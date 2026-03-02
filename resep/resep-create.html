@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tambah Resep — ResepKita</title>
+
+  <!-- Bootstrap + AOS + Icons + Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+  <style>
+    /* ══════════════════════════════════════════
+       GLOBAL VARIABLES & RESET
+    ══════════════════════════════════════════ */
+    :root {
+      --primary:        #e85d26;
+      --primary-light:  #ff7b47;
+      --primary-pale:   rgba(232,93,38,.08);
+      --primary-border: rgba(232,93,38,.18);
+      --secondary:      #2d1b0e;
+      --bg:             #faf7f4;
+      --surface:        #ffffff;
+      --sidebar-bg:     #1e1208;
+      --sidebar-w:      260px;
+      --sidebar-w-sm:   70px;
+      --topbar-h:       64px;
+      --text:           #1a0e05;
+      --muted:          #8a7060;
+      --border:         #ede5dc;
+      --danger:         #ef4444;
+      --success:        #22c55e;
+      --radius:         16px;
+      --shadow-sm:      0 2px 8px rgba(0,0,0,.06);
+      --shadow-md:      0 4px 24px rgba(0,0,0,.1);
+      --shadow-lg:      0 8px 40px rgba(0,0,0,.14);
+      --transition:     .3s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ══════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════ */
+    .sidebar { position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; z-index: 1000; transition: width var(--transition); overflow: hidden; }
+    .sidebar.collapsed { width: var(--sidebar-w-sm); }
+    .sidebar::before { content: ''; position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(232,93,38,.25) 0%, transparent 70%); top: -60px; right: -60px; pointer-events: none; animation: sideBlob 8s ease-in-out infinite; }
+    .sidebar::after  { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(245,200,66,.12) 0%, transparent 70%); bottom: 80px; left: -40px; pointer-events: none; animation: sideBlob 10s ease-in-out infinite reverse; }
+    @keyframes sideBlob { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.2) translate(8px,-8px)} }
+    .sidebar-brand { display: flex; align-items: center; gap: .75rem; padding: 1.25rem 1.1rem 1rem; text-decoration: none; flex-shrink: 0; white-space: nowrap; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .brand-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 14px rgba(232,93,38,.4); animation: brandPulse 3s ease-in-out infinite; }
+    @keyframes brandPulse { 0%,100%{box-shadow:0 4px 14px rgba(232,93,38,.4)} 50%{box-shadow:0 6px 22px rgba(232,93,38,.65)} }
+    .brand-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: -.3px; }
+    .brand-name span { color: var(--primary-light); }
+    .sidebar.collapsed .brand-name, .sidebar.collapsed .sidebar-label, .sidebar.collapsed .menu-category, .sidebar.collapsed .sidebar-footer-text { display: none; }
+    .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: .75rem .75rem 0; scrollbar-width: none; -ms-overflow-style: none; }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
+    .menu-category { font-size: .65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 1rem .5rem .35rem; white-space: nowrap; overflow: hidden; }
+    .nav-item-wrap { margin-bottom: 2px; }
+    .nav-link-custom { display: flex; align-items: center; gap: .75rem; padding: .65rem .75rem; border-radius: 12px; color: rgba(255,255,255,.55); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; overflow: hidden; position: relative; transition: background var(--transition), color var(--transition), transform .2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); transform: translateX(3px); }
+    .nav-link-custom.active { background: linear-gradient(135deg, rgba(232,93,38,.25), rgba(232,93,38,.12)); color: #fff; border: 1px solid rgba(232,93,38,.3); }
+    .nav-link-custom.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 60%; background: var(--primary-light); border-radius: 0 3px 3px 0; }
+    .nav-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: transform .3s, background .3s; }
+    .nav-link-custom:hover .nav-icon { transform: scale(1.12) rotate(-5deg); }
+    .nav-link-custom.active .nav-icon { background: rgba(232,93,38,.3); color: var(--primary-light); }
+    .nav-badge { margin-left: auto; background: var(--primary); color: #fff; font-size: .62rem; font-weight: 700; padding: .1rem .45rem; border-radius: 20px; flex-shrink: 0; }
+    .sidebar.collapsed .nav-badge, .sidebar.collapsed .sidebar-label { display: none; }
+    .sidebar.collapsed .nav-link-custom { justify-content: center; padding: .65rem; }
+    .sidebar-footer { flex-shrink: 0; padding: .75rem; border-top: 1px solid rgba(255,255,255,.07); background: rgba(0,0,0,.2); }
+    .sidebar-footer-inner { display: flex; align-items: center; gap: .7rem; padding: .6rem .5rem; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); overflow: hidden; white-space: nowrap; }
+    .sf-avatar { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; flex-shrink: 0; font-weight: 700; }
+    .sf-info { overflow: hidden; }
+    .sf-name { font-size: .8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sf-role { font-size: .68rem; color: rgba(255,255,255,.4); }
+    .sf-dots { margin-left: auto; flex-shrink: 0; color: rgba(255,255,255,.4); font-size: 1rem; cursor: pointer; transition: color .2s; }
+    .sf-dots:hover { color: var(--primary-light); }
+    .sidebar.collapsed .sidebar-footer-inner { justify-content: center; padding: .5rem; }
+
+    /* ══════════════════════════════════════════
+       MAIN WRAPPER & TOPBAR
+    ══════════════════════════════════════════ */
+    .main-wrapper { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; transition: margin-left var(--transition); }
+    .main-wrapper.expanded { margin-left: var(--sidebar-w-sm); }
+    .topbar { position: sticky; top: 0; height: var(--topbar-h); background: rgba(250,247,244,.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; z-index: 900; box-shadow: 0 1px 12px rgba(0,0,0,.06); }
+    .toggle-btn { width: 38px; height: 38px; border-radius: 10px; background: none; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 1.1rem; transition: background .2s, border-color .2s, color .2s; flex-shrink: 0; }
+    .toggle-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .toggle-btn i { transition: transform var(--transition); }
+    .toggle-btn.rotated i { transform: rotate(180deg); }
+    .topbar-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--secondary); }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: .6rem; }
+    .tb-icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; position: relative; transition: background .2s, border-color .2s, color .2s, transform .2s; text-decoration: none; }
+    .tb-icon-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); transform: translateY(-2px); }
+    .tb-notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; border: 1.5px solid var(--surface); animation: notifPing 2s ease-in-out infinite; }
+    @keyframes notifPing { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
+    .user-menu { position: relative; }
+    .user-btn { display: flex; align-items: center; gap: .6rem; padding: .35rem .7rem .35rem .35rem; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s; }
+    .user-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); box-shadow: 0 4px 14px rgba(232,93,38,.1); }
+    .user-avatar { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+    .user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .user-name { font-size: .83rem; font-weight: 600; color: var(--secondary); }
+    .user-role { font-size: .68rem; color: var(--muted); }
+    .user-caret { color: var(--muted); font-size: .75rem; transition: transform var(--transition); }
+    .user-menu.open .user-caret { transform: rotate(180deg); }
+    .user-dropdown { position: absolute; top: calc(100% + 8px); right: 0; width: 200px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); padding: .5rem; display: none; animation: dropIn .25s cubic-bezier(.34,1.56,.64,1); z-index: 999; }
+    .user-dropdown.show { display: block; }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:none} }
+    .dd-item { display: flex; align-items: center; gap: .65rem; padding: .55rem .75rem; border-radius: 10px; font-size: .85rem; color: var(--text); cursor: pointer; text-decoration: none; transition: background .2s, color .2s, transform .15s; }
+    .dd-item:hover { background: var(--primary-pale); color: var(--primary); transform: translateX(3px); }
+    .dd-item i { font-size: 1rem; width: 18px; text-align: center; }
+    .dd-item.danger:hover { background: rgba(239,68,68,.08); color: var(--danger); }
+    .dd-divider { height: 1px; background: var(--border); margin: .35rem 0; }
+
+    /* ══════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════ */
+    .content-area { flex: 1; padding: 1.5rem; }
+    .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: .75rem; }
+    .bc-left { display: flex; flex-direction: column; gap: .2rem; }
+    .bc-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--secondary); display: flex; align-items: center; gap: .5rem; }
+    .bc-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem; flex-shrink: 0; animation: bcSpin 6s linear infinite; }
+    @keyframes bcSpin { 0%,90%,100%{transform:rotate(0deg)} 95%{transform:rotate(360deg)} }
+    .bc-desc { font-size: .82rem; color: var(--muted); padding-left: .2rem; }
+    .bc-right { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--muted); flex-wrap: wrap; }
+    .bc-right a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .bc-right a:hover { text-decoration: underline; }
+
+    .main-footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: var(--muted); }
+    .footer-brand { font-family: 'Playfair Display', serif; font-weight: 900; color: var(--secondary); font-size: .9rem; }
+    .footer-brand span { color: var(--primary); }
+    .footer-links { display: flex; gap: 1rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-heart { color: var(--primary); animation: heartbeat 1.4s ease-in-out infinite; display: inline-block; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.25)} 28%{transform:scale(1)} 42%{transform:scale(1.2)} 70%{transform:scale(1)} }
+
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 999; backdrop-filter: blur(3px); }
+    .sidebar-overlay.show { display: block; }
+    .bg-float { position: fixed; pointer-events: none; z-index: 0; opacity: 0; animation: bgFloat linear infinite; }
+    @keyframes bgFloat { 0%{opacity:0;transform:translateY(110vh) rotate(0deg)} 5%{opacity:.04} 95%{opacity:.04} 100%{opacity:0;transform:translateY(-10vh) rotate(180deg)} }
+    @keyframes bounceIn { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
+    @keyframes iconBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .modal-logout .modal-content { border-radius: 24px; border: none; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-logout .modal-dialog { animation: bounceIn .5s cubic-bezier(.34,1.56,.64,1); }
+    .logout-icon-wrap { width: 80px; height: 80px; border-radius: 24px; background: linear-gradient(135deg,#fee2e2,#fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; animation: iconBob 2s ease-in-out infinite; }
+    .logout-icon-wrap i { font-size: 2.2rem; color: var(--danger); }
+    .btn-logout-confirm { background: linear-gradient(135deg,#f87171,#ef4444); border: none; color: #fff; border-radius: 12px; padding: .7rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(239,68,68,.3); }
+    .btn-logout-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(239,68,68,.4); }
+    .btn-logout-cancel { border: 1.5px solid var(--border); background: transparent; border-radius: 12px; padding: .68rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s; }
+    .btn-logout-cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+    @media (max-width: 991px) {
+      .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; z-index: 1001; }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-wrapper, .main-wrapper.expanded { margin-left: 0; }
+      .user-info { display: none; }
+    }
+    @media (max-width: 575px) {
+      .content-area { padding: 1rem; }
+      .breadcrumb-bar { padding: .75rem 1rem; }
+      .topbar { padding: 0 1rem; }
+    }
+
+    /* ══════════════════════════════════════════
+       FORM CARD — container utama section form
+    ══════════════════════════════════════════ */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+    .form-card-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: 1rem 1.5rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .form-card-icon {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: .88rem; flex-shrink: 0;
+    }
+    .form-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 900;
+      color: var(--secondary);
+    }
+    .form-card-subtitle {
+      font-size: .75rem; color: var(--muted); margin-top: .1rem;
+    }
+    .form-card-body { padding: 1.5rem; }
+
+    /* ══════════════════════════════════════════
+       FORM ELEMENTS — input, label, hint, error
+    ══════════════════════════════════════════ */
+    .form-label-custom {
+      font-size: .8rem; font-weight: 600;
+      color: var(--secondary); display: block;
+      margin-bottom: .4rem;
+    }
+    .form-label-custom .req { color: var(--danger); margin-left: 2px; }
+    .form-label-custom .opt {
+      font-weight: 400; font-size: .73rem;
+      color: var(--muted); margin-left: 4px;
+    }
+
+    .form-input, .form-select-custom, .form-textarea {
+      width: 100%;
+      padding: .68rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color .25s, box-shadow .25s, background .2s;
+    }
+    .form-input:focus, .form-select-custom:focus, .form-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(232,93,38,.1);
+      background: var(--surface);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #bba898; }
+    .form-input.is-error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,.1); }
+    .form-select-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%238a7060' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 2.2rem; cursor: pointer; }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+    .form-hint { font-size: .72rem; color: var(--muted); margin-top: .3rem; line-height: 1.5; }
+    .form-error { font-size: .72rem; color: var(--danger); margin-top: .3rem; display: none; }
+    .form-error.show { display: block; }
+
+    /* Input dengan icon kiri */
+    .input-icon-wrap { position: relative; }
+    .input-icon-wrap .input-icon {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); font-size: .9rem; pointer-events: none;
+    }
+    .input-icon-wrap .form-input { padding-left: 2.4rem; }
+
+    /* Counter karakter */
+    .char-counter {
+      font-size: .7rem; color: var(--muted);
+      text-align: right; margin-top: .25rem;
+      transition: color .2s;
+    }
+    .char-counter.warn { color: #d97706; }
+    .char-counter.over { color: var(--danger); font-weight: 600; }
+
+    /* ── Toggle switch custom ── */
+    .toggle-wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 1.1rem;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 12px; transition: border-color .2s, background .2s;
+    }
+    .toggle-wrap:hover { border-color: var(--primary-border); background: var(--primary-pale); }
+    .toggle-label { font-size: .88rem; font-weight: 600; color: var(--secondary); }
+    .toggle-sub { font-size: .73rem; color: var(--muted); margin-top: .1rem; }
+    .form-switch .form-check-input { width: 2.6em; height: 1.45em; cursor: pointer; margin: 0; }
+    .form-switch .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+    .form-switch .form-check-input:focus { box-shadow: 0 0 0 3px rgba(232,93,38,.15); border-color: var(--primary); }
+
+    /* ══════════════════════════════════════════
+       SELECT2 — custom theme sesuai tema
+    ══════════════════════════════════════════ */
+    /* Container utama — mengganti border & radius bawaan Select2 */
+    .select2-container--default .select2-selection--single,
+    .select2-container--default .select2-selection--multiple {
+      border: 1.5px solid var(--border) !important;
+      border-radius: 12px !important;
+      background: var(--bg) !important;
+      min-height: 44px !important;
+      padding: .35rem .65rem !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: .88rem !important;
+      transition: border-color .25s, box-shadow .25s !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+    .select2-container--default.select2-container--focus .select2-selection--single,
+    .select2-container--default.select2-container--focus .select2-selection--multiple,
+    .select2-container--default.select2-container--open .select2-selection--single,
+    .select2-container--default.select2-container--open .select2-selection--multiple {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 3px rgba(232,93,38,.1) !important;
+      background: var(--surface) !important;
+      outline: none !important;
+    }
+    /* Placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder,
+    .select2-container--default .select2-selection--multiple .select2-search__field::placeholder {
+      color: #bba898 !important;
+    }
+    /* Teks terpilih single */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: var(--text) !important;
+      line-height: 1.5 !important;
+      padding: 0 !important;
+    }
+    /* Arrow */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 42px !important; right: 8px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+      border-color: var(--muted) transparent transparent transparent !important;
+      border-width: 5px 4px 0 4px !important;
+    }
+    .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+      border-color: transparent transparent var(--primary) transparent !important;
+      border-width: 0 4px 5px 4px !important;
+    }
+    /* Dropdown panel */
+    .select2-dropdown {
+      border: 1.5px solid var(--primary-border) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,.12) !important;
+      background: var(--surface) !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: .88rem !important;
+      overflow: hidden !important;
+    }
+    /* Search box dalam dropdown */
+    .select2-search--dropdown { padding: .6rem .75rem !important; border-bottom: 1px solid var(--border) !important; }
+    .select2-search--dropdown .select2-search__field {
+      border: 1.5px solid var(--border) !important;
+      border-radius: 10px !important;
+      padding: .45rem .85rem !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: .85rem !important;
+      background: var(--bg) !important;
+      color: var(--text) !important;
+      outline: none !important;
+    }
+    .select2-search--dropdown .select2-search__field:focus {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 3px rgba(232,93,38,.1) !important;
+    }
+    /* List item */
+    .select2-results__option {
+      padding: .6rem 1rem !important;
+      font-size: .87rem !important;
+      color: var(--text) !important;
+      transition: background .15s !important;
+    }
+    .select2-results__option--highlighted {
+      background: var(--primary-pale) !important;
+      color: var(--primary) !important;
+    }
+    .select2-results__option[aria-selected="true"] {
+      background: rgba(232,93,38,.12) !important;
+      color: var(--primary) !important;
+      font-weight: 600 !important;
+    }
+    /* Multiple — tags terpilih */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background: var(--primary-pale) !important;
+      border: 1.5px solid var(--primary-border) !important;
+      border-radius: 8px !important;
+      color: var(--primary) !important;
+      font-size: .78rem !important;
+      font-weight: 600 !important;
+      padding: .1rem .55rem !important;
+      margin: .15rem .25rem .15rem 0 !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+      color: var(--primary) !important;
+      margin-right: .3rem !important;
+      font-size: .9rem !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+      color: var(--danger) !important;
+      background: transparent !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-search__field {
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: .85rem !important;
+      color: var(--text) !important;
+      margin-top: .1rem !important;
+    }
+    /* Width full */
+    .select2-container { width: 100% !important; }
+
+    /* ══════════════════════════════════════════
+       TINYMCE — wrapper & overrides tema
+    ══════════════════════════════════════════ */
+    .tinymce-wrap {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .tinymce-wrap:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(232,93,38,.1);
+    }
+    /* Override toolbar border */
+    .tinymce-wrap .tox-tinymce {
+      border: none !important;
+      border-radius: 0 !important;
+      font-family: 'DM Sans', sans-serif !important;
+    }
+    .tinymce-wrap .tox-toolbar-overlord,
+    .tinymce-wrap .tox .tox-toolbar__primary {
+      background: var(--bg) !important;
+      border-bottom: 1px solid var(--border) !important;
+    }
+    .tinymce-wrap .tox .tox-toolbar__group {
+      border-right: 1px solid var(--border) !important;
+    }
+    .tinymce-wrap .tox .tox-toolbar__group:last-child { border-right: none !important; }
+    .tinymce-wrap .tox .tox-tbtn { border-radius: 7px !important; }
+    .tinymce-wrap .tox .tox-tbtn:hover { background: var(--primary-pale) !important; }
+    .tinymce-wrap .tox .tox-tbtn--enabled,
+    .tinymce-wrap .tox .tox-tbtn--enabled:hover { background: rgba(232,93,38,.15) !important; }
+    .tinymce-wrap .tox .tox-tbtn svg { fill: var(--secondary) !important; }
+    .tinymce-wrap .tox .tox-tbtn--enabled svg { fill: var(--primary) !important; }
+    .tinymce-wrap .tox .tox-edit-area { background: var(--surface) !important; }
+    .tinymce-wrap .tox .tox-edit-area__iframe { background: var(--surface) !important; }
+    .tinymce-wrap .tox .tox-statusbar {
+      background: var(--bg) !important;
+      border-top: 1px solid var(--border) !important;
+      color: var(--muted) !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: .72rem !important;
+    }
+    .tinymce-wrap .tox .tox-statusbar a { color: var(--primary) !important; }
+    .tinymce-wrap .tox .tox-statusbar__resize-handle svg { fill: var(--muted) !important; }
+
+    /* ══════════════════════════════════════════
+       GAMBAR UTAMA — upload / preview area
+    ══════════════════════════════════════════ */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 2.2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .25s, background .25s;
+      position: relative;
+      background: var(--bg);
+    }
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: var(--primary);
+      background: var(--primary-pale);
+    }
+    .upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    }
+    .upload-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto .85rem;
+      font-size: 1.4rem; color: #fff;
+      box-shadow: 0 4px 16px rgba(232,93,38,.3);
+      transition: transform .3s;
+    }
+    .upload-area:hover .upload-icon { transform: scale(1.1) rotate(-5deg); }
+    .upload-title { font-weight: 700; font-size: .9rem; color: var(--secondary); margin-bottom: .3rem; }
+    .upload-sub { font-size: .77rem; color: var(--muted); line-height: 1.5; }
+    .upload-sub strong { color: var(--primary); }
+
+    /* Preview gambar setelah dipilih */
+    .upload-preview {
+      display: none;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .upload-preview.show { display: block; }
+    .upload-preview img {
+      width: 100%; height: 200px;
+      object-fit: cover; border-radius: 12px;
+      display: block;
+    }
+    .upload-preview-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center;
+      gap: .75rem; opacity: 0;
+      transition: opacity .25s;
+      border-radius: 12px;
+    }
+    .upload-preview:hover .upload-preview-overlay { opacity: 1; }
+    .preview-btn {
+      padding: .5rem 1.1rem; border-radius: 10px; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: .83rem; font-weight: 600;
+      cursor: pointer; transition: transform .2s;
+    }
+    .preview-btn:hover { transform: translateY(-2px); }
+    .preview-btn.change { background: #fff; color: var(--secondary); }
+    .preview-btn.remove { background: var(--danger); color: #fff; }
+
+    /* ══════════════════════════════════════════
+       LANGKAH MEMASAK — sortable step list
+    ══════════════════════════════════════════ */
+    .step-list { display: flex; flex-direction: column; gap: .75rem; }
+    .step-item {
+      display: flex; gap: .85rem; align-items: flex-start;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: .9rem 1rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .step-item:hover { border-color: var(--primary-border); box-shadow: var(--shadow-sm); }
+    .step-num {
+      width: 30px; height: 30px; flex-shrink: 0;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: .8rem;
+      box-shadow: 0 3px 8px rgba(232,93,38,.3);
+      margin-top: .45rem;
+    }
+    .step-content { flex: 1; }
+    .step-content textarea {
+      width: 100%; border: none; outline: none;
+      background: transparent; resize: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem; color: var(--text);
+      line-height: 1.6; min-height: 60px;
+    }
+    .step-actions {
+      display: flex; flex-direction: column; gap: .3rem;
+      flex-shrink: 0; padding-top: .3rem;
+    }
+    .step-btn {
+      width: 26px; height: 26px; border-radius: 7px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .73rem; color: var(--muted); cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .step-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .step-btn.del:hover { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: var(--danger); }
+    .step-drag { cursor: grab; }
+    .step-drag:active { cursor: grabbing; }
+
+    .btn-add-step {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .68rem 1.2rem;
+      border: 2px dashed var(--primary-border);
+      border-radius: 12px; background: transparent;
+      color: var(--primary); font-family: 'DM Sans', sans-serif;
+      font-size: .87rem; font-weight: 600; cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-add-step:hover { background: var(--primary-pale); border-color: var(--primary-border); }
+
+    /* ══════════════════════════════════════════
+       BAHAN — dynamic ingredient rows
+    ══════════════════════════════════════════ */
+    .ingredient-list { display: flex; flex-direction: column; gap: .65rem; }
+    .ingredient-row {
+      display: flex; gap: .6rem; align-items: center;
+    }
+    .ingredient-row .ing-name { flex: 2; min-width: 0; }
+    .ingredient-row .ing-qty  { flex: 1; min-width: 80px; max-width: 110px; }
+    .ingredient-row .ing-unit { flex: 1; min-width: 80px; max-width: 110px; }
+    .ingredient-row .ing-del {
+      width: 32px; height: 32px; flex-shrink: 0;
+      border-radius: 9px; border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .82rem; cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .ingredient-row .ing-del:hover { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: var(--danger); }
+
+    .btn-add-ingredient {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .65rem 1.2rem;
+      border: 2px dashed var(--primary-border);
+      border-radius: 12px; background: transparent;
+      color: var(--primary); font-family: 'DM Sans', sans-serif;
+      font-size: .87rem; font-weight: 600; cursor: pointer;
+      width: 100%; justify-content: center;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-add-ingredient:hover { background: var(--primary-pale); }
+
+    /* ══════════════════════════════════════════
+       SECTION DIVIDER — group header di sidebar
+    ══════════════════════════════════════════ */
+    .section-divider {
+      height: 1px; background: var(--border);
+      margin: 1.1rem 0;
+    }
+
+    /* ══════════════════════════════════════════
+       ACTION BAR — tombol Save / Draft / Batal
+    ══════════════════════════════════════════ */
+    .action-bar {
+      display: flex; align-items: center; gap: .75rem;
+      flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      position: sticky; bottom: 1rem; z-index: 50;
+    }
+    .btn-publish {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .7rem 1.6rem; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: #fff; font-family: 'DM Sans', sans-serif; font-size: .9rem;
+      font-weight: 600; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(232,93,38,.35);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-publish:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232,93,38,.45); }
+    .btn-draft {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .68rem 1.4rem; border: 1.5px solid var(--border);
+      border-radius: 12px; background: var(--surface);
+      color: var(--secondary); font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; font-weight: 600; cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .btn-draft:hover { border-color: var(--primary-border); color: var(--primary); background: var(--primary-pale); }
+    .btn-cancel {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .68rem 1.2rem; border: 1.5px solid var(--border);
+      border-radius: 12px; background: transparent;
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; font-weight: 500; cursor: pointer;
+      text-decoration: none;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-cancel:hover { color: var(--danger); border-color: rgba(239,68,68,.3); }
+    .action-bar-hint { font-size: .75rem; color: var(--muted); margin-left: auto; }
+    @media (max-width:575px) { .action-bar-hint { display:none; } }
+
+    /* ══════════════════════════════════════════
+       INFO NUTRITION — simple grid input
+    ══════════════════════════════════════════ */
+    .nutrition-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+    }
+    @media (max-width:575px) { .nutrition-grid { grid-template-columns: repeat(2, 1fr); } }
+    .nutrition-item label { font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: .3rem; }
+    .nutrition-item input { text-align: center; }
+
+    /* ══════════════════════════════════════════
+       LAYOUT 2 KOLOM (main + sidebar)
+    ══════════════════════════════════════════ */
+    .create-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .create-main  { min-width: 0; }
+    .create-aside { position: sticky; top: calc(var(--topbar-h) + 1.5rem); }
+
+    @media (max-width: 1099px) {
+      .create-layout { grid-template-columns: 1fr; }
+      .create-aside { position: static; }
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="bgFloats"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <div class="brand-icon">🔥</div>
+    <span class="brand-name">Resep<span>Kita</span></span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-item-wrap">
+      <a href="dashboard.html" class="nav-link-custom" data-tooltip="Dashboard">
+        <div class="nav-icon"><i class="bi bi-grid-1x2"></i></div>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+    </div>
+    <div class="menu-category">Master Data</div>
+    <div class="nav-item-wrap">
+      <a href="kategori.html" class="nav-link-custom" data-tooltip="Kategori">
+        <div class="nav-icon"><i class="bi bi-tag"></i></div>
+        <span class="sidebar-label">Kategori</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="tags.html" class="nav-link-custom" data-tooltip="Tags">
+        <div class="nav-icon"><i class="bi bi-hash"></i></div>
+        <span class="sidebar-label">Tags</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="bahan.html" class="nav-link-custom" data-tooltip="Bahan">
+        <div class="nav-icon"><i class="bi bi-basket"></i></div>
+        <span class="sidebar-label">Bahan Makanan</span>
+      </a>
+    </div>
+    <div class="menu-category">Konten</div>
+    <div class="nav-item-wrap">
+      <a href="resep.html" class="nav-link-custom active" data-tooltip="Resep">
+        <div class="nav-icon"><i class="bi bi-journal-richtext"></i></div>
+        <span class="sidebar-label">Resep</span>
+        <span class="nav-badge">12</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Moderasi">
+        <div class="nav-icon"><i class="bi bi-shield-check"></i></div>
+        <span class="sidebar-label">Moderasi</span>
+        <span class="nav-badge">4</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Koleksi">
+        <div class="nav-icon"><i class="bi bi-collection"></i></div>
+        <span class="sidebar-label">Koleksi</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Komentar">
+        <div class="nav-icon"><i class="bi bi-chat-dots"></i></div>
+        <span class="sidebar-label">Komentar</span>
+        <span class="nav-badge">7</span>
+      </a>
+    </div>
+    <div class="menu-category">Pengguna</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengguna">
+        <div class="nav-icon"><i class="bi bi-people"></i></div>
+        <span class="sidebar-label">Pengguna</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Peran">
+        <div class="nav-icon"><i class="bi bi-person-badge"></i></div>
+        <span class="sidebar-label">Peran & Akses</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Laporan">
+        <div class="nav-icon"><i class="bi bi-flag"></i></div>
+        <span class="sidebar-label">Laporan User</span>
+        <span class="nav-badge">2</span>
+      </a>
+    </div>
+    <div class="menu-category">Analitik</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Statistik">
+        <div class="nav-icon"><i class="bi bi-bar-chart-line"></i></div>
+        <span class="sidebar-label">Statistik</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Trending">
+        <div class="nav-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <span class="sidebar-label">Trending</span>
+      </a>
+    </div>
+    <div class="menu-category">Sistem</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengaturan">
+        <div class="nav-icon"><i class="bi bi-gear"></i></div>
+        <span class="sidebar-label">Pengaturan</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Bantuan">
+        <div class="nav-icon"><i class="bi bi-question-circle"></i></div>
+        <span class="sidebar-label">Bantuan</span>
+      </a>
+    </div>
+    <div style="height:.75rem"></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-inner">
+      <div class="sf-avatar">A</div>
+      <div class="sf-info sidebar-footer-text">
+        <div class="sf-name">Ahmad Firdaus</div>
+        <div class="sf-role">Super Admin</div>
+      </div>
+      <i class="bi bi-three-dots sf-dots sidebar-footer-text"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </button>
+    <span class="topbar-title d-none d-sm-block">Tambah Resep</span>
+    <div class="topbar-right">
+      <a href="resep.html" class="tb-icon-btn d-none d-md-flex" title="Kembali ke Daftar Resep"><i class="bi bi-arrow-left"></i></a>
+      <button class="tb-icon-btn" title="Notifikasi">
+        <i class="bi bi-bell"></i>
+        <span class="tb-notif-dot"></span>
+      </button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-btn" onclick="toggleUserMenu()">
+          <div class="user-avatar">A</div>
+          <div class="user-info">
+            <span class="user-name">Ahmad Firdaus</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+          <i class="bi bi-chevron-down user-caret ms-1"></i>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#" class="dd-item"><i class="bi bi-person-circle"></i> Profil Saya</a>
+          <a href="#" class="dd-item"><i class="bi bi-gear"></i> Pengaturan</a>
+          <div class="dd-divider"></div>
+          <div class="dd-item danger" onclick="showLogoutModal()"><i class="bi bi-box-arrow-right"></i> Logout</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════ CONTENT ══════════ -->
+  <main class="content-area">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar" data-aos="fade-down" data-aos-duration="600">
+      <div class="bc-left">
+        <div class="bc-title">
+          <div class="bc-icon"><i class="bi bi-plus-lg"></i></div>
+          Tambah Resep Baru
+        </div>
+        <div class="bc-desc">Isi semua informasi resep dengan lengkap agar mudah ditemukan pengguna.</div>
+      </div>
+      <div class="bc-right">
+        <i class="bi bi-house-fill text-warning"></i>
+        <a href="dashboard.html">Home</a>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <a href="resep.html">Resep</a>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <span style="color:var(--primary);font-weight:600">Tambah Baru</span>
+      </div>
+    </div>
+
+    <!-- ACTION BAR (sticky bottom) -->
+    <div class="action-bar" data-aos="fade-up" data-aos-delay="50">
+      <button class="btn-publish" onclick="submitResep('published')">
+        <i class="bi bi-send-fill"></i> Publish Resep
+      </button>
+      <button class="btn-draft" onclick="submitResep('draft')">
+        <i class="bi bi-floppy"></i> Simpan Draft
+      </button>
+      <a href="resep.html" class="btn-cancel">
+        <i class="bi bi-x-lg"></i> Batal
+      </a>
+      <span class="action-bar-hint"><i class="bi bi-info-circle me-1"></i>Perubahan belum tersimpan</span>
+    </div>
+
+    <!-- ══════ 2-KOLOM LAYOUT ══════ -->
+    <div class="create-layout">
+
+      <!-- ══ KOLOM KIRI — form utama ══ -->
+      <div class="create-main">
+
+        <!-- 1. INFORMASI DASAR -->
+        <div class="form-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-info-circle"></i></div>
+            <div>
+              <div class="form-card-title">Informasi Dasar</div>
+              <div class="form-card-subtitle">Judul, deskripsi singkat, dan slug URL resep</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+
+            <!-- Judul -->
+            <div class="mb-3">
+              <label class="form-label-custom" for="resepJudul">Judul Resep <span class="req">*</span></label>
+              <input type="text" class="form-input" id="resepJudul"
+                placeholder="cth: Rendang Daging Sapi Padang Asli"
+                oninput="autoSlug(this.value); countChar('resepJudul','judulCount',120)"/>
+              <div class="d-flex justify-content-between">
+                <div class="form-hint">Judul yang jelas dan deskriptif lebih mudah ditemukan.</div>
+                <div class="char-counter" id="judulCount">0 / 120</div>
+              </div>
+            </div>
+
+            <!-- Slug -->
+            <div class="mb-3">
+              <label class="form-label-custom" for="resepSlug">Slug URL <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="input-icon bi bi-link-45deg"></i>
+                <input type="text" class="form-input" id="resepSlug" placeholder="rendang-daging-sapi-padang-asli"/>
+              </div>
+              <div class="form-hint">Otomatis dibuat dari judul. Bisa diedit manual.</div>
+            </div>
+
+            <!-- Deskripsi singkat -->
+            <div class="mb-0">
+              <label class="form-label-custom" for="resepDesc">Deskripsi Singkat <span class="req">*</span></label>
+              <textarea class="form-textarea" id="resepDesc" rows="3"
+                placeholder="Ceritakan sedikit tentang resep ini, asal usulnya, atau kenapa harus dicoba..."
+                oninput="countChar('resepDesc','descCount',300)"></textarea>
+              <div class="d-flex justify-content-between">
+                <div class="form-hint">Tampil sebagai ringkasan di halaman daftar resep.</div>
+                <div class="char-counter" id="descCount">0 / 300</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. KONTEN — TinyMCE -->
+        <div class="form-card" data-aos="fade-up" data-aos-delay="120">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-file-richtext"></i></div>
+            <div>
+              <div class="form-card-title">Konten Resep</div>
+              <div class="form-card-subtitle">Deskripsi lengkap, tips, dan cerita di balik resep</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+            <label class="form-label-custom">Konten Lengkap <span class="req">*</span></label>
+            <div class="tinymce-wrap">
+              <textarea id="resepKonten" name="resepKonten"></textarea>
+            </div>
+            <div class="form-hint mt-2">Gunakan editor untuk memformat teks, menambah gambar tambahan, atau catatan khusus.</div>
+          </div>
+        </div>
+
+        <!-- 3. BAHAN-BAHAN -->
+        <div class="form-card" data-aos="fade-up" data-aos-delay="130">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-basket2"></i></div>
+            <div>
+              <div class="form-card-title">Bahan-Bahan</div>
+              <div class="form-card-subtitle">Daftar bahan yang diperlukan beserta takaran</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+
+            <!-- Header kolom -->
+            <div class="d-flex gap-2 mb-2" style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:0 .1rem">
+              <div style="flex:2">Nama Bahan</div>
+              <div style="flex:1;max-width:110px">Jumlah</div>
+              <div style="flex:1;max-width:110px">Satuan</div>
+              <div style="width:32px"></div>
+            </div>
+
+            <div class="ingredient-list" id="ingredientList">
+              <!-- Row bahan awal -->
+              <div class="ingredient-row">
+                <div class="ing-name">
+                  <input type="text" class="form-input" placeholder="cth: Daging sapi"/>
+                </div>
+                <div class="ing-qty">
+                  <input type="number" class="form-input" placeholder="500" min="0"/>
+                </div>
+                <div class="ing-unit">
+                  <input type="text" class="form-input" placeholder="gram"/>
+                </div>
+                <button class="ing-del" onclick="removeIngredient(this)" title="Hapus bahan">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <div class="ingredient-row">
+                <div class="ing-name">
+                  <input type="text" class="form-input" placeholder="cth: Bawang merah"/>
+                </div>
+                <div class="ing-qty">
+                  <input type="number" class="form-input" placeholder="8" min="0"/>
+                </div>
+                <div class="ing-unit">
+                  <input type="text" class="form-input" placeholder="siung"/>
+                </div>
+                <button class="ing-del" onclick="removeIngredient(this)" title="Hapus bahan">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+
+            <button class="btn-add-ingredient mt-3" onclick="addIngredient()">
+              <i class="bi bi-plus-circle"></i> Tambah Bahan
+            </button>
+
+          </div>
+        </div>
+
+        <!-- 4. LANGKAH MEMASAK -->
+        <div class="form-card" data-aos="fade-up" data-aos-delay="140">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-list-ol"></i></div>
+            <div>
+              <div class="form-card-title">Langkah Memasak</div>
+              <div class="form-card-subtitle">Urutan cara pembuatan yang jelas dan mudah diikuti</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+
+            <div class="step-list" id="stepList">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <textarea placeholder="Tuliskan langkah pertama, cth: Cuci bersih daging sapi, potong kotak-kotak ukuran 3x3 cm..." rows="2"></textarea>
+                </div>
+                <div class="step-actions">
+                  <button class="step-btn step-drag" title="Drag untuk urutkan"><i class="bi bi-grip-vertical"></i></button>
+                  <button class="step-btn del" onclick="removeStep(this)" title="Hapus langkah"><i class="bi bi-trash"></i></button>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <textarea placeholder="Tuliskan langkah kedua..." rows="2"></textarea>
+                </div>
+                <div class="step-actions">
+                  <button class="step-btn step-drag" title="Drag untuk urutkan"><i class="bi bi-grip-vertical"></i></button>
+                  <button class="step-btn del" onclick="removeStep(this)" title="Hapus langkah"><i class="bi bi-trash"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-add-step mt-3" onclick="addStep()">
+              <i class="bi bi-plus-circle"></i> Tambah Langkah
+            </button>
+
+          </div>
+        </div>
+
+        <!-- 5. INFORMASI NUTRISI -->
+        <div class="form-card" data-aos="fade-up" data-aos-delay="150">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-heart-pulse"></i></div>
+            <div>
+              <div class="form-card-title">Informasi Nutrisi <span style="font-size:.75rem;font-weight:400;color:var(--muted)">(Opsional)</span></div>
+              <div class="form-card-subtitle">Per satu porsi sajian</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+            <div class="nutrition-grid">
+              <div class="nutrition-item">
+                <label>Kalori (kkal)</label>
+                <input type="number" class="form-input" placeholder="—" min="0"/>
+              </div>
+              <div class="nutrition-item">
+                <label>Protein (g)</label>
+                <input type="number" class="form-input" placeholder="—" min="0"/>
+              </div>
+              <div class="nutrition-item">
+                <label>Lemak (g)</label>
+                <input type="number" class="form-input" placeholder="—" min="0"/>
+              </div>
+              <div class="nutrition-item">
+                <label>Karbohidrat (g)</label>
+                <input type="number" class="form-input" placeholder="—" min="0"/>
+              </div>
+              <div class="nutrition-item">
+                <label>Serat (g)</label>
+                <input type="number" class="form-input" placeholder="—" min="0"/>
+              </div>
+              <div class="nutrition-item">
+                <label>Gula (g)</label>
+                <input type="number" class="form-input" placeholder="—" min="0"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /create-main -->
+
+      <!-- ══ KOLOM KANAN — aside / sidebar form ══ -->
+      <div class="create-aside" data-aos="fade-left" data-aos-delay="120">
+
+        <!-- FOTO UTAMA -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-image"></i></div>
+            <div>
+              <div class="form-card-title">Foto Utama</div>
+              <div class="form-card-subtitle">Gambar cover resep</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+            <!-- Upload area -->
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fotoInput').click()">
+              <input type="file" id="fotoInput" accept="image/*" onchange="previewFoto(event)" style="display:none"/>
+              <div class="upload-icon"><i class="bi bi-camera"></i></div>
+              <div class="upload-title">Upload Foto Resep</div>
+              <div class="upload-sub">Drag &amp; drop atau <strong>klik untuk pilih</strong><br>JPG, PNG, WebP — maks. 5 MB<br>Rekomendasi: 1200 × 800 px</div>
+            </div>
+            <!-- Preview setelah upload -->
+            <div class="upload-preview mt-2" id="uploadPreview">
+              <img id="previewImg" src="" alt="Preview"/>
+              <div class="upload-preview-overlay">
+                <button class="preview-btn change" onclick="document.getElementById('fotoInput').click()"><i class="bi bi-arrow-repeat me-1"></i>Ganti</button>
+                <button class="preview-btn remove" onclick="removeFoto()"><i class="bi bi-trash me-1"></i>Hapus</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PENGATURAN RESEP -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-sliders"></i></div>
+            <div>
+              <div class="form-card-title">Pengaturan</div>
+              <div class="form-card-subtitle">Klasifikasi dan metadata resep</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+
+            <!-- Kategori — Select2 single -->
+            <div class="mb-3">
+              <label class="form-label-custom" for="selKategori">Kategori <span class="req">*</span></label>
+              <select id="selKategori" class="select2-target">
+                <option value=""></option>
+                <option value="masakan-utama">🍽️ Masakan Utama</option>
+                <option value="cemilan">🍪 Cemilan</option>
+                <option value="minuman">🥤 Minuman</option>
+                <option value="kue-roti">🍰 Kue &amp; Roti</option>
+                <option value="sarapan">🌅 Sarapan</option>
+                <option value="sup-kuah">🍲 Sup &amp; Kuah</option>
+                <option value="salad">🥗 Salad</option>
+                <option value="saus-sambal">🌶️ Saus &amp; Sambal</option>
+              </select>
+            </div>
+
+            <!-- Tags — Select2 multiple -->
+            <div class="mb-3">
+              <label class="form-label-custom" for="selTags">Tags <span class="opt">(opsional)</span></label>
+              <select id="selTags" class="select2-target-multi" multiple>
+                <option value="pedas">pedas</option>
+                <option value="tradisional">tradisional</option>
+                <option value="ayam">ayam</option>
+                <option value="daging">daging</option>
+                <option value="vegetarian">vegetarian</option>
+                <option value="mudah-dibuat">mudah-dibuat</option>
+                <option value="berkuah">berkuah</option>
+                <option value="diet-sehat">diet-sehat</option>
+                <option value="sarapan">sarapan</option>
+                <option value="dessert">dessert</option>
+                <option value="seafood">seafood</option>
+                <option value="bakar">bakar</option>
+                <option value="nasi-goreng">nasi-goreng</option>
+                <option value="rendang">rendang</option>
+              </select>
+              <div class="form-hint">Pilih satu atau lebih tag yang relevan.</div>
+            </div>
+
+            <!-- Tingkat kesulitan -->
+            <div class="mb-3">
+              <label class="form-label-custom" for="selKesulitan">Tingkat Kesulitan <span class="req">*</span></label>
+              <select id="selKesulitan" class="form-select-custom">
+                <option value="">-- Pilih --</option>
+                <option value="mudah">😊 Mudah</option>
+                <option value="sedang">🤔 Sedang</option>
+                <option value="sulit">😅 Sulit</option>
+                <option value="expert">👨‍🍳 Expert</option>
+              </select>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Waktu & Porsi -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label-custom">Waktu Prep <span class="req">*</span></label>
+                <div class="input-icon-wrap">
+                  <i class="input-icon bi bi-clock"></i>
+                  <input type="number" class="form-input" placeholder="15" min="0"/>
+                </div>
+                <div class="form-hint">menit</div>
+              </div>
+              <div class="col-6">
+                <label class="form-label-custom">Waktu Masak <span class="req">*</span></label>
+                <div class="input-icon-wrap">
+                  <i class="input-icon bi bi-fire"></i>
+                  <input type="number" class="form-input" placeholder="60" min="0"/>
+                </div>
+                <div class="form-hint">menit</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label-custom">Jumlah Porsi <span class="req">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="input-icon bi bi-people"></i>
+                <input type="number" class="form-input" placeholder="4" min="1"/>
+              </div>
+              <div class="form-hint">orang / sajian</div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Toggle: Unggulan -->
+            <div class="toggle-wrap mb-2">
+              <div>
+                <div class="toggle-label">⭐ Tandai Unggulan</div>
+                <div class="toggle-sub">Tampil di halaman utama</div>
+              </div>
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="toggleUnggulan"/>
+              </div>
+            </div>
+
+            <!-- Toggle: Komentar -->
+            <div class="toggle-wrap mb-2">
+              <div>
+                <div class="toggle-label"><i class="bi bi-chat-dots me-1"></i>Aktifkan Komentar</div>
+                <div class="toggle-sub">Biarkan pengguna berkomentar</div>
+              </div>
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="toggleKomentar" checked/>
+              </div>
+            </div>
+
+            <!-- Toggle: Rating -->
+            <div class="toggle-wrap">
+              <div>
+                <div class="toggle-label"><i class="bi bi-star me-1"></i>Aktifkan Rating</div>
+                <div class="toggle-sub">Biarkan pengguna memberi rating</div>
+              </div>
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="toggleRating" checked/>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SEO META -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-search"></i></div>
+            <div>
+              <div class="form-card-title">SEO Meta</div>
+              <div class="form-card-subtitle">Optimasi mesin pencari</div>
+            </div>
+          </div>
+          <div class="form-card-body">
+            <div class="mb-3">
+              <label class="form-label-custom" for="metaTitle">Meta Title <span class="opt">(opsional)</span></label>
+              <input type="text" class="form-input" id="metaTitle"
+                placeholder="cth: Rendang Sapi Padang Asli — ResepKita"
+                oninput="countChar('metaTitle','metaTitleCount',60)"/>
+              <div class="d-flex justify-content-between">
+                <div class="form-hint">Kosongkan untuk pakai judul resep.</div>
+                <div class="char-counter" id="metaTitleCount">0 / 60</div>
+              </div>
+            </div>
+            <div class="mb-0">
+              <label class="form-label-custom" for="metaDesc">Meta Description <span class="opt">(opsional)</span></label>
+              <textarea class="form-textarea" id="metaDesc" rows="3"
+                placeholder="Deskripsi singkat untuk mesin pencari..."
+                oninput="countChar('metaDesc','metaDescCount',160)"></textarea>
+              <div class="d-flex justify-content-between">
+                <div class="form-hint">Maks. 160 karakter.</div>
+                <div class="char-counter" id="metaDescCount">0 / 160</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /create-aside -->
+
+    </div><!-- /create-layout -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div>
+      <span class="footer-brand">Resep<span>Kita</span></span>
+      &nbsp;— Dibuat dengan <span class="footer-heart">♥</span> untuk para pecinta masak Indonesia
+    </div>
+    <div class="footer-links">
+      <a href="#">Tentang</a>
+      <a href="#">Privasi</a>
+      <a href="#">Bantuan</a>
+    </div>
+    <div>v1.0.0 &nbsp;•&nbsp; © 2025 ResepKita</div>
+  </footer>
+
+</div><!-- /main-wrapper -->
+
+<!-- MODAL LOGOUT -->
+<div class="modal fade modal-logout" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="logout-icon-wrap"><i class="bi bi-box-arrow-right"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.4rem">Konfirmasi Logout</h5>
+        <p style="font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem">Apakah kamu yakin ingin keluar dari akun <strong style="color:var(--secondary)">Ahmad Firdaus</strong>?</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-logout-cancel" data-bs-dismiss="modal">Batal</button>
+          <button class="btn-logout-confirm" onclick="window.location.href='login.html'"><i class="bi bi-box-arrow-right me-1"></i>Ya, Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SCRIPTS ══════════ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- TinyMCE via CDN (community/free) -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script>
+  /* ── AOS ── */
+  AOS.init({ once: true, easing: 'ease-out-cubic', offset: 30 });
+
+  /* ── BG Floats ── */
+  ['🍕','🍜','🍱','🥗','🍰','🥤','🍛','🍣','🧁','🍩','🍓','🥑','🌶️','🫕','🍲','🧆'].forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'bg-float';
+    el.textContent = e;
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${1.1+Math.random()*1.4}rem;animation-duration:${15+Math.random()*16}s;animation-delay:${Math.random()*14}s;`;
+    document.getElementById('bgFloats').appendChild(el);
+  });
+
+  /* ── Sidebar ── */
+  let collapsed = false;
+  function toggleSidebar() {
+    const sb  = document.getElementById('sidebar');
+    const mw  = document.getElementById('mainWrapper');
+    const btn = document.getElementById('toggleBtn');
+    if (window.innerWidth <= 991) {
+      sb.classList.toggle('mobile-open');
+      document.getElementById('sidebarOverlay').classList.toggle('show');
+    } else {
+      collapsed = !collapsed;
+      sb.classList.toggle('collapsed', collapsed);
+      mw.classList.toggle('expanded', collapsed);
+      btn.classList.toggle('rotated', collapsed);
+    }
+  }
+  function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
+
+  /* ── User dropdown ── */
+  function toggleUserMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+    document.getElementById('userDropdown').classList.toggle('show');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.user-menu')) {
+      document.getElementById('userMenu').classList.remove('open');
+      document.getElementById('userDropdown').classList.remove('show');
+    }
+  });
+
+  /* ── Sidebar tooltips saat collapsed ── */
+  document.querySelectorAll('.nav-link-custom').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      if (!document.getElementById('sidebar').classList.contains('collapsed')) return;
+      const tip = document.createElement('div');
+      tip.textContent = this.dataset.tooltip || '';
+      tip.style.cssText = 'position:fixed;background:var(--secondary);color:#fff;padding:.35rem .85rem;border-radius:8px;font-size:.78rem;font-weight:600;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+      const r = this.getBoundingClientRect();
+      tip.style.left = (r.right + 10) + 'px';
+      tip.style.top  = (r.top + r.height / 2 - 14) + 'px';
+      document.body.appendChild(tip);
+      this._tip = tip;
+    });
+    link.addEventListener('mouseleave', function() { if (this._tip) { this._tip.remove(); this._tip = null; } });
+    link.addEventListener('click', function(e) {
+      if (this.getAttribute('href') === '#') e.preventDefault();
+      document.querySelectorAll('.nav-link-custom').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  /* ── Logout modal ── */
+  function showLogoutModal() {
+    document.getElementById('userDropdown').classList.remove('show');
+    document.getElementById('userMenu').classList.remove('open');
+    new bootstrap.Modal(document.getElementById('logoutModal')).show();
+  }
+
+  /* ══════════════════════════════════════════
+     TINYMCE INIT
+  ══════════════════════════════════════════ */
+  tinymce.init({
+    selector: '#resepKonten',
+    license_key: 'gpl',          /* pakai lisensi GPL / self-hosted, bebas watermark */
+    height: 420,
+    menubar: false,
+    branding: false,
+    resize: true,
+    skin: 'oxide',
+    content_css: 'default',
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+      'searchreplace', 'visualblocks', 'code', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'wordcount'
+    ],
+    toolbar:
+      'undo redo | blocks | ' +
+      'bold italic underline strikethrough | forecolor backcolor | ' +
+      'alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist | blockquote | link image | ' +
+      'removeformat | code fullscreen',
+    toolbar_mode: 'wrap',
+    block_formats: 'Paragraph=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Preformatted=pre',
+    content_style: `
+      body {
+        font-family: 'DM Sans', -apple-system, sans-serif;
+        font-size: 15px;
+        color: #1a0e05;
+        line-height: 1.75;
+        padding: 1rem 1.25rem;
+        background: #ffffff;
+      }
+      h2, h3, h4 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 900;
+        color: #2d1b0e;
+        margin-top: 1.5em;
+        margin-bottom: .5em;
+      }
+      p { margin-bottom: 1em; }
+      a { color: #e85d26; }
+      blockquote {
+        border-left: 4px solid #e85d26;
+        margin: 1em 0;
+        padding: .5em 1em;
+        background: rgba(232,93,38,.06);
+        border-radius: 0 8px 8px 0;
+        color: #8a7060;
+        font-style: italic;
+      }
+      img { max-width: 100%; border-radius: 8px; }
+      ul, ol { padding-left: 1.5em; }
+      li { margin-bottom: .35em; }
+    `,
+    /* Load Google Fonts juga di dalam iframe editor */
+    content_css_cors: true,
+    setup: function(editor) {
+      /* Sync ke textarea asli saat perubahan */
+      editor.on('input change', function() {
+        editor.save();
+      });
+      /* Tambah class fokus ke wrapper saat editor aktif */
+      editor.on('focus', function() {
+        document.querySelector('.tinymce-wrap').style.borderColor = 'var(--primary)';
+        document.querySelector('.tinymce-wrap').style.boxShadow   = '0 0 0 3px rgba(232,93,38,.1)';
+      });
+      editor.on('blur', function() {
+        document.querySelector('.tinymce-wrap').style.borderColor = '';
+        document.querySelector('.tinymce-wrap').style.boxShadow   = '';
+      });
+    }
+  });
+
+  /* ══════════════════════════════════════════
+     SELECT2 INIT
+  ══════════════════════════════════════════ */
+  $(document).ready(function() {
+    /* Single select — Kategori */
+    $('#selKategori').select2({
+      placeholder: '-- Pilih Kategori --',
+      allowClear: true,
+      width: '100%'
+    });
+
+    /* Multiple select — Tags */
+    $('#selTags').select2({
+      placeholder: 'Cari atau pilih tag...',
+      allowClear: true,
+      width: '100%',
+      multiple: true,
+      closeOnSelect: false
+    });
+  });
+
+  /* ══════════════════════════════════════════
+     UTILITAS FORM
+  ══════════════════════════════════════════ */
+
+  /* Auto generate slug dari judul */
+  function autoSlug(val) {
+    const slug = val
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    document.getElementById('resepSlug').value = slug;
+  }
+
+  /* Hitung karakter & warnai counter */
+  function countChar(inputId, counterId, max) {
+    const val = document.getElementById(inputId).value.length;
+    const el  = document.getElementById(counterId);
+    el.textContent = val + ' / ' + max;
+    el.classList.remove('warn', 'over');
+    if (val > max)              el.classList.add('over');
+    else if (val > max * .85)   el.classList.add('warn');
+  }
+
+  /* ── Upload foto ── */
+  function previewFoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('uploadArea').style.display   = 'none';
+      document.getElementById('uploadPreview').classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  }
+  function removeFoto() {
+    document.getElementById('fotoInput').value          = '';
+    document.getElementById('previewImg').src           = '';
+    document.getElementById('uploadPreview').classList.remove('show');
+    document.getElementById('uploadArea').style.display = '';
+  }
+
+  /* Drag-over styling upload area */
+  const ua = document.getElementById('uploadArea');
+  if (ua) {
+    ua.addEventListener('dragover',  e => { e.preventDefault(); ua.classList.add('drag-over'); });
+    ua.addEventListener('dragleave', () => ua.classList.remove('drag-over'));
+    ua.addEventListener('drop', e => {
+      e.preventDefault(); ua.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const dt = new DataTransfer(); dt.items.add(file);
+        const fi = document.getElementById('fotoInput'); fi.files = dt.files;
+        previewFoto({ target: fi });
+      }
+    });
+  }
+
+  /* ── Ingredient rows ── */
+  function addIngredient() {
+    const list = document.getElementById('ingredientList');
+    const row = document.createElement('div');
+    row.className = 'ingredient-row';
+    row.innerHTML = `
+      <div class="ing-name"><input type="text"   class="form-input" placeholder="Nama bahan..."/></div>
+      <div class="ing-qty" ><input type="number" class="form-input" placeholder="0" min="0"/></div>
+      <div class="ing-unit"><input type="text"   class="form-input" placeholder="satuan"/></div>
+      <button class="ing-del" onclick="removeIngredient(this)" title="Hapus"><i class="bi bi-x-lg"></i></button>
+    `;
+    list.appendChild(row);
+    row.querySelector('input').focus();
+    /* Animasi masuk */
+    row.style.opacity = '0'; row.style.transform = 'translateY(-8px)';
+    requestAnimationFrame(() => {
+      row.style.transition = 'opacity .25s, transform .25s';
+      row.style.opacity = '1'; row.style.transform = 'translateY(0)';
+    });
+  }
+  function removeIngredient(btn) {
+    const row = btn.closest('.ingredient-row');
+    const list = document.getElementById('ingredientList');
+    if (list.querySelectorAll('.ingredient-row').length <= 1) return; /* minimal 1 baris */
+    row.style.transition = 'opacity .2s, transform .2s';
+    row.style.opacity = '0'; row.style.transform = 'translateX(12px)';
+    setTimeout(() => row.remove(), 200);
+  }
+
+  /* ── Step rows ── */
+  let stepCount = 2;
+  function addStep() {
+    stepCount++;
+    const list = document.getElementById('stepList');
+    const item = document.createElement('div');
+    item.className = 'step-item';
+    item.innerHTML = `
+      <div class="step-num">${stepCount}</div>
+      <div class="step-content">
+        <textarea placeholder="Tuliskan langkah ke-${stepCount}..." rows="2"></textarea>
+      </div>
+      <div class="step-actions">
+        <button class="step-btn step-drag" title="Drag untuk urutkan"><i class="bi bi-grip-vertical"></i></button>
+        <button class="step-btn del" onclick="removeStep(this)" title="Hapus langkah"><i class="bi bi-trash"></i></button>
+      </div>
+    `;
+    list.appendChild(item);
+    item.querySelector('textarea').focus();
+    item.style.opacity = '0'; item.style.transform = 'translateY(-8px)';
+    requestAnimationFrame(() => {
+      item.style.transition = 'opacity .25s, transform .25s';
+      item.style.opacity = '1'; item.style.transform = 'translateY(0)';
+    });
+  }
+  function removeStep(btn) {
+    const item = btn.closest('.step-item');
+    const list = document.getElementById('stepList');
+    if (list.querySelectorAll('.step-item').length <= 1) return;
+    item.style.transition = 'opacity .2s, transform .2s';
+    item.style.opacity = '0'; item.style.transform = 'translateX(12px)';
+    setTimeout(() => {
+      item.remove();
+      renumberSteps();
+    }, 200);
+  }
+  function renumberSteps() {
+    document.querySelectorAll('#stepList .step-num').forEach((num, i) => {
+      num.textContent = i + 1;
+    });
+    stepCount = document.querySelectorAll('#stepList .step-item').length;
+  }
+
+  /* ── Submit / Save ── */
+  function submitResep(status) {
+    /* Sync TinyMCE ke textarea sebelum submit */
+    if (typeof tinymce !== 'undefined') tinymce.triggerSave();
+
+    const judul = document.getElementById('resepJudul').value.trim();
+    if (!judul) {
+      document.getElementById('resepJudul').classList.add('is-error');
+      document.getElementById('resepJudul').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('resepJudul').focus();
+      return;
+    }
+    document.getElementById('resepJudul').classList.remove('is-error');
+
+    const btn = status === 'published'
+      ? document.querySelector('.btn-publish')
+      : document.querySelector('.btn-draft');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+    btn.disabled  = true;
+
+    setTimeout(() => {
+      btn.innerHTML = origHTML;
+      btn.disabled  = false;
+      /* Redirect ke daftar resep setelah sukses */
+      window.location.href = 'resep.html';
+    }, 1800);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — ResepKita</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --primary:   #e85d26;
+      --primary-light: #ff7b47;
+      --secondary: #2d1b0e;
+      --accent:    #f5c842;
+      --surface:   #ffffff;
+      --text:      #1a0e05;
+      --muted:     #8a7060;
+      --border:    rgba(232,93,38,.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: #fdf6f0;
+      overflow: hidden;
+    }
+
+    /* ─── SCROLLABLE WRAPPER ─── */
+    .page-wrapper {
+      height: 100vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .page-wrapper::-webkit-scrollbar { display: none; }
+
+    /* ─── BACKGROUND ─── */
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 20% 50%, #fff3eb 0%, #fdf6f0 60%, #fce8d8 100%);
+    }
+
+    /* Mesh blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: .55;
+    }
+    .blob-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, #ff9e6c 0%, #e85d26 60%);
+      top: -120px; left: -120px;
+      animation: blobFloat1 9s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, #f5c842 0%, #e8a226 70%);
+      bottom: -80px; right: -80px;
+      animation: blobFloat2 11s ease-in-out infinite;
+    }
+    .blob-3 {
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, #ff7b47 0%, #e85d26 80%);
+      top: 55%; left: 60%;
+      animation: blobFloat3 7s ease-in-out infinite;
+    }
+
+    @keyframes blobFloat1 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(40px,30px) scale(1.08); }
+    }
+    @keyframes blobFloat2 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(-30px,-40px) scale(1.1); }
+    }
+    @keyframes blobFloat3 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(20px,-25px) scale(1.06); }
+    }
+
+    /* Floating food icons */
+    .float-icon {
+      position: absolute;
+      font-size: 2rem;
+      opacity: .18;
+      animation: iconFloat linear infinite;
+      pointer-events: none;
+      user-select: none;
+    }
+    @keyframes iconFloat {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: .18; }
+      90%  { opacity: .18; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Grid texture overlay */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,93,38,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,93,38,.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ─── CARD ─── */
+    .card-login {
+      position: relative;
+      z-index: 10;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(232,93,38,.18);
+      border-radius: 28px;
+      box-shadow:
+        0 8px 40px rgba(232,93,38,.12),
+        0 2px 8px rgba(0,0,0,.06);
+      width: 100%;
+      max-width: 440px;
+      padding: 2.6rem 2.4rem 2rem;
+    }
+
+    /* Logo badge */
+    .logo-badge {
+      width: 64px; height: 64px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--primary), #c94010);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(232,93,38,.4);
+      animation: logoPulse 3s ease-in-out infinite;
+      margin: 0 auto 1.2rem;
+    }
+    .logo-badge i { font-size: 2rem; color: #fff; }
+    @keyframes logoPulse {
+      0%,100% { box-shadow: 0 6px 24px rgba(232,93,38,.4); transform: scale(1); }
+      50%      { box-shadow: 0 8px 32px rgba(232,93,38,.6); transform: scale(1.05); }
+    }
+
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: var(--secondary);
+      letter-spacing: -.5px;
+    }
+    .brand-title span { color: var(--primary); }
+    .brand-sub {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: .2rem;
+    }
+
+    /* Divider */
+    .divider-label {
+      display: flex; align-items: center; gap: .7rem;
+      font-size: .78rem; color: var(--muted); margin: 1.3rem 0;
+    }
+    .divider-label::before, .divider-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Input group */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    .input-wrap .icon-left {
+      position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 1.05rem;
+      transition: color .25s;
+      pointer-events: none;
+    }
+    .input-wrap input {
+      width: 100%;
+      padding: .75rem 1rem .75rem 2.8rem;
+      border: 1.5px solid #e8ddd5;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem;
+      background: rgba(255,255,255,.9);
+      color: var(--text);
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .input-wrap input::placeholder { color: #bba898; }
+    .input-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3.5px rgba(232,93,38,.12);
+    }
+    .input-wrap input:focus ~ .icon-left { color: var(--primary); }
+    .input-wrap .icon-left { z-index: 2; }
+
+    /* Toggle password */
+    .toggle-pw {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; padding: 0;
+      color: var(--muted); font-size: 1rem; cursor: pointer;
+      transition: color .2s;
+    }
+    .toggle-pw:hover { color: var(--primary); }
+
+    /* Remember / forgot */
+    .form-check-label { font-size: .83rem; color: var(--muted); }
+    .form-check-input:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    .link-forgot {
+      font-size: .83rem; color: var(--primary);
+      text-decoration: none; font-weight: 500;
+      transition: opacity .2s;
+    }
+    .link-forgot:hover { opacity: .75; }
+
+    /* Button */
+    .btn-login {
+      width: 100%;
+      padding: .82rem;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary), #c94010);
+      background-size: 200% 200%;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .3px;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      animation: btnGradient 4s ease infinite;
+      box-shadow: 0 4px 20px rgba(232,93,38,.35);
+    }
+    @keyframes btnGradient {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(232,93,38,.45);
+    }
+    .btn-login:active { transform: translateY(0); }
+    .btn-login .spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-login.loading .spinner { display: inline-block; }
+    .btn-login.loading .btn-text { opacity: .7; }
+
+    /* Social login */
+    .btn-social {
+      display: flex; align-items: center; justify-content: center; gap: .55rem;
+      width: 100%;
+      padding: .7rem;
+      border: 1.5px solid #e8ddd5;
+      border-radius: 14px;
+      background: rgba(255,255,255,.9);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+      text-decoration: none;
+    }
+    .btn-social:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(232,93,38,.1);
+      transform: translateY(-1px);
+      color: var(--text);
+    }
+    .btn-social img { width: 20px; height: 20px; }
+
+    /* Register link */
+    .register-box {
+      text-align: center;
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: 1.4rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border);
+    }
+    .register-box a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+    .register-box a:hover { opacity: .75; }
+
+    /* Right panel */
+    .hero-panel {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: rgba(232,93,38,.12);
+      color: var(--primary);
+      padding: .35rem .9rem;
+      border-radius: 50px;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      width: fit-content;
+    }
+    .hero-tag i { animation: tagBounce 1.5s ease-in-out infinite; }
+    @keyframes tagBounce {
+      0%,100% { transform: rotate(0deg); }
+      50%      { transform: rotate(15deg); }
+    }
+    .hero-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900;
+      color: var(--secondary);
+      line-height: 1.15;
+    }
+    .hero-heading span {
+      color: var(--primary);
+      position: relative;
+    }
+    .hero-heading span::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -4px;
+      width: 100%; height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: underlineReveal 1s ease .8s forwards;
+    }
+    @keyframes underlineReveal { to { transform: scaleX(1); } }
+    .hero-desc {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 380px;
+      line-height: 1.6;
+    }
+
+    /* Stat cards */
+    .stat-cards {
+      display: flex; gap: .8rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: .9rem 1.2rem;
+      flex: 1; min-width: 110px;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(232,93,38,.15);
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+    .stat-lbl { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
+
+    /* Food emoji strip */
+    .emoji-strip {
+      display: flex; gap: .6rem;
+      margin-top: 1.8rem;
+      flex-wrap: wrap;
+    }
+    .emoji-pill {
+      background: rgba(255,255,255,.8);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: .4rem .9rem;
+      font-size: .88rem;
+      display: flex; align-items: center; gap: .4rem;
+      color: var(--secondary);
+      font-weight: 500;
+      transition: transform .2s, background .2s;
+      cursor: default;
+    }
+    .emoji-pill:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: scale(1.06);
+    }
+
+    /* Layout helper */
+    .main-row {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      .hero-panel { display: none; }
+      .card-col {
+        display: flex; justify-content: center;
+        padding: 2rem 1rem;
+        min-height: 100vh;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BG -->
+  <div class="bg-scene">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <!-- Floating food icons -->
+  <div id="floatIcons"></div>
+
+  <!-- PAGE -->
+  <div class="page-wrapper">
+    <div class="container-fluid px-0">
+      <div class="row g-0 main-row">
+
+        <!-- LEFT: Hero Panel (hidden on mobile) -->
+        <div class="col-lg-7 d-none d-lg-flex hero-panel" data-aos="fade-right" data-aos-duration="900">
+          <div>
+            <div class="hero-tag">
+              <i class="bi bi-stars"></i> Platform Resep #1
+            </div>
+            <h1 class="hero-heading">
+              Temukan &<br><span>Bagikan</span> Resep<br>Terbaikmu
+            </h1>
+            <p class="hero-desc">
+              Bergabung bersama ribuan chef rumahan dan food lover. Simpan, eksplor, dan ciptakan resep-resep menakjubkan setiap hari.
+            </p>
+
+            <div class="stat-cards" data-aos="fade-up" data-aos-delay="300">
+              <div class="stat-card">
+                <div class="stat-num">12K+</div>
+                <div class="stat-lbl">Resep Tersedia</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-num">8K+</div>
+                <div class="stat-lbl">Chef Aktif</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-num">4.9★</div>
+                <div class="stat-lbl">Rating Rata-rata</div>
+              </div>
+            </div>
+
+            <div class="emoji-strip" data-aos="fade-up" data-aos-delay="450">
+              <div class="emoji-pill">🍜 Mie</div>
+              <div class="emoji-pill">🍱 Bento</div>
+              <div class="emoji-pill">🥗 Salad</div>
+              <div class="emoji-pill">🍰 Dessert</div>
+              <div class="emoji-pill">🥤 Minuman</div>
+              <div class="emoji-pill">🍛 Nasi</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Card Login -->
+        <div class="col-lg-5 card-col d-flex align-items-center justify-content-center" style="padding: 2rem 1.5rem; min-height:100vh;">
+          <div class="card-login" data-aos="fade-left" data-aos-duration="900">
+
+            <!-- Logo -->
+            <div class="text-center" data-aos="zoom-in" data-aos-delay="200">
+              <div class="logo-badge">
+                <i class="bi bi-fire"></i>
+              </div>
+              <h2 class="brand-title">Resep<span>Kita</span></h2>
+              <p class="brand-sub">Masuk ke akun kamu</p>
+            </div>
+
+            <!-- Social Login -->
+            <div class="mt-3" data-aos="fade-up" data-aos-delay="300">
+              <a href="#" class="btn-social mb-2">
+                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Lanjutkan dengan Google
+              </a>
+            </div>
+
+            <div class="divider-label" data-aos="fade-up" data-aos-delay="350">atau masuk dengan email</div>
+
+            <!-- Form -->
+            <form id="loginForm" data-aos="fade-up" data-aos-delay="400" novalidate>
+
+              <div class="input-wrap">
+                <i class="bi bi-envelope icon-left"></i>
+                <input type="email" id="email" placeholder="Email kamu" autocomplete="email" required/>
+              </div>
+
+              <div class="input-wrap">
+                <i class="bi bi-lock icon-left"></i>
+                <input type="password" id="password" placeholder="Password" autocomplete="current-password" required/>
+                <button type="button" class="toggle-pw" id="togglePw">
+                  <i class="bi bi-eye" id="eyeIcon"></i>
+                </button>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between mb-3" data-aos="fade-up" data-aos-delay="450">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="remember"/>
+                  <label class="form-check-label" for="remember">Ingat saya</label>
+                </div>
+                <a href="#" class="link-forgot">Lupa password?</a>
+              </div>
+
+              <button type="submit" class="btn-login" id="loginBtn">
+                <div class="spinner" id="spinner"></div>
+                <span class="btn-text">Masuk Sekarang</span>
+              </button>
+
+            </form>
+
+            <!-- Register -->
+            <div class="register-box" data-aos="fade-up" data-aos-delay="500">
+              Belum punya akun?
+              <a href="#">Daftar Sekarang →</a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+  <script>
+    // ── AOS Init ──
+    AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+    // ── Floating icons ──
+    const icons = ['🍕','🍜','🍱','🥗','🍰','🥤','🍛','🍣','🧆','🫕','🍲','🥘','🧁','🍩','🍓','🥑'];
+    const container = document.getElementById('floatIcons');
+    icons.forEach((emoji, i) => {
+      const el = document.createElement('div');
+      el.className = 'float-icon';
+      el.textContent = emoji;
+      el.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        font-size: ${1.2 + Math.random() * 1.5}rem;
+        animation-duration: ${8 + Math.random() * 12}s;
+        animation-delay: ${Math.random() * 10}s;
+      `;
+      container.appendChild(el);
+    });
+
+    // ── Toggle password ──
+    const togglePw = document.getElementById('togglePw');
+    const pwInput  = document.getElementById('password');
+    const eyeIcon  = document.getElementById('eyeIcon');
+    togglePw.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      eyeIcon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+
+    // ── Form submit ──
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      btn.classList.add('loading');
+      btn.querySelector('.btn-text').textContent = 'Memproses...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.classList.remove('loading');
+        btn.querySelector('.btn-text').textContent = 'Masuk Sekarang';
+        btn.disabled = false;
+        // redirect / handle logic here
+      }, 2000);
+    });
+
+    // ── Input focus: icon color via CSS already handled ──
+    // Extra: add focus class to parent for icon animation
+    document.querySelectorAll('.input-wrap input').forEach(input => {
+      input.addEventListener('focus', () => input.closest('.input-wrap').querySelector('.icon-left').style.color = 'var(--primary)');
+      input.addEventListener('blur',  () => input.closest('.input-wrap').querySelector('.icon-left').style.color = '');
+    });
+  </script>
+</body>
+</html>
+```
+

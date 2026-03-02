@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daftar — ResepKita</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --primary:       #e85d26;
+      --primary-light: #ff7b47;
+      --secondary:     #2d1b0e;
+      --accent:        #f5c842;
+      --text:          #1a0e05;
+      --muted:         #8a7060;
+      --border:        rgba(232,93,38,.15);
+      --success:       #22c55e;
+      --error:         #ef4444;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: #fdf6f0;
+      overflow: hidden;
+    }
+
+    /* ── SCROLL WRAPPER ── */
+    .page-wrapper {
+      height: 100vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .page-wrapper::-webkit-scrollbar { display: none; }
+
+    /* ── BACKGROUND ── */
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 80% 50%, #fff3eb 0%, #fdf6f0 60%, #fce8d8 100%);
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(72px);
+      opacity: .5;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #f5c842 0%, #e8a226 70%);
+      top: -100px; right: -100px;
+      animation: bf1 10s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, #ff9e6c 0%, #e85d26 65%);
+      bottom: -80px; left: -80px;
+      animation: bf2 8s ease-in-out infinite;
+    }
+    .blob-3 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, #ff7b47 0%, #c94010 80%);
+      top: 40%; right: 45%;
+      animation: bf3 12s ease-in-out infinite;
+    }
+    @keyframes bf1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-35px,25px) scale(1.07)} }
+    @keyframes bf2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-30px) scale(1.1)} }
+    @keyframes bf3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-20px,20px) scale(1.05)} }
+
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(232,93,38,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,93,38,.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── FLOATING ICONS ── */
+    .float-icon {
+      position: fixed;
+      font-size: 2rem;
+      opacity: .16;
+      animation: iconFloat linear infinite;
+      pointer-events: none;
+    }
+    @keyframes iconFloat {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: .16; }
+      90%  { opacity: .16; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .main-row {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ── CARD ── */
+    .card-register {
+      position: relative;
+      z-index: 10;
+      background: rgba(255,255,255,.83);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(232,93,38,.18);
+      border-radius: 28px;
+      box-shadow:
+        0 8px 40px rgba(232,93,38,.12),
+        0 2px 8px rgba(0,0,0,.06);
+      width: 100%;
+      max-width: 460px;
+      padding: 2.4rem 2.4rem 2rem;
+    }
+
+    /* ── LOGO ── */
+    .logo-badge {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), #c94010);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(232,93,38,.4);
+      animation: logoPulse 3s ease-in-out infinite;
+      margin: 0 auto 1rem;
+    }
+    .logo-badge i { font-size: 1.8rem; color: #fff; }
+    @keyframes logoPulse {
+      0%,100% { box-shadow: 0 6px 24px rgba(232,93,38,.4); transform: scale(1); }
+      50%      { box-shadow: 0 8px 32px rgba(232,93,38,.6); transform: scale(1.05); }
+    }
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 900;
+      color: var(--secondary); letter-spacing: -.5px;
+    }
+    .brand-title span { color: var(--primary); }
+    .brand-sub { font-size: .83rem; color: var(--muted); margin-top: .15rem; }
+
+    /* ── STEP INDICATOR ── */
+    .step-bar {
+      display: flex; align-items: center; gap: 0;
+      margin: 1.4rem 0 1.6rem;
+    }
+    .step-item {
+      display: flex; flex-direction: column; align-items: center;
+      flex: 1; position: relative;
+    }
+    .step-circle {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 2px solid #e8ddd5;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .78rem; font-weight: 700;
+      color: var(--muted);
+      transition: all .4s ease;
+      position: relative; z-index: 2;
+    }
+    .step-circle.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(232,93,38,.2);
+    }
+    .step-circle.done {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+    .step-label {
+      font-size: .7rem; color: var(--muted);
+      margin-top: .3rem; white-space: nowrap;
+      transition: color .3s;
+    }
+    .step-item.active .step-label { color: var(--primary); font-weight: 600; }
+    .step-item.done  .step-label  { color: var(--success); }
+
+    .step-line {
+      flex: 1; height: 2px;
+      background: #e8ddd5;
+      margin-bottom: 1.4rem;
+      position: relative; overflow: hidden;
+    }
+    .step-line-fill {
+      position: absolute; left: 0; top: 0; height: 100%;
+      background: var(--primary);
+      width: 0%; transition: width .5s ease;
+    }
+
+    /* ── FORM PAGES ── */
+    .form-page { display: none; }
+    .form-page.active { display: block; }
+
+    /* ── INPUT ── */
+    .input-wrap {
+      position: relative; margin-bottom: .9rem;
+    }
+    .input-wrap .icon-left {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); font-size: 1rem;
+      transition: color .25s; pointer-events: none; z-index: 2;
+    }
+    .input-wrap input,
+    .input-wrap select,
+    .input-wrap textarea {
+      width: 100%;
+      padding: .72rem 1rem .72rem 2.7rem;
+      border: 1.5px solid #e8ddd5;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      background: rgba(255,255,255,.9);
+      color: var(--text);
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+      appearance: none;
+    }
+    .input-wrap textarea {
+      resize: none; min-height: 80px;
+      padding-top: .75rem;
+    }
+    .input-wrap select {
+      cursor: pointer;
+    }
+    .input-wrap input::placeholder,
+    .input-wrap textarea::placeholder { color: #bba898; }
+    .input-wrap input:focus,
+    .input-wrap select:focus,
+    .input-wrap textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3.5px rgba(232,93,38,.12);
+    }
+    /* validation states */
+    .input-wrap input.is-valid,
+    .input-wrap select.is-valid { border-color: var(--success); }
+    .input-wrap input.is-invalid,
+    .input-wrap select.is-invalid { border-color: var(--error); }
+
+    .icon-right {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-size: .95rem; pointer-events: none;
+    }
+    .icon-right.valid   { color: var(--success); }
+    .icon-right.invalid { color: var(--error); }
+
+    .toggle-pw {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; padding: 0;
+      color: var(--muted); font-size: 1rem; cursor: pointer;
+      transition: color .2s; z-index: 3;
+    }
+    .toggle-pw:hover { color: var(--primary); }
+
+    .field-hint {
+      font-size: .73rem; color: var(--muted);
+      margin-top: -.4rem; margin-bottom: .5rem;
+      padding-left: .3rem;
+    }
+    .field-error {
+      font-size: .73rem; color: var(--error);
+      margin-top: -.4rem; margin-bottom: .5rem;
+      padding-left: .3rem;
+      display: none;
+    }
+
+    /* Password strength */
+    .pw-strength {
+      margin-top: -.35rem; margin-bottom: .6rem;
+    }
+    .pw-strength-bar {
+      display: flex; gap: 4px; margin-bottom: .25rem;
+    }
+    .pw-bar-seg {
+      flex: 1; height: 3px; border-radius: 2px;
+      background: #e8ddd5; transition: background .3s;
+    }
+    .pw-strength-text { font-size: .72rem; color: var(--muted); }
+
+    /* Avatar upload */
+    .avatar-upload {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: .9rem;
+    }
+    .avatar-preview {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, #ffe0cc, #ffd0b0);
+      border: 2px dashed rgba(232,93,38,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; overflow: hidden; flex-shrink: 0;
+      cursor: pointer; transition: border-color .2s;
+      position: relative;
+    }
+    .avatar-preview:hover { border-color: var(--primary); }
+    .avatar-preview input[type=file] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+      padding: 0;
+    }
+    .avatar-preview img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+    }
+    .avatar-info { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+    .avatar-info strong { display: block; color: var(--text); font-size: .85rem; }
+
+    /* Interests grid */
+    .interest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .5rem; margin-bottom: .9rem;
+    }
+    .interest-chip {
+      border: 1.5px solid #e8ddd5;
+      border-radius: 12px;
+      padding: .5rem .5rem;
+      font-size: .78rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      background: rgba(255,255,255,.8);
+      color: var(--muted);
+      user-select: none;
+    }
+    .interest-chip .chip-icon { font-size: 1.2rem; display: block; margin-bottom: .15rem; }
+    .interest-chip:hover {
+      border-color: var(--primary-light);
+      background: rgba(232,93,38,.05);
+    }
+    .interest-chip.selected {
+      border-color: var(--primary);
+      background: rgba(232,93,38,.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Terms */
+    .terms-box {
+      display: flex; align-items: flex-start; gap: .6rem;
+      font-size: .81rem; color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .terms-box input[type=checkbox] {
+      width: 16px; height: 16px; margin-top: 2px;
+      accent-color: var(--primary); flex-shrink: 0;
+      cursor: pointer;
+    }
+    .terms-box a { color: var(--primary); font-weight: 500; text-decoration: none; }
+    .terms-box a:hover { text-decoration: underline; }
+
+    /* Buttons */
+    .btn-primary-custom {
+      width: 100%; padding: .8rem;
+      border: none; border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary), #c94010);
+      background-size: 200%;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem; font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      animation: btnGradient 4s ease infinite;
+      box-shadow: 0 4px 20px rgba(232,93,38,.35);
+    }
+    @keyframes btnGradient {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .btn-primary-custom:hover  { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,93,38,.45); }
+    .btn-primary-custom:active { transform: translateY(0); }
+    .btn-primary-custom:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .btn-outline-custom {
+      width: 100%; padding: .78rem;
+      border: 1.5px solid #e8ddd5;
+      border-radius: 14px;
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .2s, color .2s, transform .2s;
+    }
+    .btn-outline-custom:hover {
+      border-color: var(--primary); color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .btn-wrap { display: flex; gap: .7rem; margin-top: .4rem; }
+
+    /* Spinner */
+    .btn-spinner {
+      display: none; width: 17px; height: 17px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-right: 7px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading .btn-spinner { display: inline-block; }
+
+    /* Social */
+    .btn-social {
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      width: 100%; padding: .68rem;
+      border: 1.5px solid #e8ddd5; border-radius: 14px;
+      background: rgba(255,255,255,.9);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .86rem; font-weight: 500;
+      color: var(--text); cursor: pointer; text-decoration: none;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .btn-social:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(232,93,38,.1);
+      transform: translateY(-1px); color: var(--text);
+    }
+
+    /* Divider */
+    .divider-label {
+      display: flex; align-items: center; gap: .7rem;
+      font-size: .76rem; color: var(--muted); margin: 1.1rem 0;
+    }
+    .divider-label::before, .divider-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Success screen */
+    .success-screen {
+      display: none; text-align: center; padding: 1rem 0;
+    }
+    .success-screen.show { display: block; }
+    .success-icon-wrap {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.2rem;
+      animation: successPop .5s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes successPop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .success-icon-wrap i { font-size: 2.2rem; color: var(--success); }
+    .confetti-strip { font-size: 1.5rem; letter-spacing: .3rem; animation: confettiBounce 1s ease infinite; }
+    @keyframes confettiBounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-6px); }
+    }
+
+    /* Login link */
+    .login-box {
+      text-align: center; font-size: .83rem; color: var(--muted);
+      margin-top: 1.3rem; padding-top: 1.1rem;
+      border-top: 1px solid var(--border);
+    }
+    .login-box a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .login-box a:hover { opacity: .75; }
+
+    /* Hero panel */
+    .hero-panel {
+      position: relative; z-index: 5;
+      display: flex; flex-direction: column;
+      justify-content: center; padding: 3rem 2.5rem;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: rgba(232,93,38,.12); color: var(--primary);
+      padding: .35rem .9rem; border-radius: 50px;
+      font-size: .78rem; font-weight: 600; letter-spacing: .5px;
+      text-transform: uppercase; margin-bottom: 1.2rem; width: fit-content;
+    }
+    .hero-tag i { animation: tagSpin 3s linear infinite; }
+    @keyframes tagSpin { to { transform: rotate(360deg); } }
+    .hero-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900; color: var(--secondary); line-height: 1.18;
+    }
+    .hero-heading em { color: var(--primary); font-style: normal; position: relative; }
+    .hero-heading em::after {
+      content: ''; position: absolute; left: 0; bottom: -3px;
+      width: 100%; height: 3px; background: var(--accent); border-radius: 2px;
+      transform: scaleX(0); transform-origin: left;
+      animation: underline 1s ease .7s forwards;
+    }
+    @keyframes underline { to { transform: scaleX(1); } }
+    .hero-desc { font-size: .95rem; color: var(--muted); max-width: 360px; line-height: 1.65; margin-top: .9rem; }
+
+    /* Benefit list */
+    .benefit-list { margin-top: 1.8rem; display: flex; flex-direction: column; gap: .7rem; }
+    .benefit-item {
+      display: flex; align-items: center; gap: .8rem;
+      background: rgba(255,255,255,.7); backdrop-filter: blur(10px);
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: .75rem 1rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .benefit-item:hover { transform: translateX(6px); box-shadow: 0 4px 16px rgba(232,93,38,.1); }
+    .benefit-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1rem; flex-shrink: 0;
+    }
+    .benefit-text strong { display: block; font-size: .88rem; color: var(--secondary); }
+    .benefit-text span  { font-size: .78rem; color: var(--muted); }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+      .hero-panel { display: none !important; }
+      .card-col { padding: 1.5rem 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-scene">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="bg-grid"></div>
+</div>
+<div id="floatIcons"></div>
+
+<div class="page-wrapper">
+  <div class="container-fluid px-0">
+    <div class="row g-0 main-row">
+
+      <!-- CARD (LEFT on desktop) -->
+      <div class="col-lg-5 card-col d-flex align-items-center justify-content-center order-lg-1" style="padding:2rem 1.5rem; min-height:100vh;">
+        <div class="card-register" data-aos="fade-right" data-aos-duration="900">
+
+          <!-- Logo -->
+          <div class="text-center" data-aos="zoom-in" data-aos-delay="150">
+            <div class="logo-badge"><i class="bi bi-fire"></i></div>
+            <h2 class="brand-title">Resep<span>Kita</span></h2>
+            <p class="brand-sub">Buat akun gratis sekarang</p>
+          </div>
+
+          <!-- Google -->
+          <div class="mt-3" data-aos="fade-up" data-aos-delay="250">
+            <a href="#" class="btn-social">
+              <svg width="19" height="19" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Daftar dengan Google
+            </a>
+          </div>
+
+          <div class="divider-label" data-aos="fade-up" data-aos-delay="300">atau isi form di bawah</div>
+
+          <!-- STEP BAR -->
+          <div class="step-bar" data-aos="fade-up" data-aos-delay="320" id="stepBar">
+            <div class="step-item active" id="si-1">
+              <div class="step-circle active" id="sc-1">1</div>
+              <div class="step-label">Akun</div>
+            </div>
+            <div class="step-line"><div class="step-line-fill" id="sl-1"></div></div>
+            <div class="step-item" id="si-2">
+              <div class="step-circle" id="sc-2">2</div>
+              <div class="step-label">Profil</div>
+            </div>
+            <div class="step-line"><div class="step-line-fill" id="sl-2"></div></div>
+            <div class="step-item" id="si-3">
+              <div class="step-circle" id="sc-3">3</div>
+              <div class="step-label">Minat</div>
+            </div>
+          </div>
+
+          <!-- ── STEP 1: Akun ── -->
+          <div class="form-page active" id="page-1" data-aos="fade-up" data-aos-delay="350">
+
+            <div class="input-wrap">
+              <i class="bi bi-person icon-left"></i>
+              <input type="text" id="fullname" placeholder="Nama lengkap" autocomplete="name"/>
+              <span class="icon-right" id="iv-fullname"></span>
+            </div>
+            <div class="field-error" id="err-fullname">Nama minimal 3 karakter</div>
+
+            <div class="input-wrap">
+              <i class="bi bi-envelope icon-left"></i>
+              <input type="email" id="email" placeholder="Email aktif" autocomplete="email"/>
+              <span class="icon-right" id="iv-email"></span>
+            </div>
+            <div class="field-error" id="err-email">Format email tidak valid</div>
+
+            <div class="input-wrap">
+              <i class="bi bi-phone icon-left"></i>
+              <input type="tel" id="phone" placeholder="No. WhatsApp (opsional)" autocomplete="tel"/>
+            </div>
+
+            <div class="input-wrap">
+              <i class="bi bi-lock icon-left"></i>
+              <input type="password" id="password" placeholder="Buat password"/>
+              <button type="button" class="toggle-pw" data-target="password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            <div class="pw-strength" id="pwStrength" style="display:none">
+              <div class="pw-strength-bar">
+                <div class="pw-bar-seg" id="bar0"></div>
+                <div class="pw-bar-seg" id="bar1"></div>
+                <div class="pw-bar-seg" id="bar2"></div>
+                <div class="pw-bar-seg" id="bar3"></div>
+              </div>
+              <div class="pw-strength-text" id="pwStrengthText"></div>
+            </div>
+            <div class="field-error" id="err-password">Password minimal 8 karakter</div>
+
+            <div class="input-wrap">
+              <i class="bi bi-shield-lock icon-left"></i>
+              <input type="password" id="password2" placeholder="Ulangi password"/>
+              <button type="button" class="toggle-pw" data-target="password2">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            <div class="field-error" id="err-password2">Password tidak cocok</div>
+
+            <button class="btn-primary-custom" onclick="goStep(2)">
+              Lanjut <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+          </div>
+
+          <!-- ── STEP 2: Profil ── -->
+          <div class="form-page" id="page-2">
+            <!-- Avatar -->
+            <div class="avatar-upload">
+              <div class="avatar-preview" id="avatarPreview">
+                🧑‍🍳
+                <input type="file" accept="image/*" id="avatarInput" onchange="previewAvatar(this)"/>
+              </div>
+              <div class="avatar-info">
+                <strong>Foto Profil</strong>
+                Klik untuk upload foto.<br>
+                <span style="font-size:.72rem">JPG, PNG maks. 2MB</span>
+              </div>
+            </div>
+
+            <div class="input-wrap">
+              <i class="bi bi-at icon-left"></i>
+              <input type="text" id="username" placeholder="Username unik (misal: chef_budi)"/>
+              <span class="icon-right" id="iv-username"></span>
+            </div>
+            <div class="field-hint">Huruf kecil, angka, dan underscore saja</div>
+
+            <div class="input-wrap">
+              <i class="bi bi-geo-alt icon-left"></i>
+              <input type="text" id="location" placeholder="Kota kamu (opsional)"/>
+            </div>
+
+            <div class="input-wrap">
+              <i class="bi bi-person-lines-fill icon-left"></i>
+              <textarea id="bio" placeholder="Ceritakan sedikit tentang kamu sebagai chef... (opsional)"></textarea>
+            </div>
+
+            <div class="input-wrap">
+              <i class="bi bi-trophy icon-left"></i>
+              <select id="experience">
+                <option value="" disabled selected>Level memasak kamu</option>
+                <option value="beginner">🥄 Pemula — Baru belajar memasak</option>
+                <option value="intermediate">🍳 Menengah — Sudah cukup berpengalaman</option>
+                <option value="advanced">👨‍🍳 Mahir — Chef profesional</option>
+              </select>
+            </div>
+
+            <div class="btn-wrap">
+              <button class="btn-outline-custom" onclick="goStep(1)">
+                <i class="bi bi-arrow-left me-1"></i> Kembali
+              </button>
+              <button class="btn-primary-custom" onclick="goStep(3)">
+                Lanjut <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── STEP 3: Minat ── -->
+          <div class="form-page" id="page-3">
+            <p style="font-size:.83rem; color:var(--muted); margin-bottom:.8rem;">
+              Pilih minimal 2 kategori yang kamu suka 👇
+            </p>
+
+            <div class="interest-grid" id="interestGrid">
+              <div class="interest-chip" data-val="makanan-berat"><span class="chip-icon">🍛</span>Makanan Berat</div>
+              <div class="interest-chip" data-val="minuman"><span class="chip-icon">🥤</span>Minuman</div>
+              <div class="interest-chip" data-val="dessert"><span class="chip-icon">🍰</span>Dessert</div>
+              <div class="interest-chip" data-val="snack"><span class="chip-icon">🍿</span>Snack</div>
+              <div class="interest-chip" data-val="sehat"><span class="chip-icon">🥗</span>Sehat</div>
+              <div class="interest-chip" data-val="bakar"><span class="chip-icon">🔥</span>Grilled</div>
+              <div class="interest-chip" data-val="seafood"><span class="chip-icon">🦐</span>Seafood</div>
+              <div class="interest-chip" data-val="tradisional"><span class="chip-icon">🫕</span>Tradisional</div>
+              <div class="interest-chip" data-val="kue"><span class="chip-icon">🧁</span>Kue & Roti</div>
+            </div>
+            <div class="field-error" id="err-interests" style="display:none; margin-bottom:.6rem;">
+              Pilih minimal 2 kategori
+            </div>
+
+            <div class="terms-box">
+              <input type="checkbox" id="terms"/>
+              <label for="terms">
+                Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan
+                <a href="#">Kebijakan Privasi</a> ResepKita
+              </label>
+            </div>
+            <div class="field-error" id="err-terms">Harap centang persetujuan di atas</div>
+
+            <div class="btn-wrap">
+              <button class="btn-outline-custom" onclick="goStep(2)">
+                <i class="bi bi-arrow-left me-1"></i> Kembali
+              </button>
+              <button class="btn-primary-custom" id="submitBtn" onclick="submitForm()">
+                <div class="btn-spinner" id="submitSpinner"></div>
+                <span id="submitText">Buat Akun 🎉</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── SUCCESS ── -->
+          <div class="success-screen" id="successScreen">
+            <div class="success-icon-wrap">
+              <i class="bi bi-check-lg"></i>
+            </div>
+            <div class="confetti-strip">🎉🍳🎊</div>
+            <h4 style="font-family:'Playfair Display',serif; margin-top:.8rem; color:var(--secondary);">
+              Selamat Bergabung!
+            </h4>
+            <p style="font-size:.84rem; color:var(--muted); margin-top:.4rem; line-height:1.6;">
+              Akun kamu berhasil dibuat.<br>Cek email untuk verifikasi, lalu mulai eksplorasi resep!
+            </p>
+            <a href="login.html" class="btn-primary-custom d-block text-decoration-none text-center mt-3"
+               style="line-height:1.4; padding:.8rem;">
+              Masuk Sekarang →
+            </a>
+          </div>
+
+          <!-- Login link -->
+          <div class="login-box" id="loginBox">
+            Sudah punya akun? <a href="login.html">Masuk di sini →</a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- HERO (RIGHT on desktop) -->
+      <div class="col-lg-7 hero-panel order-lg-2 d-none d-lg-flex" data-aos="fade-left" data-aos-duration="900">
+        <div>
+          <div class="hero-tag">
+            <i class="bi bi-stars"></i> Gratis Selamanya
+          </div>
+          <h1 class="hero-heading">
+            Bergabung &<br>Mulai <em>Berbagi</em><br>Resepmu
+          </h1>
+          <p class="hero-desc">
+            Daftarkan dirimu dan jadilah bagian dari komunitas chef rumahan terbesar di Indonesia. Share resep, dapatkan feedback, dan inspirasi setiap hari.
+          </p>
+
+          <div class="benefit-list" data-aos="fade-up" data-aos-delay="300">
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-upload"></i></div>
+              <div class="benefit-text">
+                <strong>Publikasi Resep</strong>
+                <span>Upload resepmu dan dapatkan ribuan pembaca</span>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-bookmark-heart"></i></div>
+              <div class="benefit-text">
+                <strong>Simpan Koleksi</strong>
+                <span>Organisir resep favorit dalam koleksi pribadi</span>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-people"></i></div>
+              <div class="benefit-text">
+                <strong>Follow Chef</strong>
+                <span>Ikuti chef favoritmu dan pantau resep terbarunya</span>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-star"></i></div>
+              <div class="benefit-text">
+                <strong>Rating & Review</strong>
+                <span>Beri ulasan dan bantu chef lain berkembang</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+  // ── Floating icons ──
+  const icons = ['🍕','🍜','🍱','🥗','🍰','🥤','🍛','🍣','🧆','🫕','🍲','🥘','🧁','🍩','🍓','🥑'];
+  const fc = document.getElementById('floatIcons');
+  icons.forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'float-icon';
+    el.textContent = e;
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${1.2+Math.random()*1.4}rem;animation-duration:${9+Math.random()*11}s;animation-delay:${Math.random()*10}s;`;
+    fc.appendChild(el);
+  });
+
+  // ── Toggle password ──
+  document.querySelectorAll('.toggle-pw').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target);
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.querySelector('i').className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+  });
+
+  // ── Password strength ──
+  const pwEl = document.getElementById('password');
+  const pwStrengthEl = document.getElementById('pwStrength');
+  const pwStrengthText = document.getElementById('pwStrengthText');
+  const bars = [0,1,2,3].map(i => document.getElementById('bar'+i));
+  const colors = ['#ef4444','#f97316','#eab308','#22c55e'];
+  const labels = ['Lemah','Sedang','Kuat','Sangat Kuat'];
+
+  pwEl.addEventListener('input', () => {
+    const val = pwEl.value;
+    if (!val) { pwStrengthEl.style.display='none'; return; }
+    pwStrengthEl.style.display='block';
+    let score = 0;
+    if (val.length >= 8)  score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    bars.forEach((b, i) => b.style.background = i <= score-1 ? colors[score-1] : '#e8ddd5');
+    pwStrengthText.textContent = labels[score-1] || '';
+    pwStrengthText.style.color = colors[score-1] || '#8a7060';
+  });
+
+  // ── Avatar preview ──
+  function previewAvatar(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const prev = document.getElementById('avatarPreview');
+      prev.innerHTML = `<img src="${e.target.result}" alt="avatar"/><input type="file" accept="image/*" onchange="previewAvatar(this)"/>`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Username live check ──
+  const usernameEl = document.getElementById('username');
+  if (usernameEl) {
+    usernameEl.addEventListener('input', () => {
+      const iv = document.getElementById('iv-username');
+      const val = usernameEl.value;
+      if (!val) { iv.className='icon-right'; iv.textContent=''; return; }
+      const valid = /^[a-z0-9_]{3,20}$/.test(val);
+      iv.className = 'icon-right ' + (valid ? 'valid' : 'invalid');
+      iv.innerHTML = valid ? '<i class="bi bi-check-circle-fill"></i>' : '<i class="bi bi-x-circle-fill"></i>';
+    });
+  }
+
+  // ── Interest chips ──
+  document.querySelectorAll('.interest-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  // ── Step navigation ──
+  let currentStep = 1;
+  function goStep(n) {
+    if (n > currentStep && !validateStep(currentStep)) return;
+    document.getElementById('page-'+currentStep).classList.remove('active');
+    document.getElementById('page-'+n).classList.add('active');
+
+    // update circles
+    for (let i = 1; i <= 3; i++) {
+      const sc = document.getElementById('sc-'+i);
+      const si = document.getElementById('si-'+i);
+      sc.classList.remove('active','done');
+      si.classList.remove('active','done');
+      if (i < n)       { sc.classList.add('done'); sc.innerHTML='<i class="bi bi-check"></i>'; si.classList.add('done'); }
+      else if (i === n){ sc.classList.add('active'); sc.innerHTML = i; si.classList.add('active'); }
+      else             { sc.innerHTML = i; }
+    }
+    // lines
+    if (n >= 2) document.getElementById('sl-1').style.width = '100%';
+    else document.getElementById('sl-1').style.width = '0%';
+    if (n >= 3) document.getElementById('sl-2').style.width = '100%';
+    else document.getElementById('sl-2').style.width = '0%';
+
+    currentStep = n;
+  }
+
+  // ── Validation ──
+  function validateStep(step) {
+    if (step === 1) {
+      const name = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const pw = document.getElementById('password').value;
+      const pw2 = document.getElementById('password2').value;
+      let ok = true;
+
+      const showErr = (id, show) => { document.getElementById(id).style.display = show ? 'block' : 'none'; };
+
+      if (name.length < 3) { showErr('err-fullname', true); ok = false; } else showErr('err-fullname', false);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('err-email', true); ok = false; } else showErr('err-email', false);
+      if (pw.length < 8) { showErr('err-password', true); ok = false; } else showErr('err-password', false);
+      if (pw !== pw2) { showErr('err-password2', true); ok = false; } else showErr('err-password2', false);
+      return ok;
+    }
+    return true;
+  }
+
+  // ── Submit ──
+  function submitForm() {
+    const selected = document.querySelectorAll('.interest-chip.selected').length;
+    const terms = document.getElementById('terms').checked;
+    const errI = document.getElementById('err-interests');
+    const errT = document.getElementById('err-terms');
+
+    if (selected < 2) { errI.style.display='block'; return; } else errI.style.display='none';
+    if (!terms) { errT.style.display='block'; return; } else errT.style.display='none';
+
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading'); btn.disabled = true;
+    document.getElementById('submitText').textContent = 'Memproses...';
+
+    setTimeout(() => {
+      document.getElementById('page-3').style.display = 'none';
+      document.getElementById('stepBar').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+    }, 2000);
+  }
+</script>
+</body>
+</html>

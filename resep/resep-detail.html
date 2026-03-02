@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rendang Daging Sapi Padang Asli — ResepKita</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <style>
+    /* ══════════════════════════════════════════
+       GLOBAL VARIABLES & RESET
+    ══════════════════════════════════════════ */
+    :root {
+      --primary:        #e85d26;
+      --primary-light:  #ff7b47;
+      --primary-pale:   rgba(232,93,38,.08);
+      --primary-border: rgba(232,93,38,.18);
+      --secondary:      #2d1b0e;
+      --bg:             #faf7f4;
+      --surface:        #ffffff;
+      --sidebar-bg:     #1e1208;
+      --sidebar-w:      260px;
+      --sidebar-w-sm:   70px;
+      --topbar-h:       64px;
+      --text:           #1a0e05;
+      --muted:          #8a7060;
+      --border:         #ede5dc;
+      --danger:         #ef4444;
+      --success:        #22c55e;
+      --warning:        #f59e0b;
+      --radius:         16px;
+      --shadow-sm:      0 2px 8px rgba(0,0,0,.06);
+      --shadow-md:      0 4px 24px rgba(0,0,0,.1);
+      --shadow-lg:      0 8px 40px rgba(0,0,0,.14);
+      --transition:     .3s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ══════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════ */
+    .sidebar { position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; z-index: 1000; transition: width var(--transition); overflow: hidden; }
+    .sidebar.collapsed { width: var(--sidebar-w-sm); }
+    .sidebar::before { content: ''; position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(232,93,38,.25) 0%, transparent 70%); top: -60px; right: -60px; pointer-events: none; animation: sideBlob 8s ease-in-out infinite; }
+    .sidebar::after  { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(245,200,66,.12) 0%, transparent 70%); bottom: 80px; left: -40px; pointer-events: none; animation: sideBlob 10s ease-in-out infinite reverse; }
+    @keyframes sideBlob { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.2) translate(8px,-8px)} }
+    .sidebar-brand { display: flex; align-items: center; gap: .75rem; padding: 1.25rem 1.1rem 1rem; text-decoration: none; flex-shrink: 0; white-space: nowrap; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .brand-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 14px rgba(232,93,38,.4); animation: brandPulse 3s ease-in-out infinite; }
+    @keyframes brandPulse { 0%,100%{box-shadow:0 4px 14px rgba(232,93,38,.4)} 50%{box-shadow:0 6px 22px rgba(232,93,38,.65)} }
+    .brand-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: -.3px; }
+    .brand-name span { color: var(--primary-light); }
+    .sidebar.collapsed .brand-name, .sidebar.collapsed .sidebar-label, .sidebar.collapsed .menu-category, .sidebar.collapsed .sidebar-footer-text { display: none; }
+    .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: .75rem .75rem 0; scrollbar-width: none; -ms-overflow-style: none; }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
+    .menu-category { font-size: .65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 1rem .5rem .35rem; white-space: nowrap; overflow: hidden; }
+    .nav-item-wrap { margin-bottom: 2px; }
+    .nav-link-custom { display: flex; align-items: center; gap: .75rem; padding: .65rem .75rem; border-radius: 12px; color: rgba(255,255,255,.55); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; overflow: hidden; position: relative; transition: background var(--transition), color var(--transition), transform .2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); transform: translateX(3px); }
+    .nav-link-custom.active { background: linear-gradient(135deg, rgba(232,93,38,.25), rgba(232,93,38,.12)); color: #fff; border: 1px solid rgba(232,93,38,.3); }
+    .nav-link-custom.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 60%; background: var(--primary-light); border-radius: 0 3px 3px 0; }
+    .nav-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: transform .3s, background .3s; }
+    .nav-link-custom:hover .nav-icon { transform: scale(1.12) rotate(-5deg); }
+    .nav-link-custom.active .nav-icon { background: rgba(232,93,38,.3); color: var(--primary-light); }
+    .nav-badge { margin-left: auto; background: var(--primary); color: #fff; font-size: .62rem; font-weight: 700; padding: .1rem .45rem; border-radius: 20px; flex-shrink: 0; }
+    .sidebar.collapsed .nav-badge, .sidebar.collapsed .sidebar-label { display: none; }
+    .sidebar.collapsed .nav-link-custom { justify-content: center; padding: .65rem; }
+    .sidebar-footer { flex-shrink: 0; padding: .75rem; border-top: 1px solid rgba(255,255,255,.07); background: rgba(0,0,0,.2); }
+    .sidebar-footer-inner { display: flex; align-items: center; gap: .7rem; padding: .6rem .5rem; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); overflow: hidden; white-space: nowrap; }
+    .sf-avatar { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; flex-shrink: 0; font-weight: 700; }
+    .sf-info { overflow: hidden; }
+    .sf-name { font-size: .8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sf-role { font-size: .68rem; color: rgba(255,255,255,.4); }
+    .sf-dots { margin-left: auto; flex-shrink: 0; color: rgba(255,255,255,.4); font-size: 1rem; cursor: pointer; transition: color .2s; }
+    .sf-dots:hover { color: var(--primary-light); }
+    .sidebar.collapsed .sidebar-footer-inner { justify-content: center; padding: .5rem; }
+
+    /* ══════════════════════════════════════════
+       MAIN WRAPPER & TOPBAR
+    ══════════════════════════════════════════ */
+    .main-wrapper { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; transition: margin-left var(--transition); }
+    .main-wrapper.expanded { margin-left: var(--sidebar-w-sm); }
+    .topbar { position: sticky; top: 0; height: var(--topbar-h); background: rgba(250,247,244,.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; z-index: 900; box-shadow: 0 1px 12px rgba(0,0,0,.06); }
+    .toggle-btn { width: 38px; height: 38px; border-radius: 10px; background: none; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 1.1rem; transition: background .2s, border-color .2s, color .2s; flex-shrink: 0; }
+    .toggle-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .toggle-btn i { transition: transform var(--transition); }
+    .toggle-btn.rotated i { transform: rotate(180deg); }
+    .topbar-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+    .tb-icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; position: relative; transition: background .2s, border-color .2s, color .2s, transform .2s; text-decoration: none; }
+    .tb-icon-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); transform: translateY(-2px); }
+    .tb-notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; border: 1.5px solid var(--surface); animation: notifPing 2s ease-in-out infinite; }
+    @keyframes notifPing { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
+    .user-menu { position: relative; }
+    .user-btn { display: flex; align-items: center; gap: .6rem; padding: .35rem .7rem .35rem .35rem; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s; }
+    .user-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); box-shadow: 0 4px 14px rgba(232,93,38,.1); }
+    .user-avatar { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+    .user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .user-name { font-size: .83rem; font-weight: 600; color: var(--secondary); }
+    .user-role { font-size: .68rem; color: var(--muted); }
+    .user-caret { color: var(--muted); font-size: .75rem; transition: transform var(--transition); }
+    .user-menu.open .user-caret { transform: rotate(180deg); }
+    .user-dropdown { position: absolute; top: calc(100% + 8px); right: 0; width: 200px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); padding: .5rem; display: none; animation: dropIn .25s cubic-bezier(.34,1.56,.64,1); z-index: 999; }
+    .user-dropdown.show { display: block; }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:none} }
+    .dd-item { display: flex; align-items: center; gap: .65rem; padding: .55rem .75rem; border-radius: 10px; font-size: .85rem; color: var(--text); cursor: pointer; text-decoration: none; transition: background .2s, color .2s, transform .15s; }
+    .dd-item:hover { background: var(--primary-pale); color: var(--primary); transform: translateX(3px); }
+    .dd-item i { font-size: 1rem; width: 18px; text-align: center; }
+    .dd-item.danger:hover { background: rgba(239,68,68,.08); color: var(--danger); }
+    .dd-divider { height: 1px; background: var(--border); margin: .35rem 0; }
+
+    /* ══════════════════════════════════════════
+       MISC — floats, animations, overlay, footer
+    ══════════════════════════════════════════ */
+    .content-area { flex: 1; padding: 1.5rem; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 999; backdrop-filter: blur(3px); }
+    .sidebar-overlay.show { display: block; }
+    .bg-float { position: fixed; pointer-events: none; z-index: 0; opacity: 0; animation: bgFloat linear infinite; }
+    @keyframes bgFloat { 0%{opacity:0;transform:translateY(110vh) rotate(0deg)} 5%{opacity:.04} 95%{opacity:.04} 100%{opacity:0;transform:translateY(-10vh) rotate(180deg)} }
+    @keyframes bounceIn { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
+    @keyframes iconBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .fab { position: fixed; bottom: 2rem; right: 1.8rem; width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); border: none; color: #fff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 800; box-shadow: 0 6px 24px rgba(232,93,38,.45); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; animation: fabFloat 3s ease-in-out infinite; }
+    .fab.visible { opacity: 1; pointer-events: all; }
+    @keyframes fabFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .fab:hover { transform: translateY(-3px) scale(1.08) !important; animation: none; }
+    .main-footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: var(--muted); }
+    .footer-brand { font-family: 'Playfair Display', serif; font-weight: 900; color: var(--secondary); font-size: .9rem; }
+    .footer-brand span { color: var(--primary); }
+    .footer-links { display: flex; gap: 1rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-heart { color: var(--primary); animation: heartbeat 1.4s ease-in-out infinite; display: inline-block; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.25)} 28%{transform:scale(1)} 42%{transform:scale(1.2)} 70%{transform:scale(1)} }
+    .modal-logout .modal-content { border-radius: 24px; border: none; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-logout .modal-dialog { animation: bounceIn .5s cubic-bezier(.34,1.56,.64,1); }
+    .logout-icon-wrap { width: 80px; height: 80px; border-radius: 24px; background: linear-gradient(135deg,#fee2e2,#fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; animation: iconBob 2s ease-in-out infinite; }
+    .logout-icon-wrap i { font-size: 2.2rem; color: var(--danger); }
+    .btn-logout-confirm { background: linear-gradient(135deg,#f87171,#ef4444); border: none; color: #fff; border-radius: 12px; padding: .7rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(239,68,68,.3); }
+    .btn-logout-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(239,68,68,.4); }
+    .btn-logout-cancel { border: 1.5px solid var(--border); background: transparent; border-radius: 12px; padding: .68rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s; }
+    .btn-logout-cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── Responsive base ── */
+    @media (max-width: 991px) {
+      .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; z-index: 1001; }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-wrapper, .main-wrapper.expanded { margin-left: 0; }
+      .user-info { display: none; }
+    }
+    @media (max-width: 575px) {
+      .content-area { padding: 1rem; }
+      .topbar { padding: 0 1rem; }
+    }
+
+    /* ══════════════════════════════════════════
+       BREADCRUMB BAR
+    ══════════════════════════════════════════ */
+    .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: .75rem; }
+    .bc-left { display: flex; flex-direction: column; gap: .2rem; }
+    .bc-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--secondary); display: flex; align-items: center; gap: .5rem; }
+    .bc-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem; flex-shrink: 0; }
+    .bc-desc { font-size: .82rem; color: var(--muted); padding-left: .2rem; }
+    .bc-right { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--muted); flex-wrap: wrap; }
+    .bc-right a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .bc-right a:hover { text-decoration: underline; }
+
+    /* ══════════════════════════════════════════
+       ACTION BAR ATAS — tombol Edit / Hapus dll
+    ══════════════════════════════════════════ */
+    .detail-action-bar {
+      display: flex; align-items: center; gap: .65rem; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: .85rem 1.25rem;
+      margin-bottom: 1.25rem; box-shadow: var(--shadow-sm);
+    }
+    .btn-action {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .58rem 1.1rem; border-radius: 10px; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; white-space: nowrap;
+      transition: transform .2s, box-shadow .2s, background .2s, border-color .2s;
+    }
+    .btn-action:hover { transform: translateY(-2px); }
+    .btn-action.primary { background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; box-shadow: 0 4px 14px rgba(232,93,38,.3); }
+    .btn-action.primary:hover { box-shadow: 0 6px 22px rgba(232,93,38,.42); color: #fff; }
+    .btn-action.outline { background: var(--surface); border: 1.5px solid var(--border); color: var(--secondary); }
+    .btn-action.outline:hover { border-color: var(--primary-border); color: var(--primary); background: var(--primary-pale); }
+    .btn-action.danger { background: var(--surface); border: 1.5px solid rgba(239,68,68,.25); color: var(--danger); }
+    .btn-action.danger:hover { background: rgba(239,68,68,.07); border-color: rgba(239,68,68,.4); }
+    .btn-action.warning { background: var(--surface); border: 1.5px solid rgba(245,158,11,.3); color: #d97706; }
+    .btn-action.warning:hover { background: rgba(245,158,11,.07); border-color: rgba(245,158,11,.45); }
+    .btn-action.success { background: var(--surface); border: 1.5px solid rgba(34,197,94,.3); color: #16a34a; }
+    .btn-action.success:hover { background: rgba(34,197,94,.07); border-color: rgba(34,197,94,.45); }
+    /* Status badge inline dalam action bar */
+    .ab-status { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .9rem; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+    .ab-status.published { background: rgba(34,197,94,.1); color: #16a34a; border: 1.5px solid rgba(34,197,94,.2); }
+    .ab-status.pending   { background: rgba(245,158,11,.1); color: #d97706; border: 1.5px solid rgba(245,158,11,.2); }
+    .ab-status.draft     { background: rgba(100,116,139,.1); color: #475569; border: 1.5px solid rgba(100,116,139,.2); }
+    .ab-status i { font-size: .8rem; }
+
+    /* ══════════════════════════════════════════
+       LAYOUT 2 KOLOM
+    ══════════════════════════════════════════ */
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .detail-main  { min-width: 0; }
+    .detail-aside { position: sticky; top: calc(var(--topbar-h) + 1.25rem); }
+    @media (max-width: 1099px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .detail-aside { position: static; }
+    }
+
+    /* ══════════════════════════════════════════
+       DETAIL CARD — wrapper section
+    ══════════════════════════════════════════ */
+    .detail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .detail-card-header {
+      display: flex; align-items: center; gap: .75rem;
+      padding: 1rem 1.5rem;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+    }
+    .dc-icon {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: .88rem; flex-shrink: 0;
+    }
+    .dc-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 900; color: var(--secondary); }
+    .dc-sub    { font-size: .73rem; color: var(--muted); margin-top: .1rem; }
+    .detail-card-body { padding: 1.5rem; }
+
+    /* ══════════════════════════════════════════
+       HERO — foto + judul + meta info
+    ══════════════════════════════════════════ */
+    .hero-img-wrap {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .hero-img-wrap img {
+      width: 100%; height: 360px;
+      object-fit: cover; display: block;
+    }
+    /* Gradient overlay bawah untuk teks di atas foto */
+    .hero-img-wrap::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 55%;
+      background: linear-gradient(to top, rgba(29,16,6,.65) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .hero-overlay {
+      position: absolute; bottom: 1.25rem; left: 1.5rem; right: 1.5rem;
+      z-index: 2;
+    }
+    .hero-category-badge {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .28rem .75rem; border-radius: 20px;
+      background: var(--primary); color: #fff;
+      font-size: .72rem; font-weight: 700;
+      margin-bottom: .6rem;
+      box-shadow: 0 3px 10px rgba(232,93,38,.4);
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.65rem; font-weight: 900;
+      color: #fff; line-height: 1.25;
+      text-shadow: 0 2px 12px rgba(0,0,0,.35);
+      margin-bottom: .65rem;
+    }
+    .hero-meta {
+      display: flex; align-items: center; gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .hero-meta-item {
+      display: flex; align-items: center; gap: .3rem;
+      font-size: .78rem; color: rgba(255,255,255,.88); font-weight: 500;
+    }
+    .hero-meta-item i { font-size: .82rem; color: var(--primary-light); }
+    .hero-meta-sep { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.35); }
+
+    @media (max-width:575px) {
+      .hero-img-wrap img { height: 240px; }
+      .hero-title { font-size: 1.25rem; }
+      .hero-overlay { bottom: .85rem; left: 1rem; right: 1rem; }
+    }
+
+    /* ══════════════════════════════════════════
+       STAT CARDS — quick numbers
+    ══════════════════════════════════════════ */
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .75rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width:767px) { .stat-cards { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width:400px) { .stat-cards { grid-template-columns: 1fr 1fr; } }
+
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.15rem;
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: .3rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .stat-card-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; margin-bottom: .15rem;
+    }
+    .stat-card-icon.orange { background: rgba(232,93,38,.1); color: var(--primary); }
+    .stat-card-icon.green  { background: rgba(34,197,94,.1); color: #16a34a; }
+    .stat-card-icon.blue   { background: rgba(59,130,246,.1); color: #2563eb; }
+    .stat-card-icon.yellow { background: rgba(245,158,11,.1); color: #d97706; }
+    .stat-card-value { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--secondary); line-height: 1; }
+    .stat-card-label { font-size: .72rem; color: var(--muted); font-weight: 500; }
+
+    /* ══════════════════════════════════════════
+       INFORMASI DASAR — judul, deskripsi, slug
+    ══════════════════════════════════════════ */
+    .resep-title-display {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem; font-weight: 900;
+      color: var(--secondary); line-height: 1.3;
+      margin-bottom: .65rem;
+    }
+    .resep-desc-display {
+      font-size: .92rem; color: var(--text);
+      line-height: 1.7; margin-bottom: 1rem;
+    }
+    .slug-display {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .3rem .85rem; border-radius: 8px;
+      background: var(--bg); border: 1px solid var(--border);
+      font-family: monospace; font-size: .78rem; color: var(--muted);
+    }
+    .slug-display i { color: var(--primary); font-size: .8rem; }
+
+    /* Tags chips tampilan */
+    .tag-chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+    .tag-chip-display {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .22rem .75rem; border-radius: 20px;
+      background: var(--primary-pale); border: 1.5px solid var(--primary-border);
+      color: var(--primary); font-size: .75rem; font-weight: 600;
+    }
+    .tag-chip-display i { font-size: .68rem; }
+
+    /* ══════════════════════════════════════════
+       KONTEN ARTIKEL — rich text display
+    ══════════════════════════════════════════ */
+    .resep-content {
+      font-size: .93rem;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .resep-content p { margin-bottom: 1em; }
+    .resep-content h2, .resep-content h3 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900; color: var(--secondary);
+      margin: 1.5em 0 .5em;
+    }
+    .resep-content h2 { font-size: 1.2rem; }
+    .resep-content h3 { font-size: 1rem; }
+    .resep-content ul, .resep-content ol { padding-left: 1.5rem; margin-bottom: 1em; }
+    .resep-content li { margin-bottom: .35em; }
+    .resep-content blockquote {
+      border-left: 4px solid var(--primary);
+      margin: 1.25em 0; padding: .6rem 1rem;
+      background: var(--primary-pale); border-radius: 0 10px 10px 0;
+      color: var(--muted); font-style: italic;
+      font-size: .9rem;
+    }
+    .resep-content strong { color: var(--secondary); font-weight: 600; }
+    .resep-content a { color: var(--primary); }
+
+    /* ══════════════════════════════════════════
+       BAHAN — ingredient table style
+    ══════════════════════════════════════════ */
+    .ingredient-table { width: 100%; border-collapse: collapse; }
+    .ingredient-table th {
+      background: var(--bg); font-size: .7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: var(--muted); padding: .65rem 1rem;
+      border-bottom: 1.5px solid var(--border); text-align: left;
+    }
+    .ingredient-table td {
+      padding: .65rem 1rem;
+      border-bottom: 1px solid rgba(237,229,220,.5);
+      font-size: .87rem; vertical-align: middle;
+    }
+    .ingredient-table tr:last-child td { border-bottom: none; }
+    .ingredient-table tr:hover td { background: var(--primary-pale); }
+    .ing-name-cell { font-weight: 600; color: var(--secondary); }
+    .ing-qty-cell  { color: var(--primary); font-weight: 700; white-space: nowrap; }
+    .ing-unit-cell { color: var(--muted); font-size: .8rem; }
+
+    /* ══════════════════════════════════════════
+       LANGKAH MEMASAK — step cards
+    ══════════════════════════════════════════ */
+    .steps-list { display: flex; flex-direction: column; gap: 1rem; }
+    .step-card {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.1rem 1.25rem;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 14px;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .step-card:hover { border-color: var(--primary-border); box-shadow: var(--shadow-sm); background: var(--surface); }
+    .step-number {
+      width: 36px; height: 36px; flex-shrink: 0;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 900; font-size: .88rem;
+      box-shadow: 0 3px 10px rgba(232,93,38,.3);
+      font-family: 'Playfair Display', serif;
+    }
+    .step-text {
+      font-size: .9rem; line-height: 1.7; color: var(--text);
+      padding-top: .35rem;
+    }
+
+    /* ══════════════════════════════════════════
+       NUTRISI — grid pill display
+    ══════════════════════════════════════════ */
+    .nutrition-grid-display {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+    }
+    @media (max-width:400px) { .nutrition-grid-display { grid-template-columns: repeat(2,1fr); } }
+    .nutrition-pill {
+      padding: .85rem 1rem; text-align: center;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 12px;
+      transition: border-color .2s, background .2s;
+    }
+    .nutrition-pill:hover { border-color: var(--primary-border); background: var(--primary-pale); }
+    .np-value { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 900; color: var(--secondary); }
+    .np-unit  { font-size: .68rem; color: var(--muted); font-weight: 500; }
+    .np-label { font-size: .72rem; color: var(--muted); margin-top: .2rem; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+
+    /* ══════════════════════════════════════════
+       KOMENTAR
+    ══════════════════════════════════════════ */
+    .comment-list { display: flex; flex-direction: column; gap: 1rem; }
+    .comment-item {
+      display: flex; gap: .9rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: background .2s, border-color .2s;
+    }
+    .comment-item:hover { background: var(--surface); border-color: var(--primary-border); }
+    .comment-item.flagged { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.03); }
+    .comment-avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 700; color: #fff;
+    }
+    .comment-body { flex: 1; min-width: 0; }
+    .comment-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .35rem; margin-bottom: .3rem; }
+    .comment-author { font-size: .85rem; font-weight: 700; color: var(--secondary); }
+    .comment-date   { font-size: .72rem; color: var(--muted); }
+    .comment-text   { font-size: .85rem; color: var(--text); line-height: 1.6; word-break: break-word; }
+    .comment-stars  { display: flex; align-items: center; gap: .15rem; margin-bottom: .3rem; }
+    .comment-stars i { font-size: .78rem; color: #f59e0b; }
+    .comment-stars i.empty { color: var(--border); }
+    .comment-actions { display: flex; gap: .4rem; margin-top: .55rem; flex-wrap: wrap; }
+    .comment-btn {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .22rem .65rem; border-radius: 7px;
+      border: 1.5px solid var(--border); background: transparent;
+      font-size: .72rem; font-weight: 600; cursor: pointer;
+      color: var(--muted); transition: all .2s; white-space: nowrap;
+    }
+    .comment-btn:hover { transform: translateY(-1px); }
+    .comment-btn.approve:hover { border-color: rgba(34,197,94,.35); color: #16a34a; background: rgba(34,197,94,.07); }
+    .comment-btn.del:hover     { border-color: rgba(239,68,68,.35); color: var(--danger); background: rgba(239,68,68,.06); }
+    .comment-btn.reply:hover   { border-color: var(--primary-border); color: var(--primary); background: var(--primary-pale); }
+    .flag-badge { font-size: .65rem; font-weight: 700; padding: .15rem .5rem; border-radius: 20px; background: rgba(239,68,68,.1); color: var(--danger); border: 1px solid rgba(239,68,68,.2); white-space: nowrap; }
+
+    /* ══════════════════════════════════════════
+       SIDEBAR KANAN — metadata & quick stats
+    ══════════════════════════════════════════ */
+    .aside-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow-sm);
+      overflow: hidden; margin-bottom: 1.25rem;
+    }
+    .aside-card-header {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .85rem 1.15rem;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+    }
+    .aside-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: .8rem; flex-shrink: 0;
+    }
+    .aside-title { font-family: 'Playfair Display', serif; font-size: .9rem; font-weight: 900; color: var(--secondary); }
+    .aside-card-body { padding: 1rem 1.15rem; }
+
+    /* Metadata row */
+    .meta-row {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: .65rem;
+      padding: .6rem 0;
+      border-bottom: 1px solid rgba(237,229,220,.5);
+    }
+    .meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .meta-row:first-child { padding-top: 0; }
+    .meta-key { font-size: .75rem; color: var(--muted); font-weight: 500; flex-shrink: 0; display: flex; align-items: center; gap: .35rem; }
+    .meta-key i { font-size: .8rem; }
+    .meta-val { font-size: .8rem; font-weight: 600; color: var(--secondary); text-align: right; }
+    .meta-val.primary { color: var(--primary); }
+    .meta-val.green   { color: #16a34a; }
+    .meta-val.amber   { color: #d97706; }
+
+    /* Rating bar dalam sidebar */
+    .rating-summary { text-align: center; padding-bottom: .75rem; border-bottom: 1px solid var(--border); margin-bottom: .75rem; }
+    .rating-big { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; color: var(--secondary); line-height: 1; }
+    .rating-stars-big { display: flex; justify-content: center; gap: .2rem; margin: .35rem 0 .25rem; }
+    .rating-stars-big i { font-size: 1.1rem; color: #f59e0b; }
+    .rating-stars-big i.half { color: #f59e0b; }
+    .rating-stars-big i.empty { color: var(--border); }
+    .rating-count { font-size: .75rem; color: var(--muted); }
+    .rating-bars { display: flex; flex-direction: column; gap: .4rem; }
+    .rbar-row { display: flex; align-items: center; gap: .6rem; }
+    .rbar-label { font-size: .73rem; color: var(--muted); width: 14px; text-align: right; flex-shrink: 0; }
+    .rbar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .rbar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--primary-light), var(--primary)); transition: width .6s ease; }
+    .rbar-count { font-size: .72rem; color: var(--muted); width: 22px; text-align: right; flex-shrink: 0; }
+
+    /* Quick action buttons di sidebar */
+    .aside-actions { display: flex; flex-direction: column; gap: .5rem; }
+    .aside-btn {
+      display: flex; align-items: center; gap: .55rem;
+      padding: .65rem .9rem; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      font-family: 'DM Sans', sans-serif; font-size: .83rem; font-weight: 600;
+      color: var(--secondary); cursor: pointer; text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s, transform .2s;
+    }
+    .aside-btn i { font-size: .9rem; width: 18px; text-align: center; }
+    .aside-btn:hover { transform: translateX(3px); }
+    .aside-btn.edit:hover    { border-color: var(--primary-border); color: var(--primary); background: var(--primary-pale); }
+    .aside-btn.feature:hover { border-color: rgba(245,200,66,.4); color: #b45309; background: rgba(245,200,66,.1); }
+    .aside-btn.unpublish:hover { border-color: rgba(245,158,11,.3); color: #d97706; background: rgba(245,158,11,.07); }
+    .aside-btn.delete:hover  { border-color: rgba(239,68,68,.3); color: var(--danger); background: rgba(239,68,68,.06); }
+
+    /* ── Detail divider ── */
+    .detail-divider { height: 1px; background: var(--border); margin: 1.1rem 0; }
+
+    /* ── Responsive tweaks ── */
+    @media (max-width:575px) {
+      .stat-card-value { font-size: 1.15rem; }
+      .detail-card-body { padding: 1rem; }
+      .resep-title-display { font-size: 1.15rem; }
+      .hero-title { font-size: 1.1rem; }
+      .stat-cards { gap: .5rem; }
+      .ingredient-table th, .ingredient-table td { padding: .55rem .75rem; }
+    }
+
+    /* ── Modal hapus ── */
+    .modal-delete .modal-content { border-radius: 24px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.18); }
+    .modal-delete .modal-dialog { animation: bounceIn .4s cubic-bezier(.34,1.56,.64,1); }
+    .del-icon-wrap { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg,#fee2e2,#fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; animation: iconBob 2s ease-in-out infinite; }
+    .del-icon-wrap i { font-size: 2rem; color: var(--danger); }
+    .btn-del-confirm { display: inline-flex; align-items: center; gap: .35rem; padding: .68rem 1.5rem; border: none; border-radius: 12px; background: linear-gradient(135deg,#f87171,#ef4444); color: #fff; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .88rem; cursor: pointer; box-shadow: 0 4px 14px rgba(239,68,68,.3); transition: transform .2s; }
+    .btn-del-confirm:hover { transform: translateY(-2px); }
+    .btn-del-cancel { padding: .67rem 1.4rem; border-radius: 12px; border: 1.5px solid var(--border); background: transparent; font-family: 'DM Sans',sans-serif; font-size: .9rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s; }
+    .btn-del-cancel:hover { border-color: var(--primary); color: var(--primary); }
+  </style>
+</head>
+<body>
+
+<div id="bgFloats"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <div class="brand-icon">🔥</div>
+    <span class="brand-name">Resep<span>Kita</span></span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-item-wrap">
+      <a href="dashboard.html" class="nav-link-custom" data-tooltip="Dashboard">
+        <div class="nav-icon"><i class="bi bi-grid-1x2"></i></div>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+    </div>
+    <div class="menu-category">Master Data</div>
+    <div class="nav-item-wrap">
+      <a href="kategori.html" class="nav-link-custom" data-tooltip="Kategori">
+        <div class="nav-icon"><i class="bi bi-tag"></i></div>
+        <span class="sidebar-label">Kategori</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="tags.html" class="nav-link-custom" data-tooltip="Tags">
+        <div class="nav-icon"><i class="bi bi-hash"></i></div>
+        <span class="sidebar-label">Tags</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="bahan.html" class="nav-link-custom" data-tooltip="Bahan">
+        <div class="nav-icon"><i class="bi bi-basket"></i></div>
+        <span class="sidebar-label">Bahan Makanan</span>
+      </a>
+    </div>
+    <div class="menu-category">Konten</div>
+    <div class="nav-item-wrap">
+      <a href="resep.html" class="nav-link-custom active" data-tooltip="Resep">
+        <div class="nav-icon"><i class="bi bi-journal-richtext"></i></div>
+        <span class="sidebar-label">Resep</span>
+        <span class="nav-badge">12</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Moderasi">
+        <div class="nav-icon"><i class="bi bi-shield-check"></i></div>
+        <span class="sidebar-label">Moderasi</span>
+        <span class="nav-badge">4</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Koleksi">
+        <div class="nav-icon"><i class="bi bi-collection"></i></div>
+        <span class="sidebar-label">Koleksi</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Komentar">
+        <div class="nav-icon"><i class="bi bi-chat-dots"></i></div>
+        <span class="sidebar-label">Komentar</span>
+        <span class="nav-badge">7</span>
+      </a>
+    </div>
+    <div class="menu-category">Pengguna</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengguna">
+        <div class="nav-icon"><i class="bi bi-people"></i></div>
+        <span class="sidebar-label">Pengguna</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Peran">
+        <div class="nav-icon"><i class="bi bi-person-badge"></i></div>
+        <span class="sidebar-label">Peran &amp; Akses</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Laporan">
+        <div class="nav-icon"><i class="bi bi-flag"></i></div>
+        <span class="sidebar-label">Laporan User</span>
+        <span class="nav-badge">2</span>
+      </a>
+    </div>
+    <div class="menu-category">Analitik</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Statistik">
+        <div class="nav-icon"><i class="bi bi-bar-chart-line"></i></div>
+        <span class="sidebar-label">Statistik</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Trending">
+        <div class="nav-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <span class="sidebar-label">Trending</span>
+      </a>
+    </div>
+    <div class="menu-category">Sistem</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengaturan">
+        <div class="nav-icon"><i class="bi bi-gear"></i></div>
+        <span class="sidebar-label">Pengaturan</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Bantuan">
+        <div class="nav-icon"><i class="bi bi-question-circle"></i></div>
+        <span class="sidebar-label">Bantuan</span>
+      </a>
+    </div>
+    <div style="height:.75rem"></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-inner">
+      <div class="sf-avatar">A</div>
+      <div class="sf-info sidebar-footer-text">
+        <div class="sf-name">Ahmad Firdaus</div>
+        <div class="sf-role">Super Admin</div>
+      </div>
+      <i class="bi bi-three-dots sf-dots sidebar-footer-text"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </button>
+    <span class="topbar-title d-none d-sm-block">Rendang Daging Sapi Padang Asli</span>
+    <div class="topbar-right">
+      <a href="resep.html" class="tb-icon-btn d-none d-md-flex" title="Kembali ke Daftar Resep"><i class="bi bi-arrow-left"></i></a>
+      <a href="resep-edit.html" class="tb-icon-btn d-none d-md-flex" title="Edit Resep"><i class="bi bi-pencil"></i></a>
+      <button class="tb-icon-btn" title="Notifikasi">
+        <i class="bi bi-bell"></i>
+        <span class="tb-notif-dot"></span>
+      </button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-btn" onclick="toggleUserMenu()">
+          <div class="user-avatar">A</div>
+          <div class="user-info">
+            <span class="user-name">Ahmad Firdaus</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+          <i class="bi bi-chevron-down user-caret ms-1"></i>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#" class="dd-item"><i class="bi bi-person-circle"></i> Profil Saya</a>
+          <a href="#" class="dd-item"><i class="bi bi-gear"></i> Pengaturan</a>
+          <div class="dd-divider"></div>
+          <div class="dd-item danger" onclick="showLogoutModal()"><i class="bi bi-box-arrow-right"></i> Logout</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════ CONTENT ══════════ -->
+  <main class="content-area">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar" data-aos="fade-down" data-aos-duration="600">
+      <div class="bc-left">
+        <div class="bc-title">
+          <div class="bc-icon"><i class="bi bi-eye"></i></div>
+          Detail Resep
+        </div>
+        <div class="bc-desc">Informasi lengkap resep beserta data komentar dan statistik.</div>
+      </div>
+      <div class="bc-right">
+        <i class="bi bi-house-fill text-warning"></i>
+        <a href="dashboard.html">Home</a>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <a href="resep.html">Resep</a>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <span style="color:var(--primary);font-weight:600">Detail</span>
+      </div>
+    </div>
+
+    <!-- ── Action Bar ── -->
+    <div class="detail-action-bar" data-aos="fade-up" data-aos-delay="50">
+      <span class="ab-status published"><i class="bi bi-check-circle-fill"></i> Published</span>
+      <span class="ab-status published d-none d-sm-flex" style="background:rgba(245,200,66,.12);color:#b45309;border-color:rgba(245,200,66,.3)"><i class="bi bi-star-fill"></i> Unggulan</span>
+      <div style="height:22px;width:1px;background:var(--border);margin:0 .1rem" class="d-none d-md-block"></div>
+      <a href="resep-edit.html" class="btn-action primary">
+        <i class="bi bi-pencil-square"></i>
+        <span class="d-none d-sm-inline">Edit Resep</span>
+        <span class="d-inline d-sm-none">Edit</span>
+      </a>
+      <button class="btn-action warning" onclick="unpublishResep()">
+        <i class="bi bi-eye-slash"></i>
+        <span class="d-none d-md-inline">Unpublish</span>
+      </button>
+      <button class="btn-action outline d-none d-md-flex" onclick="duplicateResep()">
+        <i class="bi bi-copy"></i> Duplikat
+      </button>
+      <button class="btn-action danger ms-auto" onclick="document.getElementById('modalHapus').querySelector('.modal').style.display='block'; new bootstrap.Modal(document.getElementById('modalHapus')).show()">
+        <i class="bi bi-trash3"></i>
+        <span class="d-none d-sm-inline">Hapus</span>
+      </button>
+    </div>
+
+    <!-- ── Stat Cards ── -->
+    <div class="stat-cards" data-aos="fade-up" data-aos-delay="80">
+      <div class="stat-card">
+        <div class="stat-card-icon orange"><i class="bi bi-eye-fill"></i></div>
+        <div class="stat-card-value">12.8k</div>
+        <div class="stat-card-label">Total Dilihat</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon green"><i class="bi bi-bookmark-fill"></i></div>
+        <div class="stat-card-value">2,341</div>
+        <div class="stat-card-label">Disimpan</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon blue"><i class="bi bi-chat-dots-fill"></i></div>
+        <div class="stat-card-value">187</div>
+        <div class="stat-card-label">Komentar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon yellow"><i class="bi bi-star-fill"></i></div>
+        <div class="stat-card-value">4.9</div>
+        <div class="stat-card-label">Rata-rata Rating</div>
+      </div>
+    </div>
+
+    <!-- ══ 2-KOLOM LAYOUT ══ -->
+    <div class="detail-layout">
+
+      <!-- ═══ KOLOM KIRI ═══ -->
+      <div class="detail-main">
+
+        <!-- 1. FOTO HERO + JUDUL -->
+        <div class="detail-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="detail-card-body">
+
+            <!-- Foto hero dengan overlay judul -->
+            <div class="hero-img-wrap">
+              <!-- Placeholder foto dengan gradient — ganti dengan <img> saat ada foto asli -->
+              <div style="width:100%;height:360px;background:linear-gradient(135deg,#8b3a10 0%,#c4501c 35%,#e85d26 60%,#f5a623 100%);display:flex;align-items:center;justify-content:center;font-size:6rem;">
+                🍖
+              </div>
+              <div class="hero-overlay">
+                <span class="hero-category-badge"><i class="bi bi-tag-fill"></i> Masakan Utama</span>
+                <div class="hero-title">Rendang Daging Sapi Padang Asli</div>
+                <div class="hero-meta">
+                  <div class="hero-meta-item"><i class="bi bi-clock-fill"></i> 75 menit</div>
+                  <div class="hero-meta-sep"></div>
+                  <div class="hero-meta-item"><i class="bi bi-people-fill"></i> 4 porsi</div>
+                  <div class="hero-meta-sep"></div>
+                  <div class="hero-meta-item"><i class="bi bi-speedometer2"></i> Sulit</div>
+                  <div class="hero-meta-sep"></div>
+                  <div class="hero-meta-item"><i class="bi bi-star-fill"></i> 4.9 (523)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Judul & Deskripsi -->
+            <div class="resep-title-display">Rendang Daging Sapi Padang Asli</div>
+            <p class="resep-desc-display">
+              Rendang adalah masakan berbumbu yang daging dimasak bersama santan kelapa dan campuran berbagai bumbu hingga kering. Asal usulnya dari Minangkabau, Sumatera Barat, dan kini diakui sebagai salah satu masakan terlezat di dunia versi CNN Travel.
+            </p>
+
+            <!-- Slug & Tags -->
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <span class="slug-display"><i class="bi bi-link-45deg"></i>rendang-daging-sapi-padang-asli</span>
+            </div>
+            <div class="mt-3">
+              <div class="tag-chips">
+                <span class="tag-chip-display"><i class="bi bi-hash"></i>rendang</span>
+                <span class="tag-chip-display"><i class="bi bi-hash"></i>daging</span>
+                <span class="tag-chip-display"><i class="bi bi-hash"></i>tradisional</span>
+                <span class="tag-chip-display"><i class="bi bi-hash"></i>pedas</span>
+                <span class="tag-chip-display"><i class="bi bi-hash"></i>masakan-padang</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. KONTEN LENGKAP -->
+        <div class="detail-card" data-aos="fade-up" data-aos-delay="120">
+          <div class="detail-card-header">
+            <div class="dc-icon"><i class="bi bi-file-richtext"></i></div>
+            <div>
+              <div class="dc-title">Konten Resep</div>
+              <div class="dc-sub">Deskripsi lengkap dan tips memasak</div>
+            </div>
+          </div>
+          <div class="detail-card-body">
+            <div class="resep-content">
+              <p>
+                Rendang daging sapi Padang adalah mahakarya kuliner Minangkabau yang telah mendunia.
+                Masakan ini dibuat dengan memadukan daging sapi pilihan bersama santan kelapa pekat dan
+                beragam rempah khas Nusantara yang ditumis berjam-jam hingga menghasilkan cita rasa yang
+                kompleks, kaya, dan tak terlupakan.
+              </p>
+              <h2>Tips Memilih Daging</h2>
+              <p>
+                Pilih bagian <strong>sandung lamur</strong> atau <strong>sengkel</strong> untuk hasil rendang
+                yang paling lembut. Hindari bagian has dalam karena terlalu mudah hancur saat dimasak lama.
+                Pastikan daging segar dengan warna merah cerah dan tidak berbau.
+              </p>
+              <blockquote>
+                "Rahasia rendang yang enak terletak pada kesabaran. Masak di api kecil dan aduk terus hingga
+                santan benar-benar menyusut dan bumbu meresap sempurna." — Mak Etek, Padang
+              </blockquote>
+              <h3>Variasi Regional</h3>
+              <p>
+                Di Payakumbuh, rendang dibuat lebih kering dan berwarna lebih gelap.
+                Sementara rendang Bukittinggi cenderung lebih basah dengan kuah santan yang kaya.
+                Keduanya sama-sama lezat, tergantung selera Anda.
+              </p>
+              <ul>
+                <li>Rendang kering — tahan hingga 2 minggu di suhu ruang</li>
+                <li>Rendang basah (kalio) — cocok disajikan segar</li>
+                <li>Rendang paru — variasi dengan babat atau paru sapi</li>
+              </ul>
+              <p>
+                Setelah matang, biarkan rendang mendingin sebelum disimpan. Simpan dalam wadah kedap udara.
+                Rendang justru semakin enak keesokan harinya karena bumbu makin meresap.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. BAHAN-BAHAN -->
+        <div class="detail-card" data-aos="fade-up" data-aos-delay="130">
+          <div class="detail-card-header">
+            <div class="dc-icon"><i class="bi bi-basket2"></i></div>
+            <div>
+              <div class="dc-title">Bahan-Bahan</div>
+              <div class="dc-sub">14 bahan untuk 4 porsi</div>
+            </div>
+          </div>
+          <div class="detail-card-body" style="padding:0">
+            <div style="overflow-x:auto">
+              <table class="ingredient-table">
+                <thead>
+                  <tr>
+                    <th style="width:40%">Nama Bahan</th>
+                    <th style="width:22%">Jumlah</th>
+                    <th>Satuan</th>
+                    <th class="d-none d-md-table-cell">Catatan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="ing-name-cell">Daging sapi</td>
+                    <td class="ing-qty-cell">1</td>
+                    <td class="ing-unit-cell">kg</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Potong 3×3 cm</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Santan kelapa</td>
+                    <td class="ing-qty-cell">1</td>
+                    <td class="ing-unit-cell">liter</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Dari 2 butir kelapa</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Cabai merah keriting</td>
+                    <td class="ing-qty-cell">200</td>
+                    <td class="ing-unit-cell">gram</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Haluskan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Bawang merah</td>
+                    <td class="ing-qty-cell">12</td>
+                    <td class="ing-unit-cell">siung</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Iris tipis</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Bawang putih</td>
+                    <td class="ing-qty-cell">6</td>
+                    <td class="ing-unit-cell">siung</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Haluskan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Serai</td>
+                    <td class="ing-qty-cell">3</td>
+                    <td class="ing-unit-cell">batang</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Memarkan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Daun jeruk</td>
+                    <td class="ing-qty-cell">8</td>
+                    <td class="ing-unit-cell">lembar</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Buang tulang daun</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Lengkuas</td>
+                    <td class="ing-qty-cell">4</td>
+                    <td class="ing-unit-cell">cm</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Memarkan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Kunyit</td>
+                    <td class="ing-qty-cell">3</td>
+                    <td class="ing-unit-cell">cm</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Haluskan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Jahe</td>
+                    <td class="ing-qty-cell">3</td>
+                    <td class="ing-unit-cell">cm</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Haluskan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Kemiri</td>
+                    <td class="ing-qty-cell">5</td>
+                    <td class="ing-unit-cell">butir</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Sangrai, haluskan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Ketumbar</td>
+                    <td class="ing-qty-cell">1</td>
+                    <td class="ing-unit-cell">sdt</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Haluskan</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Garam</td>
+                    <td class="ing-qty-cell">2</td>
+                    <td class="ing-unit-cell">sdt</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Sesuaikan selera</td>
+                  </tr>
+                  <tr>
+                    <td class="ing-name-cell">Minyak goreng</td>
+                    <td class="ing-qty-cell">3</td>
+                    <td class="ing-unit-cell">sdm</td>
+                    <td class="d-none d-md-table-cell" style="font-size:.78rem;color:var(--muted)">Untuk menumis</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. LANGKAH MEMASAK -->
+        <div class="detail-card" data-aos="fade-up" data-aos-delay="140">
+          <div class="detail-card-header">
+            <div class="dc-icon"><i class="bi bi-list-ol"></i></div>
+            <div>
+              <div class="dc-title">Langkah Memasak</div>
+              <div class="dc-sub">6 langkah cara pembuatan</div>
+            </div>
+          </div>
+          <div class="detail-card-body">
+            <div class="steps-list">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-text">Haluskan semua bumbu: cabai merah, bawang merah, bawang putih, kunyit, jahe, kemiri, dan ketumbar menggunakan blender atau ulekan. Sisihkan.</div>
+              </div>
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-text">Panaskan minyak goreng dalam wajan besar atau wajan datar. Tumis bumbu halus bersama serai yang dimemarkan, daun jeruk, dan lengkuas hingga harum dan minyak mulai terpisah dari bumbu (sekitar 10-15 menit).</div>
+              </div>
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-text">Masukkan potongan daging sapi ke dalam wajan. Aduk hingga daging berubah warna dan bumbu merata menutupi seluruh permukaan daging.</div>
+              </div>
+              <div class="step-card">
+                <div class="step-number">4</div>
+                <div class="step-text">Tuangkan santan kelapa ke dalam wajan. Aduk perlahan agar santan tidak pecah. Masak dengan api sedang sambil terus diaduk secara berkala hingga santan mendidih.</div>
+              </div>
+              <div class="step-card">
+                <div class="step-number">5</div>
+                <div class="step-text">Kecilkan api ke tingkat paling kecil. Masak sambil sesekali diaduk selama 1,5–2 jam hingga santan benar-benar menyusut, bumbu mengering, dan daging berwarna cokelat gelap mengkilap. Tambahkan garam sesuai selera.</div>
+              </div>
+              <div class="step-card">
+                <div class="step-number">6</div>
+                <div class="step-text">Matikan api. Biarkan rendang mendingin sejenak sebelum disajikan. Rendang paling nikmat disajikan dengan nasi putih hangat dan kerupuk jengkol. Bon appétit!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. INFORMASI NUTRISI -->
+        <div class="detail-card" data-aos="fade-up" data-aos-delay="150">
+          <div class="detail-card-header">
+            <div class="dc-icon"><i class="bi bi-heart-pulse"></i></div>
+            <div>
+              <div class="dc-title">Informasi Nutrisi</div>
+              <div class="dc-sub">Per satu porsi sajian</div>
+            </div>
+          </div>
+          <div class="detail-card-body">
+            <div class="nutrition-grid-display">
+              <div class="nutrition-pill">
+                <div class="np-value">450</div>
+                <div class="np-unit">kkal</div>
+                <div class="np-label">Kalori</div>
+              </div>
+              <div class="nutrition-pill">
+                <div class="np-value">38</div>
+                <div class="np-unit">g</div>
+                <div class="np-label">Protein</div>
+              </div>
+              <div class="nutrition-pill">
+                <div class="np-value">28</div>
+                <div class="np-unit">g</div>
+                <div class="np-label">Lemak</div>
+              </div>
+              <div class="nutrition-pill">
+                <div class="np-value">12</div>
+                <div class="np-unit">g</div>
+                <div class="np-label">Karbohidrat</div>
+              </div>
+              <div class="nutrition-pill">
+                <div class="np-value">3</div>
+                <div class="np-unit">g</div>
+                <div class="np-label">Serat</div>
+              </div>
+              <div class="nutrition-pill">
+                <div class="np-value">4</div>
+                <div class="np-unit">g</div>
+                <div class="np-label">Gula</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. KOMENTAR -->
+        <div class="detail-card" data-aos="fade-up" data-aos-delay="160">
+          <div class="detail-card-header">
+            <div class="dc-icon"><i class="bi bi-chat-dots"></i></div>
+            <div>
+              <div class="dc-title">Komentar</div>
+              <div class="dc-sub">187 komentar — 3 memerlukan moderasi</div>
+            </div>
+          </div>
+          <div class="detail-card-body">
+
+            <!-- Filter komentar -->
+            <div class="d-flex gap-2 flex-wrap mb-3">
+              <button class="comment-btn active" onclick="filterComments('all', this)" style="border-color:var(--primary);color:var(--primary);background:var(--primary-pale)">Semua (187)</button>
+              <button class="comment-btn" onclick="filterComments('flagged', this)"><i class="bi bi-flag"></i> Dilaporkan (3)</button>
+              <button class="comment-btn" onclick="filterComments('approved', this)">Disetujui (184)</button>
+            </div>
+
+            <div class="comment-list" id="commentList">
+
+              <!-- Komentar 1 — flagged -->
+              <div class="comment-item flagged" data-filter="flagged">
+                <div class="comment-avatar" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">RM</div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <div>
+                      <span class="comment-author">Rizky Maulana</span>
+                      <span class="flag-badge ms-2"><i class="bi bi-flag-fill me-1"></i>Dilaporkan</span>
+                    </div>
+                    <span class="comment-date">2 hari lalu</span>
+                  </div>
+                  <div class="comment-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star empty"></i><i class="bi bi-star empty"></i>
+                  </div>
+                  <div class="comment-text">Resepnya kurang lengkap ya, nggak ada step yang jelas. Buang-buang waktu aja coba resep ini. Kapok deh!</div>
+                  <div class="comment-actions">
+                    <button class="comment-btn approve" onclick="approveComment(this)"><i class="bi bi-check2"></i> Setujui</button>
+                    <button class="comment-btn del" onclick="deleteComment(this)"><i class="bi bi-trash"></i> Hapus</button>
+                    <button class="comment-btn reply"><i class="bi bi-reply"></i> Balas</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Komentar 2 -->
+              <div class="comment-item" data-filter="approved">
+                <div class="comment-avatar" style="background:linear-gradient(135deg,#e85d26,#ff7b47)">SA</div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <span class="comment-author">Siti Aminah</span>
+                    <span class="comment-date">5 hari lalu</span>
+                  </div>
+                  <div class="comment-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                  </div>
+                  <div class="comment-text">Alhamdulillah, rendangnya berhasil! Saya coba buat untuk arisan dan semua orang bilang enak banget. Terima kasih resepnya sangat detail dan mudah diikuti. ⭐⭐⭐⭐⭐</div>
+                  <div class="comment-actions">
+                    <button class="comment-btn del" onclick="deleteComment(this)"><i class="bi bi-trash"></i> Hapus</button>
+                    <button class="comment-btn reply"><i class="bi bi-reply"></i> Balas</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Komentar 3 -->
+              <div class="comment-item" data-filter="approved">
+                <div class="comment-avatar" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">DK</div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <span class="comment-author">Dewi Kartika</span>
+                    <span class="comment-date">1 minggu lalu</span>
+                  </div>
+                  <div class="comment-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                  </div>
+                  <div class="comment-text">Enak sekali! Aroma rempahnya kuat banget. Saya sedikit ngurangi cabenya karena anakku nggak tahan pedas tapi tetap lezat. Satu lagi, waktu masaknya lebih dari 2 jam untuk daging yang bener-bener kering ya kak.</div>
+                  <div class="comment-actions">
+                    <button class="comment-btn del" onclick="deleteComment(this)"><i class="bi bi-trash"></i> Hapus</button>
+                    <button class="comment-btn reply"><i class="bi bi-reply"></i> Balas</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Komentar 4 -->
+              <div class="comment-item" data-filter="approved">
+                <div class="comment-avatar" style="background:linear-gradient(135deg,#10b981,#059669)">BS</div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <span class="comment-author">Budi Santoso</span>
+                    <span class="comment-date">2 minggu lalu</span>
+                  </div>
+                  <div class="comment-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                  </div>
+                  <div class="comment-text">Udah nyoba 3x dan hasilnya konsisten enak. Tips saya: gunakan kelapa tua biar santannya lebih gurih, dan jangan lupa aduk tiap 5 menit biar tidak gosong. Masterpice! 🔥</div>
+                  <div class="comment-actions">
+                    <button class="comment-btn del" onclick="deleteComment(this)"><i class="bi bi-trash"></i> Hapus</button>
+                    <button class="comment-btn reply"><i class="bi bi-reply"></i> Balas</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Komentar 5 — flagged -->
+              <div class="comment-item flagged" data-filter="flagged">
+                <div class="comment-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">XX</div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <div>
+                      <span class="comment-author">Anonymous</span>
+                      <span class="flag-badge ms-2"><i class="bi bi-flag-fill me-1"></i>Spam</span>
+                    </div>
+                    <span class="comment-date">3 minggu lalu</span>
+                  </div>
+                  <div class="comment-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star empty"></i><i class="bi bi-star empty"></i><i class="bi bi-star empty"></i><i class="bi bi-star empty"></i>
+                  </div>
+                  <div class="comment-text">Cek website kami untuk resep lebih baik di [LINK SPAM DIHAPUS]</div>
+                  <div class="comment-actions">
+                    <button class="comment-btn approve" onclick="approveComment(this)"><i class="bi bi-check2"></i> Setujui</button>
+                    <button class="comment-btn del" onclick="deleteComment(this)"><i class="bi bi-trash"></i> Hapus</button>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /comment-list -->
+
+            <!-- Load more -->
+            <div class="text-center mt-4">
+              <button onclick="loadMoreComments(this)"
+                style="padding:.65rem 1.8rem;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;color:var(--secondary);cursor:pointer;transition:all .2s"
+                onmouseover="this.style.borderColor='var(--primary-border)';this.style.color='var(--primary)';this.style.background='var(--primary-pale)'"
+                onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--secondary)';this.style.background='var(--surface)'">
+                <i class="bi bi-arrow-down-circle me-1"></i> Muat 20 Komentar Lagi
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /detail-main -->
+
+      <!-- ═══ KOLOM KANAN ═══ -->
+      <div class="detail-aside" data-aos="fade-left" data-aos-delay="120">
+
+        <!-- Quick Actions -->
+        <div class="aside-card">
+          <div class="aside-card-header">
+            <div class="aside-icon"><i class="bi bi-lightning-fill"></i></div>
+            <div class="aside-title">Aksi Cepat</div>
+          </div>
+          <div class="aside-card-body">
+            <div class="aside-actions">
+              <a href="resep-edit.html" class="aside-btn edit">
+                <i class="bi bi-pencil-square"></i> Edit Resep
+              </a>
+              <button class="aside-btn feature" onclick="toggleFeatured(this)">
+                <i class="bi bi-star-fill"></i> Lepas dari Unggulan
+              </button>
+              <button class="aside-btn unpublish" onclick="unpublishResep()">
+                <i class="bi bi-eye-slash"></i> Unpublish
+              </button>
+              <button class="aside-btn" style="color:var(--muted)" onclick="duplicateResep()">
+                <i class="bi bi-copy"></i> Duplikat Resep
+              </button>
+              <button class="aside-btn delete" data-bs-toggle="modal" data-bs-target="#modalHapus">
+                <i class="bi bi-trash3"></i> Hapus Permanen
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metadata -->
+        <div class="aside-card">
+          <div class="aside-card-header">
+            <div class="aside-icon"><i class="bi bi-info-circle"></i></div>
+            <div class="aside-title">Metadata</div>
+          </div>
+          <div class="aside-card-body">
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-person-fill"></i> Penulis</span>
+              <span class="meta-val">Siti Aminah</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-calendar-plus"></i> Dibuat</span>
+              <span class="meta-val">12 Jan 2025</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-calendar-check"></i> Diupdate</span>
+              <span class="meta-val">28 Feb 2025</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-send-fill"></i> Dipublish</span>
+              <span class="meta-val">14 Jan 2025</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-tag-fill"></i> Kategori</span>
+              <span class="meta-val primary">Masakan Utama</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-speedometer2"></i> Kesulitan</span>
+              <span class="meta-val">😅 Sulit</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-clock"></i> Prep</span>
+              <span class="meta-val">15 menit</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-fire"></i> Masak</span>
+              <span class="meta-val">60 menit</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-people-fill"></i> Porsi</span>
+              <span class="meta-val">4 orang</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-chat-dots"></i> Komentar</span>
+              <span class="meta-val green">Aktif</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key"><i class="bi bi-star"></i> Rating</span>
+              <span class="meta-val green">Aktif</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rating Breakdown -->
+        <div class="aside-card">
+          <div class="aside-card-header">
+            <div class="aside-icon"><i class="bi bi-star-fill"></i></div>
+            <div class="aside-title">Rating Breakdown</div>
+          </div>
+          <div class="aside-card-body">
+            <div class="rating-summary">
+              <div class="rating-big">4.9</div>
+              <div class="rating-stars-big">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-half"></i>
+              </div>
+              <div class="rating-count">dari 523 penilaian</div>
+            </div>
+            <div class="rating-bars">
+              <div class="rbar-row">
+                <span class="rbar-label">5</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width:82%"></div></div>
+                <span class="rbar-count">429</span>
+              </div>
+              <div class="rbar-row">
+                <span class="rbar-label">4</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width:12%;background:linear-gradient(90deg,#f59e0b,#d97706)"></div></div>
+                <span class="rbar-count">63</span>
+              </div>
+              <div class="rbar-row">
+                <span class="rbar-label">3</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width:4%;background:linear-gradient(90deg,#94a3b8,#64748b)"></div></div>
+                <span class="rbar-count">21</span>
+              </div>
+              <div class="rbar-row">
+                <span class="rbar-label">2</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width:1.5%;background:linear-gradient(90deg,#f87171,#ef4444)"></div></div>
+                <span class="rbar-count">8</span>
+              </div>
+              <div class="rbar-row">
+                <span class="rbar-label">1</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width:0.5%;background:linear-gradient(90deg,#f87171,#ef4444)"></div></div>
+                <span class="rbar-count">2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO Preview -->
+        <div class="aside-card">
+          <div class="aside-card-header">
+            <div class="aside-icon"><i class="bi bi-search"></i></div>
+            <div class="aside-title">SEO Preview</div>
+          </div>
+          <div class="aside-card-body">
+            <div style="border:1px solid var(--border);border-radius:10px;padding:.85rem;background:var(--bg)">
+              <div style="font-size:.68rem;color:#006621;font-family:monospace;margin-bottom:.2rem;word-break:break-all">resepkita.id › masakan-utama › rendang-daging-sapi-padang-asli</div>
+              <div style="font-size:.95rem;font-weight:600;color:#1a0affcc;line-height:1.3;margin-bottom:.3rem">Rendang Daging Sapi Padang Asli — ResepKita</div>
+              <div style="font-size:.78rem;color:#4d5156;line-height:1.5">Resep rendang daging sapi Padang yang otentik dengan bumbu rempah khas Minangkabau. Mudah diikuti dengan panduan langkah demi langkah.</div>
+            </div>
+            <div class="mt-2 d-flex gap-2">
+              <span style="font-size:.72rem;color:var(--muted)">Title: <strong style="color:var(--success)">52/60</strong></span>
+              <span style="font-size:.72rem;color:var(--muted)">Desc: <strong style="color:var(--success)">128/160</strong></span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /detail-aside -->
+
+    </div><!-- /detail-layout -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div>
+      <span class="footer-brand">Resep<span>Kita</span></span>
+      &nbsp;— Dibuat dengan <span class="footer-heart">♥</span> untuk para pecinta masak Indonesia
+    </div>
+    <div class="footer-links">
+      <a href="#">Tentang</a>
+      <a href="#">Privasi</a>
+      <a href="#">Bantuan</a>
+    </div>
+    <div>v1.0.0 &nbsp;•&nbsp; © 2025 ResepKita</div>
+  </footer>
+
+</div><!-- /main-wrapper -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Ke atas">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- MODAL HAPUS -->
+<div class="modal fade" id="modalHapus" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered modal-delete">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="del-icon-wrap"><i class="bi bi-trash3"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.35rem">Hapus Resep?</h5>
+        <p style="font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem">
+          Kamu yakin ingin menghapus resep<br>
+          <strong style="color:var(--secondary)">"Rendang Daging Sapi Padang Asli"</strong>?<br>
+          <span style="color:var(--danger);font-size:.77rem">⚠ Semua data termasuk komentar akan ikut terhapus.</span>
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-del-cancel" data-bs-dismiss="modal">Batal</button>
+          <button class="btn-del-confirm" onclick="confirmHapus()"><i class="bi bi-trash3"></i> Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div class="modal fade modal-logout" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="logout-icon-wrap"><i class="bi bi-box-arrow-right"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.4rem">Konfirmasi Logout</h5>
+        <p style="font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem">Apakah kamu yakin ingin keluar dari akun <strong style="color:var(--secondary)">Ahmad Firdaus</strong>?</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-logout-cancel" data-bs-dismiss="modal">Batal</button>
+          <button class="btn-logout-confirm" onclick="window.location.href='login.html'"><i class="bi bi-box-arrow-right me-1"></i> Ya, Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ once: true, easing: 'ease-out-cubic', offset: 40 });
+
+  /* ── BG Floats ── */
+  ['🍖','🍜','🌶️','🧅','🫚','🥥','🍛','🌿','🧄','🫙','🍲','🔥'].forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'bg-float'; el.textContent = e;
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${1.1+Math.random()*1.4}rem;animation-duration:${15+Math.random()*16}s;animation-delay:${Math.random()*14}s;`;
+    document.getElementById('bgFloats').appendChild(el);
+  });
+
+  /* ── Sidebar ── */
+  let collapsed = false;
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const mw = document.getElementById('mainWrapper');
+    const btn = document.getElementById('toggleBtn');
+    if (window.innerWidth <= 991) {
+      sb.classList.toggle('mobile-open');
+      document.getElementById('sidebarOverlay').classList.toggle('show');
+    } else {
+      collapsed = !collapsed;
+      sb.classList.toggle('collapsed', collapsed);
+      mw.classList.toggle('expanded', collapsed);
+      btn.classList.toggle('rotated', collapsed);
+    }
+  }
+  function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
+
+  /* ── User dropdown ── */
+  function toggleUserMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+    document.getElementById('userDropdown').classList.toggle('show');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.user-menu')) {
+      document.getElementById('userMenu').classList.remove('open');
+      document.getElementById('userDropdown').classList.remove('show');
+    }
+  });
+
+  /* ── Sidebar tooltips saat collapsed ── */
+  document.querySelectorAll('.nav-link-custom').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      if (!document.getElementById('sidebar').classList.contains('collapsed')) return;
+      const tip = document.createElement('div');
+      tip.textContent = this.dataset.tooltip || '';
+      tip.style.cssText = 'position:fixed;background:var(--secondary);color:#fff;padding:.35rem .85rem;border-radius:8px;font-size:.78rem;font-weight:600;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+      const r = this.getBoundingClientRect();
+      tip.style.left = (r.right + 10) + 'px';
+      tip.style.top  = (r.top + r.height / 2 - 14) + 'px';
+      document.body.appendChild(tip); this._tip = tip;
+    });
+    link.addEventListener('mouseleave', function() { if (this._tip) { this._tip.remove(); this._tip = null; } });
+    link.addEventListener('click', function(e) {
+      if (this.getAttribute('href') === '#') e.preventDefault();
+    });
+  });
+
+  /* ── FAB ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('fab').classList.toggle('visible', window.scrollY > 250);
+  });
+
+  /* ── Logout ── */
+  function showLogoutModal() {
+    document.getElementById('userDropdown').classList.remove('show');
+    document.getElementById('userMenu').classList.remove('open');
+    new bootstrap.Modal(document.getElementById('logoutModal')).show();
+  }
+
+  /* ── Action handlers ── */
+  function unpublishResep() {
+    const status = document.querySelector('.ab-status.published');
+    if (!status) return;
+    status.className = 'ab-status pending';
+    status.innerHTML = '<i class="bi bi-hourglass-split"></i> Draft';
+  }
+
+  function duplicateResep() {
+    const btn = document.querySelector('.btn-action.outline');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menduplikat...';
+    btn.disabled = true;
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1500);
+  }
+
+  function toggleFeatured(btn) {
+    const isFeatured = btn.innerHTML.includes('Lepas');
+    btn.innerHTML = isFeatured
+      ? '<i class="bi bi-star"></i> Tandai Unggulan'
+      : '<i class="bi bi-star-fill"></i> Lepas dari Unggulan';
+  }
+
+  function confirmHapus() {
+    bootstrap.Modal.getInstance(document.getElementById('modalHapus')).hide();
+    setTimeout(() => { window.location.href = 'resep.html'; }, 400);
+  }
+
+  /* ── Comment actions ── */
+  function approveComment(btn) {
+    const item = btn.closest('.comment-item');
+    item.classList.remove('flagged');
+    item.dataset.filter = 'approved';
+    /* Hapus tombol approve, ganti dengan badge approved */
+    btn.remove();
+    const header = item.querySelector('.comment-header');
+    const badge  = header.querySelector('.flag-badge');
+    if (badge) {
+      badge.style.background = 'rgba(34,197,94,.1)';
+      badge.style.color      = '#16a34a';
+      badge.style.borderColor= 'rgba(34,197,94,.2)';
+      badge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Disetujui';
+    }
+  }
+
+  function deleteComment(btn) {
+    const item = btn.closest('.comment-item');
+    item.style.transition = 'opacity .25s, transform .25s';
+    item.style.opacity  = '0';
+    item.style.transform= 'translateX(20px)';
+    setTimeout(() => item.remove(), 260);
+  }
+
+  /* ── Filter komentar ── */
+  function filterComments(filter, btnEl) {
+    /* Update active button */
+    document.querySelectorAll('.comment-btn').forEach(b => {
+      b.style.borderColor = ''; b.style.color = ''; b.style.background = '';
+    });
+    btnEl.style.borderColor = 'var(--primary)';
+    btnEl.style.color       = 'var(--primary)';
+    btnEl.style.background  = 'var(--primary-pale)';
+
+    document.querySelectorAll('#commentList .comment-item').forEach(item => {
+      if (filter === 'all')            item.style.display = '';
+      else if (item.dataset.filter === filter) item.style.display = '';
+      else item.style.display = 'none';
+    });
+  }
+
+  /* ── Load more comments placeholder ── */
+  function loadMoreComments(btn) {
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memuat...';
+    btn.disabled  = true;
+    setTimeout(() => {
+      btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Semua komentar sudah dimuat';
+      btn.style.cursor = 'default';
+    }, 1400);
+  }
+</script>
+</body>
+</html>

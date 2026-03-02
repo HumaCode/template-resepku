@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tags — ResepKita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    /* ══════════════════════════════════════════
+       GLOBAL VARIABLES & RESET
+    ══════════════════════════════════════════ */
+    :root {
+      --primary:        #e85d26;
+      --primary-light:  #ff7b47;
+      --primary-pale:   rgba(232,93,38,.08);
+      --primary-border: rgba(232,93,38,.18);
+      --secondary:      #2d1b0e;
+      --accent:         #f5c842;
+      --bg:             #faf7f4;
+      --surface:        #ffffff;
+      --sidebar-bg:     #1e1208;
+      --sidebar-w:      260px;
+      --sidebar-w-sm:   70px;
+      --topbar-h:       64px;
+      --text:           #1a0e05;
+      --muted:          #8a7060;
+      --border:         #ede5dc;
+      --success:        #22c55e;
+      --warning:        #f59e0b;
+      --info:           #3b82f6;
+      --danger:         #ef4444;
+      --radius:         16px;
+      --shadow-sm:      0 2px 8px rgba(0,0,0,.06);
+      --shadow-md:      0 4px 24px rgba(0,0,0,.1);
+      --shadow-lg:      0 8px 40px rgba(0,0,0,.14);
+      --transition:     .3s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ══════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════ */
+    .sidebar { position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; z-index: 1000; transition: width var(--transition); overflow: hidden; }
+    .sidebar.collapsed { width: var(--sidebar-w-sm); }
+    .sidebar::before { content: ''; position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(232,93,38,.25) 0%, transparent 70%); top: -60px; right: -60px; pointer-events: none; animation: sideBlob 8s ease-in-out infinite; }
+    .sidebar::after  { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(245,200,66,.12) 0%, transparent 70%); bottom: 80px; left: -40px; pointer-events: none; animation: sideBlob 10s ease-in-out infinite reverse; }
+    @keyframes sideBlob { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.2) translate(8px,-8px)} }
+    .sidebar-brand { display: flex; align-items: center; gap: .75rem; padding: 1.25rem 1.1rem 1rem; text-decoration: none; flex-shrink: 0; white-space: nowrap; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .brand-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 14px rgba(232,93,38,.4); animation: brandPulse 3s ease-in-out infinite; }
+    @keyframes brandPulse { 0%,100%{box-shadow:0 4px 14px rgba(232,93,38,.4)} 50%{box-shadow:0 6px 22px rgba(232,93,38,.65)} }
+    .brand-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: -.3px; }
+    .brand-name span { color: var(--primary-light); }
+    .sidebar.collapsed .brand-name, .sidebar.collapsed .sidebar-label, .sidebar.collapsed .menu-category, .sidebar.collapsed .sidebar-footer-text { display: none; }
+    .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: .75rem .75rem 0; scrollbar-width: none; -ms-overflow-style: none; }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
+    .menu-category { font-size: .65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 1rem .5rem .35rem; white-space: nowrap; overflow: hidden; }
+    .nav-item-wrap { margin-bottom: 2px; }
+    .nav-link-custom { display: flex; align-items: center; gap: .75rem; padding: .65rem .75rem; border-radius: 12px; color: rgba(255,255,255,.55); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; overflow: hidden; position: relative; transition: background var(--transition), color var(--transition), transform .2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); transform: translateX(3px); }
+    .nav-link-custom.active { background: linear-gradient(135deg, rgba(232,93,38,.25), rgba(232,93,38,.12)); color: #fff; border: 1px solid rgba(232,93,38,.3); }
+    .nav-link-custom.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 60%; background: var(--primary-light); border-radius: 0 3px 3px 0; }
+    .nav-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: transform .3s, background .3s; }
+    .nav-link-custom:hover .nav-icon { transform: scale(1.12) rotate(-5deg); }
+    .nav-link-custom.active .nav-icon { background: rgba(232,93,38,.3); color: var(--primary-light); }
+    .nav-badge { margin-left: auto; background: var(--primary); color: #fff; font-size: .62rem; font-weight: 700; padding: .1rem .45rem; border-radius: 20px; flex-shrink: 0; }
+    .sidebar.collapsed .nav-badge, .sidebar.collapsed .sidebar-label { display: none; }
+    .sidebar.collapsed .nav-link-custom { justify-content: center; padding: .65rem; }
+    .sidebar-footer { flex-shrink: 0; padding: .75rem; border-top: 1px solid rgba(255,255,255,.07); background: rgba(0,0,0,.2); }
+    .sidebar-footer-inner { display: flex; align-items: center; gap: .7rem; padding: .6rem .5rem; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); overflow: hidden; white-space: nowrap; }
+    .sf-avatar { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; flex-shrink: 0; font-weight: 700; }
+    .sf-info { overflow: hidden; }
+    .sf-name { font-size: .8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sf-role { font-size: .68rem; color: rgba(255,255,255,.4); }
+    .sf-dots { margin-left: auto; flex-shrink: 0; color: rgba(255,255,255,.4); font-size: 1rem; cursor: pointer; transition: color .2s; }
+    .sf-dots:hover { color: var(--primary-light); }
+    .sidebar.collapsed .sidebar-footer-inner { justify-content: center; padding: .5rem; }
+
+    /* ══════════════════════════════════════════
+       MAIN WRAPPER & TOPBAR
+    ══════════════════════════════════════════ */
+    .main-wrapper { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; transition: margin-left var(--transition); }
+    .main-wrapper.expanded { margin-left: var(--sidebar-w-sm); }
+    .topbar { position: sticky; top: 0; height: var(--topbar-h); background: rgba(250,247,244,.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; z-index: 900; box-shadow: 0 1px 12px rgba(0,0,0,.06); }
+    .toggle-btn { width: 38px; height: 38px; border-radius: 10px; background: none; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 1.1rem; transition: background .2s, border-color .2s, color .2s; flex-shrink: 0; }
+    .toggle-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .toggle-btn i { transition: transform var(--transition); }
+    .toggle-btn.rotated i { transform: rotate(180deg); }
+    .topbar-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--secondary); }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: .6rem; }
+    .tb-icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; position: relative; transition: background .2s, border-color .2s, color .2s, transform .2s; text-decoration: none; }
+    .tb-icon-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); transform: translateY(-2px); }
+    .tb-notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; border: 1.5px solid var(--surface); animation: notifPing 2s ease-in-out infinite; }
+    @keyframes notifPing { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
+    .user-menu { position: relative; }
+    .user-btn { display: flex; align-items: center; gap: .6rem; padding: .35rem .7rem .35rem .35rem; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s; }
+    .user-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); box-shadow: 0 4px 14px rgba(232,93,38,.1); }
+    .user-avatar { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+    .user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .user-name { font-size: .83rem; font-weight: 600; color: var(--secondary); }
+    .user-role { font-size: .68rem; color: var(--muted); }
+    .user-caret { color: var(--muted); font-size: .75rem; transition: transform var(--transition); }
+    .user-menu.open .user-caret { transform: rotate(180deg); }
+    .user-dropdown { position: absolute; top: calc(100% + 8px); right: 0; width: 200px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); padding: .5rem; display: none; animation: dropIn .25s cubic-bezier(.34,1.56,.64,1); z-index: 999; }
+    .user-dropdown.show { display: block; }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    .dd-item { display: flex; align-items: center; gap: .65rem; padding: .55rem .75rem; border-radius: 10px; font-size: .85rem; color: var(--text); cursor: pointer; text-decoration: none; transition: background .2s, color .2s, transform .15s; }
+    .dd-item:hover { background: var(--primary-pale); color: var(--primary); transform: translateX(3px); }
+    .dd-item i { font-size: 1rem; width: 18px; text-align: center; }
+    .dd-item.danger:hover { background: rgba(239,68,68,.08); color: var(--danger); }
+    .dd-divider { height: 1px; background: var(--border); margin: .35rem 0; }
+
+    /* ══════════════════════════════════════════
+       CONTENT + BREADCRUMB
+    ══════════════════════════════════════════ */
+    .content-area { flex: 1; padding: 1.5rem; }
+    .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: .75rem; }
+    .bc-left { display: flex; flex-direction: column; gap: .2rem; }
+    .bc-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--secondary); display: flex; align-items: center; gap: .5rem; }
+    .bc-title i { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem; animation: bcSpin 6s linear infinite; }
+    @keyframes bcSpin { 0%,90%,100%{transform:rotate(0deg)} 95%{transform:rotate(360deg)} }
+    .bc-desc { font-size: .82rem; color: var(--muted); padding-left: .2rem; }
+    .bc-right { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--muted); }
+    .bc-right a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .bc-right a:hover { text-decoration: underline; }
+
+    /* ══════════════════════════════════════════
+       FOOTER / FAB / MODALS
+    ══════════════════════════════════════════ */
+    .main-footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: var(--muted); }
+    .footer-brand { font-family: 'Playfair Display', serif; font-weight: 900; color: var(--secondary); font-size: .9rem; }
+    .footer-brand span { color: var(--primary); }
+    .footer-links { display: flex; gap: 1rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-heart { color: var(--primary); animation: heartbeat 1.4s ease-in-out infinite; display: inline-block; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.25)} 28%{transform:scale(1)} 42%{transform:scale(1.2)} 70%{transform:scale(1)} }
+    .fab { position: fixed; bottom: 2rem; right: 1.8rem; width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); border: none; color: #fff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 800; box-shadow: 0 6px 24px rgba(232,93,38,.45); transition: transform .3s, box-shadow .3s, opacity .3s; animation: fabFloat 3s ease-in-out infinite; opacity: 0; pointer-events: none; }
+    .fab.visible { opacity: 1; pointer-events: all; }
+    @keyframes fabFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-5px) scale(1.03)} }
+    .fab:hover { transform: translateY(-3px) scale(1.08) !important; animation: none; }
+    @keyframes bounceIn { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
+    @keyframes iconBob  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .modal-logout .modal-content { border-radius: 24px; border: none; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-logout .modal-dialog { animation: bounceIn .5s cubic-bezier(.34,1.56,.64,1); }
+    .logout-icon-wrap { width: 80px; height: 80px; border-radius: 24px; background: linear-gradient(135deg,#fee2e2,#fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; animation: iconBob 2s ease-in-out infinite; }
+    .logout-icon-wrap i { font-size: 2.2rem; color: var(--danger); }
+    .btn-logout-confirm { background: linear-gradient(135deg,#f87171,#ef4444); border: none; color: #fff; border-radius: 12px; padding: .7rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(239,68,68,.3); }
+    .btn-logout-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(239,68,68,.4); }
+    .btn-logout-cancel { border: 1.5px solid var(--border); background: transparent; border-radius: 12px; padding: .68rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s; }
+    .btn-logout-cancel:hover { border-color: var(--primary); color: var(--primary); }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 999; backdrop-filter: blur(3px); }
+    .sidebar-overlay.show { display: block; }
+    .bg-float { position: fixed; pointer-events: none; z-index: 0; opacity: 0; animation: bgFloat linear infinite; }
+    @keyframes bgFloat { 0%{opacity:0;transform:translateY(110vh) rotate(0deg)} 5%{opacity:.05} 95%{opacity:.05} 100%{opacity:0;transform:translateY(-10vh) rotate(180deg)} }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE LAYOUT
+    ══════════════════════════════════════════ */
+    @media (max-width: 991px) { .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; z-index: 1001; } .sidebar.mobile-open { transform: translateX(0); } .main-wrapper, .main-wrapper.expanded { margin-left: 0; } .user-info { display: none; } }
+    @media (max-width: 575px) { .content-area { padding: 1rem; } .breadcrumb-bar { padding: .75rem 1rem; } .topbar { padding: 0 1rem; } }
+
+
+    /* =========================================================
+       // - - ---------- style untuk content tags - - ///
+       ========================================================= */
+
+    /* ── Toolbar ── */
+    .cat-toolbar {
+      display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem; box-shadow: var(--shadow-sm);
+    }
+    .cat-search-wrap { position: relative; flex: 1; min-width: 200px; }
+    .cat-search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .95rem; pointer-events: none; }
+    .cat-search { width: 100%; padding: .6rem 1rem .6rem 2.5rem; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .88rem; background: var(--bg); color: var(--text); outline: none; transition: border-color .25s, box-shadow .25s; }
+    .cat-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(232,93,38,.1); background: var(--surface); }
+    .cat-search::placeholder { color: #bba898; }
+    .cat-filter { padding: .6rem .9rem; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .85rem; background: var(--bg); color: var(--text); outline: none; cursor: pointer; transition: border-color .25s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%238a7060' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 2rem; }
+    .cat-filter:focus { border-color: var(--primary); }
+    .btn-tambah { display: inline-flex; align-items: center; gap: .45rem; padding: .62rem 1.1rem; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; font-family: 'DM Sans', sans-serif; font-size: .87rem; font-weight: 600; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 14px rgba(232,93,38,.35); transition: transform .2s, box-shadow .2s; }
+    .btn-tambah:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(232,93,38,.45); }
+    .btn-tambah i { font-size: 1rem; transition: transform .3s; }
+    .btn-tambah:hover i { transform: rotate(90deg); }
+
+    /* ── Stat pills ── */
+    .cat-stat-pills { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .stat-pill { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem 1rem; border-radius: 50px; font-size: .8rem; font-weight: 600; border: 1.5px solid transparent; transition: transform .2s, box-shadow .2s; cursor: default; }
+    .stat-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+    .stat-pill i { font-size: .9rem; }
+    .pill-all     { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .pill-active  { background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.2); color: #16a34a; }
+    .pill-hot     { background: rgba(239,68,68,.07); border-color: rgba(239,68,68,.18); color: #dc2626; }
+    .pill-new     { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.2); color: #2563eb; }
+
+    /* ── Badge status ── */
+    .tag-status-badge { font-size: .65rem; font-weight: 700; padding: .22rem .6rem; border-radius: 20px; white-space: nowrap; }
+    .badge-active   { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.25); }
+    .badge-inactive { background: rgba(239,68,68,.1);  color: #dc2626; border: 1px solid rgba(239,68,68,.2); }
+
+    /* ── Hot badge ── */
+    .badge-hot { background: rgba(239,68,68,.1); color: #dc2626; border: 1px solid rgba(239,68,68,.2); font-size: .65rem; font-weight: 700; padding: .22rem .55rem; border-radius: 20px; white-space: nowrap; }
+
+    /* ── Warna dot di tabel ── */
+    .tbl-color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,.18); }
+
+    /* ── TABLE ── */
+    .tag-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Scroll horizontal otomatis — semua kolom selalu tampil */
+    .tag-table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tag-table-responsive::-webkit-scrollbar { height: 4px; }
+    .tag-table-responsive::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .tag-table {
+      width: 100%;
+      min-width: 600px;
+      border-collapse: collapse;
+      font-size: .83rem;
+    }
+    .tag-table thead th {
+      background: var(--bg);
+      color: var(--muted);
+      font-weight: 600; font-size: .7rem;
+      text-transform: uppercase; letter-spacing: .5px;
+      padding: .8rem 1rem;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    /* Kolom sortable — kursor pointer */
+    .tag-table thead th.sortable { cursor: pointer; user-select: none; }
+    .tag-table thead th.sortable:hover { color: var(--primary); }
+    .tag-table thead th.sortable i { font-size: .65rem; margin-left: .25rem; opacity: .5; }
+    .tag-table tbody td {
+      padding: .8rem 1rem;
+      border-bottom: 1px solid rgba(237,229,220,.5);
+      vertical-align: middle;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .tag-table tbody tr:last-child td { border-bottom: none; }
+    .tag-table tbody tr { transition: background .15s; }
+    .tag-table tbody tr:hover { background: var(--primary-pale); }
+
+    /* Kolom Nama tag — boleh wrap */
+    .tag-table td.td-name { white-space: normal; min-width: 150px; }
+    .tbl-tag-name {
+      font-weight: 700; font-size: .88rem;
+      color: var(--secondary);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tbl-tag-slug { font-size: .7rem; color: var(--muted); font-family: monospace; margin-top: 2px; }
+
+    /* Jumlah resep — number bold */
+    .tbl-resep-num { font-weight: 700; color: var(--secondary); font-size: .88rem; }
+
+    /* Tombol aksi di tabel */
+    .tbl-action-btn {
+      width: 30px; height: 30px; border-radius: 8px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .82rem; color: var(--muted); cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s, transform .2s;
+    }
+    .tbl-action-btn:hover { transform: translateY(-1px); }
+    .tbl-action-btn.edit:hover  { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .tbl-action-btn.toggle:hover { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.25); color: #16a34a; }
+    .tbl-action-btn.del:hover   { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: var(--danger); }
+
+    /* ── Pagination ── */
+    .tag-pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: .75rem; padding: .75rem 0;
+    }
+    .pag-info { font-size: .8rem; color: var(--muted); }
+    .pag-info strong { color: var(--secondary); }
+    .pag-btns { display: flex; gap: .35rem; }
+    .pag-btn { width: 34px; height: 34px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .pag-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .pag-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .pag-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Modal ── */
+    .modal-cat .modal-content { border-radius: 24px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.18); }
+    .modal-cat .modal-dialog { animation: bounceIn .4s cubic-bezier(.34,1.56,.64,1); }
+    .modal-cat .modal-header { border-bottom: 1px solid var(--border); padding: 1.25rem 1.5rem; background: var(--bg); border-radius: 24px 24px 0 0; }
+    .modal-cat .modal-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 900; color: var(--secondary); display: flex; align-items: center; gap: .5rem; }
+    .modal-cat .modal-title i { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .9rem; animation: iconBob 2s ease-in-out infinite; }
+    .modal-cat .modal-body { padding: 1.5rem; }
+    .modal-cat .modal-footer { border-top: 1px solid var(--border); padding: 1rem 1.5rem; gap: .6rem; }
+    .modal-form-label { font-size: .8rem; font-weight: 600; color: var(--secondary); margin-bottom: .4rem; display: block; }
+    .modal-form-label span { color: var(--danger); margin-left: 2px; }
+    .modal-input, .modal-select { width: 100%; padding: .68rem 1rem; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .88rem; background: var(--bg); color: var(--text); outline: none; transition: border-color .25s, box-shadow .25s; appearance: none; }
+    .modal-input:focus, .modal-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(232,93,38,.1); background: var(--surface); }
+    .modal-input::placeholder { color: #bba898; }
+    .modal-hint { font-size: .72rem; color: var(--muted); margin-top: .3rem; }
+    .modal-toggle-wrap { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1rem; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); }
+    .modal-toggle-label { font-size: .85rem; font-weight: 600; color: var(--secondary); }
+    .modal-toggle-sub { font-size: .73rem; color: var(--muted); margin-top: .1rem; }
+    .form-switch .form-check-input { width: 2.5em; height: 1.4em; cursor: pointer; }
+    .form-switch .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+    .btn-modal-save { display: inline-flex; align-items: center; gap: .4rem; padding: .68rem 1.6rem; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 16px rgba(232,93,38,.3); transition: transform .2s, box-shadow .2s; }
+    .btn-modal-save:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232,93,38,.4); }
+    .btn-modal-cancel { padding: .67rem 1.4rem; border-radius: 12px; border: 1.5px solid var(--border); background: transparent; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s; }
+    .btn-modal-cancel:hover { border-color: var(--primary); color: var(--primary); }
+    .modal-delete .modal-content { border-radius: 24px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.18); }
+    .modal-delete .modal-dialog { animation: bounceIn .4s cubic-bezier(.34,1.56,.64,1); }
+    .delete-icon-wrap { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg,#fee2e2,#fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; animation: iconBob 2s ease-in-out infinite; }
+    .delete-icon-wrap i { font-size: 2rem; color: var(--danger); }
+
+    /* Color palette picker di modal */
+    .color-palette { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .color-opt { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform .2s, border-color .2s, box-shadow .2s; }
+    .color-opt:hover { transform: scale(1.2); }
+    .color-opt.selected { border-color: var(--secondary); box-shadow: 0 2px 8px rgba(0,0,0,.25); transform: scale(1.15); }
+
+    /* Preview tag nama di modal */
+    .tag-preview-wrap {
+      padding: .75rem 1rem;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+      display: flex; align-items: center; gap: .65rem;
+    }
+    .tag-preview-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .tag-preview-name { font-size: .9rem; font-weight: 700; color: var(--secondary); }
+
+    /* ── Responsive tags ── */
+    @media (max-width: 575px) {
+      .cat-stat-pills { gap: .4rem; }
+      .stat-pill { font-size: .74rem; padding: .38rem .8rem; }
+      .cat-toolbar { gap: .5rem; }
+      .tag-pagination { flex-direction: column; align-items: center; text-align: center; }
+      .pag-info { width: 100%; text-align: center; }
+      .pag-btns { justify-content: center; }
+    }
+
+    /* =========================================================
+       // end - - ---------- style untuk content tags - - ///
+       ========================================================= */
+
+  </style>
+</head>
+<body>
+
+<div id="bgFloats"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <div class="brand-icon">🔥</div>
+    <span class="brand-name">Resep<span>Kita</span></span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-item-wrap">
+      <a href="dashboard.html" class="nav-link-custom" data-tooltip="Dashboard">
+        <div class="nav-icon"><i class="bi bi-grid-1x2"></i></div>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+    </div>
+    <div class="menu-category">Master Data</div>
+    <div class="nav-item-wrap">
+      <a href="kategori.html" class="nav-link-custom" data-tooltip="Kategori">
+        <div class="nav-icon"><i class="bi bi-tag"></i></div>
+        <span class="sidebar-label">Kategori</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom active" data-tooltip="Tags">
+        <div class="nav-icon"><i class="bi bi-hash"></i></div>
+        <span class="sidebar-label">Tags</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Bahan">
+        <div class="nav-icon"><i class="bi bi-basket"></i></div>
+        <span class="sidebar-label">Bahan Makanan</span>
+      </a>
+    </div>
+    <div class="menu-category">Konten</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Resep">
+        <div class="nav-icon"><i class="bi bi-journal-richtext"></i></div>
+        <span class="sidebar-label">Resep</span>
+        <span class="nav-badge">12</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Moderasi">
+        <div class="nav-icon"><i class="bi bi-shield-check"></i></div>
+        <span class="sidebar-label">Moderasi</span>
+        <span class="nav-badge">4</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Koleksi">
+        <div class="nav-icon"><i class="bi bi-collection"></i></div>
+        <span class="sidebar-label">Koleksi</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Komentar">
+        <div class="nav-icon"><i class="bi bi-chat-dots"></i></div>
+        <span class="sidebar-label">Komentar</span>
+        <span class="nav-badge">7</span>
+      </a>
+    </div>
+    <div class="menu-category">Pengguna</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengguna">
+        <div class="nav-icon"><i class="bi bi-people"></i></div>
+        <span class="sidebar-label">Pengguna</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Peran">
+        <div class="nav-icon"><i class="bi bi-person-badge"></i></div>
+        <span class="sidebar-label">Peran & Akses</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Laporan">
+        <div class="nav-icon"><i class="bi bi-flag"></i></div>
+        <span class="sidebar-label">Laporan User</span>
+        <span class="nav-badge">2</span>
+      </a>
+    </div>
+    <div class="menu-category">Analitik</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Statistik">
+        <div class="nav-icon"><i class="bi bi-bar-chart-line"></i></div>
+        <span class="sidebar-label">Statistik</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Trending">
+        <div class="nav-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <span class="sidebar-label">Trending</span>
+      </a>
+    </div>
+    <div class="menu-category">Sistem</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengaturan">
+        <div class="nav-icon"><i class="bi bi-gear"></i></div>
+        <span class="sidebar-label">Pengaturan</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Bantuan">
+        <div class="nav-icon"><i class="bi bi-question-circle"></i></div>
+        <span class="sidebar-label">Bantuan</span>
+      </a>
+    </div>
+    <div style="height:.75rem"></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-inner">
+      <div class="sf-avatar">A</div>
+      <div class="sf-info sidebar-footer-text">
+        <div class="sf-name">Ahmad Firdaus</div>
+        <div class="sf-role">Super Admin</div>
+      </div>
+      <i class="bi bi-three-dots sf-dots sidebar-footer-text"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </button>
+    <span class="topbar-title d-none d-sm-block">Tags</span>
+    <div class="topbar-right">
+      <button class="tb-icon-btn d-none d-md-flex" title="Cari"><i class="bi bi-search"></i></button>
+      <button class="tb-icon-btn" title="Notifikasi">
+        <i class="bi bi-bell"></i>
+        <span class="tb-notif-dot"></span>
+      </button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-btn" onclick="toggleUserMenu()">
+          <div class="user-avatar">A</div>
+          <div class="user-info">
+            <span class="user-name">Ahmad Firdaus</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+          <i class="bi bi-chevron-down user-caret ms-1"></i>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#" class="dd-item"><i class="bi bi-person-circle"></i> Profil Saya</a>
+          <a href="#" class="dd-item"><i class="bi bi-gear"></i> Pengaturan</a>
+          <div class="dd-divider"></div>
+          <div class="dd-item danger" onclick="showLogoutModal()"><i class="bi bi-box-arrow-right"></i> Logout</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════ CONTENT ══════════ -->
+  <main class="content-area">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar" data-aos="fade-down" data-aos-duration="600">
+      <div class="bc-left">
+        <div class="bc-title">
+          <i class="bi bi-hash"></i>
+          Tags
+        </div>
+        <div class="bc-desc">Kelola semua tag resep untuk memudahkan pencarian dan pengelompokan konten.</div>
+      </div>
+      <div class="bc-right">
+        <i class="bi bi-house-fill text-warning"></i>
+        <a href="dashboard.html">Home</a>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <span style="color:var(--muted)">Master Data</span>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <span style="color:var(--primary);font-weight:600">Tags</span>
+      </div>
+    </div>
+
+    <!-- Stat Pills -->
+    <div class="cat-stat-pills" data-aos="fade-up" data-aos-delay="50">
+      <div class="stat-pill pill-all">
+        <i class="bi bi-hash"></i>
+        <span>Total: <strong>24</strong> Tags</span>
+      </div>
+      <div class="stat-pill pill-active">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>Aktif: <strong>20</strong></span>
+      </div>
+      <div class="stat-pill pill-hot">
+        <i class="bi bi-fire"></i>
+        <span>Hot: <strong>6</strong></span>
+      </div>
+      <div class="stat-pill pill-new">
+        <i class="bi bi-stars"></i>
+        <span>Baru bulan ini: <strong>3</strong></span>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="cat-toolbar" data-aos="fade-up" data-aos-delay="100">
+      <div class="cat-search-wrap">
+        <i class="bi bi-search"></i>
+        <input type="text" class="cat-search" id="tagSearch" placeholder="Cari nama tag atau slug..." oninput="filterTags()"/>
+      </div>
+      <select class="cat-filter" id="tagStatusFilter" onchange="filterTags()">
+        <option value="all">Semua Status</option>
+        <option value="active">Aktif</option>
+        <option value="inactive">Nonaktif</option>
+      </select>
+      <select class="cat-filter d-none d-sm-block" id="tagHotFilter" onchange="filterTags()">
+        <option value="all">Semua</option>
+        <option value="hot">🔥 Hot</option>
+      </select>
+      <button class="btn-tambah ms-auto" data-bs-toggle="modal" data-bs-target="#modalTambahTag">
+        <i class="bi bi-plus-lg"></i>
+        <span class="d-none d-sm-inline">Tambah Tag</span>
+        <span class="d-inline d-sm-none">Tambah</span>
+      </button>
+    </div>
+
+    <!-- ── TABLE (satu-satunya tampilan) ── -->
+    <div class="tag-table-wrap" data-aos="fade-up" data-aos-delay="150">
+      <div class="tag-table-responsive">
+        <table class="tag-table" id="tagTable">
+          <thead>
+            <tr>
+              <th style="width:46px"></th><!-- dot warna -->
+              <th class="sortable" onclick="sortTable('name')">Nama Tag <i class="bi bi-chevron-expand"></i></th>
+              <th class="sortable d-none d-md-table-cell" style="width:130px" onclick="sortTable('slug')">Slug <i class="bi bi-chevron-expand"></i></th>
+              <th class="sortable" style="width:80px;text-align:center" onclick="sortTable('resep')">Resep <i class="bi bi-chevron-expand"></i></th>
+              <th style="width:95px">Status</th>
+              <th style="width:70px;text-align:center">Hot</th>
+              <th style="width:90px;text-align:center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tagTbody">
+            <tr data-name="rendang" data-slug="rendang" data-resep="342" data-status="active" data-hot="true">
+              <td><span class="tbl-color-dot" style="background:#ef4444"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#rendang</span></div>
+                <div class="tbl-tag-slug d-md-none">rendang</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">rendang</td>
+              <td style="text-align:center"><span class="tbl-resep-num">342</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center"><span class="badge-hot">🔥 Hot</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('rendang')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('rendang')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="nasi goreng" data-slug="nasi-goreng" data-resep="287" data-status="active" data-hot="true">
+              <td><span class="tbl-color-dot" style="background:#f59e0b"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#nasi-goreng</span></div>
+                <div class="tbl-tag-slug d-md-none">nasi-goreng</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">nasi-goreng</td>
+              <td style="text-align:center"><span class="tbl-resep-num">287</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center"><span class="badge-hot">🔥 Hot</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('nasi-goreng')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('nasi-goreng')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="ayam" data-slug="ayam" data-resep="215" data-status="active" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#e85d26"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#ayam</span></div>
+                <div class="tbl-tag-slug d-md-none">ayam</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">ayam</td>
+              <td style="text-align:center"><span class="tbl-resep-num">215</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('ayam')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('ayam')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="kue" data-slug="kue" data-resep="198" data-status="active" data-hot="true">
+              <td><span class="tbl-color-dot" style="background:#ec4899"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#kue</span></div>
+                <div class="tbl-tag-slug d-md-none">kue</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">kue</td>
+              <td style="text-align:center"><span class="tbl-resep-num">198</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center"><span class="badge-hot">🔥 Hot</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('kue')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('kue')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="seafood" data-slug="seafood" data-resep="176" data-status="active" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#10b981"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#seafood</span></div>
+                <div class="tbl-tag-slug d-md-none">seafood</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">seafood</td>
+              <td style="text-align:center"><span class="tbl-resep-num">176</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('seafood')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('seafood')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="vegetarian" data-slug="vegetarian" data-resep="143" data-status="active" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#22c55e"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#vegetarian</span></div>
+                <div class="tbl-tag-slug d-md-none">vegetarian</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">vegetarian</td>
+              <td style="text-align:center"><span class="tbl-resep-num">143</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('vegetarian')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('vegetarian')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="pedas" data-slug="pedas" data-resep="134" data-status="active" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#dc2626"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#pedas</span></div>
+                <div class="tbl-tag-slug d-md-none">pedas</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">pedas</td>
+              <td style="text-align:center"><span class="tbl-resep-num">134</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('pedas')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('pedas')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="tradisional" data-slug="tradisional" data-resep="118" data-status="active" data-hot="true">
+              <td><span class="tbl-color-dot" style="background:#7c3aed"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#tradisional</span></div>
+                <div class="tbl-tag-slug d-md-none">tradisional</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">tradisional</td>
+              <td style="text-align:center"><span class="tbl-resep-num">118</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center"><span class="badge-hot">🔥 Hot</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('tradisional')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('tradisional')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="dessert" data-slug="dessert" data-resep="109" data-status="active" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#f472b6"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#dessert</span></div>
+                <div class="tbl-tag-slug d-md-none">dessert</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">dessert</td>
+              <td style="text-align:center"><span class="tbl-resep-num">109</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('dessert')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('dessert')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="diet sehat" data-slug="diet-sehat" data-resep="97" data-status="active" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#14b8a6"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#diet-sehat</span></div>
+                <div class="tbl-tag-slug d-md-none">diet-sehat</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">diet-sehat</td>
+              <td style="text-align:center"><span class="tbl-resep-num">97</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('diet-sehat')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('diet-sehat')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="mudah dibuat" data-slug="mudah-dibuat" data-resep="63" data-status="active" data-hot="true">
+              <td><span class="tbl-color-dot" style="background:#0ea5e9"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#mudah-dibuat</span></div>
+                <div class="tbl-tag-slug d-md-none">mudah-dibuat</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">mudah-dibuat</td>
+              <td style="text-align:center"><span class="tbl-resep-num">63</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center"><span class="badge-hot">🔥 Hot</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('mudah-dibuat')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('mudah-dibuat')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="berkuah" data-slug="berkuah" data-resep="52" data-status="active" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#06b6d4"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name"><span>#berkuah</span></div>
+                <div class="tbl-tag-slug d-md-none">berkuah</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace">berkuah</td>
+              <td style="text-align:center"><span class="tbl-resep-num">52</span></td>
+              <td><span class="tag-status-badge badge-active">Aktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('berkuah')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('berkuah')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="fermentasi" data-slug="fermentasi" data-resep="28" data-status="inactive" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#94a3b8"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name" style="opacity:.55"><span>#fermentasi</span></div>
+                <div class="tbl-tag-slug d-md-none" style="opacity:.55">fermentasi</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace;opacity:.55">fermentasi</td>
+              <td style="text-align:center"><span class="tbl-resep-num" style="opacity:.55">28</span></td>
+              <td><span class="tag-status-badge badge-inactive">Nonaktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('fermentasi')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Aktifkan" style="color:#d97706;border-color:rgba(245,158,11,.25)"><i class="bi bi-toggle-off"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('fermentasi')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr data-name="raw food" data-slug="raw-food" data-resep="14" data-status="inactive" data-hot="false">
+              <td><span class="tbl-color-dot" style="background:#94a3b8"></span></td>
+              <td class="td-name">
+                <div class="tbl-tag-name" style="opacity:.55"><span>#raw-food</span></div>
+                <div class="tbl-tag-slug d-md-none" style="opacity:.55">raw-food</div>
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.75rem;color:var(--muted);font-family:monospace;opacity:.55">raw-food</td>
+              <td style="text-align:center"><span class="tbl-resep-num" style="opacity:.55">14</span></td>
+              <td><span class="tag-status-badge badge-inactive">Nonaktif</span></td>
+              <td style="text-align:center;color:var(--muted);font-size:.8rem">—</td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <button class="tbl-action-btn edit" onclick="openEditTag('raw-food')" title="Edit"><i class="bi bi-pencil"></i></button>
+                  <button class="tbl-action-btn toggle" onclick="toggleStatus(this)" title="Aktifkan" style="color:#d97706;border-color:rgba(245,158,11,.25)"><i class="bi bi-toggle-off"></i></button>
+                  <button class="tbl-action-btn del"  onclick="openDeleteTag('raw-food')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="tag-pagination">
+      <div class="pag-info">Menampilkan <strong>1–14</strong> dari <strong>24</strong> tags</div>
+      <div class="pag-btns">
+        <button class="pag-btn" disabled><i class="bi bi-chevron-left"></i></button>
+        <button class="pag-btn active">1</button>
+        <button class="pag-btn">2</button>
+        <button class="pag-btn"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div>
+      <span class="footer-brand">Resep<span>Kita</span></span>
+      &nbsp;— Dibuat dengan <span class="footer-heart">♥</span> untuk para pecinta masak Indonesia
+    </div>
+    <div class="footer-links">
+      <a href="#">Tentang</a>
+      <a href="#">Privasi</a>
+      <a href="#">Bantuan</a>
+    </div>
+    <div>v1.0.0 &nbsp;•&nbsp; © 2025 ResepKita</div>
+  </footer>
+
+</div><!-- /main-wrapper -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Ke atas">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- ══════════════════════════════════════
+     MODAL TAMBAH / EDIT TAG
+══════════════════════════════════════ -->
+<div class="modal fade modal-cat" id="modalTambahTag" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:460px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="bi bi-hash"></i>
+          <span id="modalTagTitle">Tambah Tag Baru</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Nama -->
+        <label class="modal-form-label">Nama Tag <span>*</span></label>
+        <input type="text" class="modal-input mb-1" id="tagName" placeholder="cth: Rendang" oninput="autoTagSlug(); updatePreview()"/>
+        <div class="modal-hint mb-3">Akan tampil dengan prefix # di halaman publik.</div>
+
+        <!-- Slug -->
+        <label class="modal-form-label">Slug <span>*</span></label>
+        <input type="text" class="modal-input mb-1" id="tagSlug" placeholder="cth: rendang" oninput="updatePreview()"/>
+        <div class="modal-hint mb-3">Huruf kecil, tanpa spasi, gunakan tanda hubung.</div>
+
+        <!-- Warna -->
+        <label class="modal-form-label">Warna <span>*</span></label>
+        <div class="color-palette mb-3" id="colorPalette">
+          <div class="color-opt selected" style="background:#ef4444" data-c="#ef4444" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#f59e0b" data-c="#f59e0b" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#e85d26" data-c="#e85d26" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#ec4899" data-c="#ec4899" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#f472b6" data-c="#f472b6" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#10b981" data-c="#10b981" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#22c55e" data-c="#22c55e" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#14b8a6" data-c="#14b8a6" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#06b6d4" data-c="#06b6d4" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#0ea5e9" data-c="#0ea5e9" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#3b82f6" data-c="#3b82f6" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#6366f1" data-c="#6366f1" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#7c3aed" data-c="#7c3aed" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#dc2626" data-c="#dc2626" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#fb923c" data-c="#fb923c" onclick="pickColor(this)"></div>
+          <div class="color-opt" style="background:#94a3b8" data-c="#94a3b8" onclick="pickColor(this)"></div>
+        </div>
+
+        <!-- Preview -->
+        <label class="modal-form-label">Preview Chip</label>
+        <div class="tag-preview-wrap mb-3">
+          <div class="tag-preview-chip">
+            <div class="tag-preview-dot" id="prevDot" style="background:#ef4444;width:9px;height:9px;border-radius:50%"></div>
+            <span class="tag-preview-name" id="prevName">#nama-tag</span>
+          </div>
+          <span class="tag-preview-hint">Begini tampilannya di halaman publik</span>
+        </div>
+
+        <!-- Hot toggle -->
+        <label class="modal-form-label">Opsi Tambahan</label>
+        <div class="modal-toggle-wrap mb-2">
+          <div>
+            <div class="modal-toggle-label">🔥 Tandai sebagai Hot</div>
+            <div class="modal-toggle-sub">Tag hot tampil lebih menonjol dengan glow merah</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="tagHot"/>
+          </div>
+        </div>
+
+        <!-- Status toggle -->
+        <div class="modal-toggle-wrap">
+          <div>
+            <div class="modal-toggle-label">Aktifkan Tag</div>
+            <div class="modal-toggle-sub">Tag aktif akan tampil di halaman publik</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="tagStatus" checked/>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn-modal-save" onclick="saveTag()">
+          <i class="bi bi-check-lg"></i> Simpan Tag
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HAPUS TAG -->
+<div class="modal fade modal-delete" id="modalHapusTag" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content" style="border-radius:24px;border:none;box-shadow:0 20px 60px rgba(0,0,0,.18)">
+      <div class="modal-body text-center p-4">
+        <div class="delete-icon-wrap"><i class="bi bi-trash3"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.35rem">Hapus Tag?</h5>
+        <p style="font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem">
+          Kamu yakin ingin menghapus tag <strong id="delTagName" style="color:var(--secondary)"></strong>?<br>
+          <span style="color:var(--danger);font-size:.77rem">⚠ Tindakan ini tidak dapat dibatalkan.</span>
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
+          <button onclick="confirmDelete()" style="display:inline-flex;align-items:center;gap:.35rem;padding:.68rem 1.5rem;border:none;border-radius:12px;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.88rem;cursor:pointer;box-shadow:0 4px 14px rgba(239,68,68,.3)">
+            <i class="bi bi-trash3"></i> Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div class="modal fade modal-logout" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content" style="border-radius:24px;border:none;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <div class="modal-body text-center p-4">
+        <div class="logout-icon-wrap"><i class="bi bi-box-arrow-right"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.4rem">Konfirmasi Logout</h5>
+        <p style="font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem">Apakah kamu yakin ingin keluar dari akun <strong style="color:var(--secondary)">Ahmad Firdaus</strong>?</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-logout-cancel" data-bs-dismiss="modal">Batal</button>
+          <button class="btn-logout-confirm" onclick="window.location.href='login.html'"><i class="bi bi-box-arrow-right me-1"></i> Ya, Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ once: true, easing: 'ease-out-cubic', offset: 40 });
+
+  /* ── BG Floats ── */
+  ['🍕','🍜','🍱','🥗','🍰','🥤','🍛','🍣','🧁','🍩','🍓','🥑','🌶️','🫕','🍲','🧆'].forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'bg-float'; el.textContent = e;
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${1.2+Math.random()*1.5}rem;animation-duration:${14+Math.random()*16}s;animation-delay:${Math.random()*12}s;`;
+    document.getElementById('bgFloats').appendChild(el);
+  });
+
+  /* ── Sidebar ── */
+  let collapsed = false;
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar'), mw = document.getElementById('mainWrapper'), btn = document.getElementById('toggleBtn');
+    if (window.innerWidth <= 991) {
+      sb.classList.toggle('mobile-open');
+      document.getElementById('sidebarOverlay').classList.toggle('show');
+    } else {
+      collapsed = !collapsed;
+      sb.classList.toggle('collapsed', collapsed);
+      mw.classList.toggle('expanded', collapsed);
+      btn.classList.toggle('rotated', collapsed);
+    }
+  }
+  function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
+
+  /* ── User dropdown ── */
+  function toggleUserMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+    document.getElementById('userDropdown').classList.toggle('show');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.user-menu')) {
+      document.getElementById('userMenu').classList.remove('open');
+      document.getElementById('userDropdown').classList.remove('show');
+    }
+  });
+
+  /* ── Sidebar tooltips ── */
+  document.querySelectorAll('.nav-link-custom').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      if (!document.getElementById('sidebar').classList.contains('collapsed')) return;
+      const tip = document.createElement('div');
+      tip.textContent = this.dataset.tooltip || '';
+      tip.style.cssText = `position:fixed;background:var(--secondary);color:#fff;padding:.35rem .85rem;border-radius:8px;font-size:.78rem;font-weight:600;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);`;
+      const r = this.getBoundingClientRect();
+      tip.style.left = (r.right + 10) + 'px';
+      tip.style.top  = (r.top + r.height/2 - 14) + 'px';
+      document.body.appendChild(tip); this._tip = tip;
+    });
+    link.addEventListener('mouseleave', function() { if (this._tip) { this._tip.remove(); this._tip = null; } });
+    link.addEventListener('click', function(e) {
+      if (this.getAttribute('href') === '#') e.preventDefault();
+      document.querySelectorAll('.nav-link-custom').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  /* ── FAB ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('fab').classList.toggle('visible', window.scrollY > 250);
+  });
+
+  /* ── Logout modal ── */
+  function showLogoutModal() {
+    document.getElementById('userDropdown').classList.remove('show');
+    document.getElementById('userMenu').classList.remove('open');
+    new bootstrap.Modal(document.getElementById('logoutModal')).show();
+  }
+
+  /* ── Filter tabel ── */
+  function filterTags() {
+    const q      = document.getElementById('tagSearch').value.toLowerCase();
+    const status = document.getElementById('tagStatusFilter').value;
+    const hot    = document.getElementById('tagHotFilter').value;
+    document.querySelectorAll('#tagTbody tr').forEach(row => {
+      const name = (row.dataset.name || '').toLowerCase();
+      const slug = (row.dataset.slug || '').toLowerCase();
+      const st   = row.dataset.status || '';
+      const isH  = row.dataset.hot === 'true';
+      const show = (name.includes(q) || slug.includes(q))
+                && (status === 'all' || st === status)
+                && (hot    === 'all' || (hot === 'hot' && isH));
+      row.style.display = show ? '' : 'none';
+    });
+  }
+
+  /* ── Sort tabel ── */
+  let sortDir = {};
+  function sortTable(col) {
+    sortDir[col] = !sortDir[col]; // toggle asc/desc
+    const tbody = document.getElementById('tagTbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr'));
+    rows.sort((a, b) => {
+      let va = a.dataset[col] || '';
+      let vb = b.dataset[col] || '';
+      if (col === 'resep') { va = parseInt(va) || 0; vb = parseInt(vb) || 0; return sortDir[col] ? vb - va : va - vb; }
+      return sortDir[col] ? vb.localeCompare(va) : va.localeCompare(vb);
+    });
+    rows.forEach(r => tbody.appendChild(r));
+  }
+
+  /* ── Toggle status baris ── */
+  function toggleStatus(btn) {
+    const row    = btn.closest('tr');
+    const isOn   = row.dataset.status === 'active';
+    row.dataset.status = isOn ? 'inactive' : 'active';
+    const badge  = row.querySelector('.tag-status-badge');
+    badge.className = 'tag-status-badge ' + (isOn ? 'badge-inactive' : 'badge-active');
+    badge.textContent = isOn ? 'Nonaktif' : 'Aktif';
+    btn.querySelector('i').className = isOn ? 'bi bi-toggle-off' : 'bi bi-toggle-on';
+    btn.title = isOn ? 'Aktifkan' : 'Nonaktifkan';
+    btn.style.color  = isOn ? '#d97706' : '';
+    btn.style.borderColor = isOn ? 'rgba(245,158,11,.25)' : '';
+    // Redup baris jika nonaktif
+    row.querySelectorAll('.tbl-tag-name, .tbl-tag-slug, .tbl-resep-num').forEach(el => {
+      el.style.opacity = isOn ? '.55' : '';
+    });
+  }
+
+  /* ── Auto slug ── */
+  function autoTagSlug() {
+    const v = document.getElementById('tagName').value;
+    document.getElementById('tagSlug').value = v.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+    updatePreview();
+  }
+
+  /* ── Color picker ── */
+  let activeColor = '#ef4444';
+  function pickColor(el) {
+    document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    activeColor = el.dataset.c;
+    updatePreview();
+  }
+
+  /* ── Preview di modal ── */
+  function updatePreview() {
+    const slug = document.getElementById('tagSlug').value || 'nama-tag';
+    document.getElementById('prevName').textContent = '#' + slug;
+    document.getElementById('prevDot').style.background = activeColor;
+  }
+
+  /* ── Edit tag ── */
+  function openEditTag(name) {
+    document.getElementById('modalTagTitle').textContent = 'Edit Tag — #' + name;
+    document.getElementById('tagName').value = name.replace(/-/g,' ');
+    document.getElementById('tagSlug').value = name;
+    updatePreview();
+    new bootstrap.Modal(document.getElementById('modalTambahTag')).show();
+  }
+
+  /* ── Delete tag ── */
+  function openDeleteTag(name) {
+    document.getElementById('delTagName').textContent = '#' + name;
+    new bootstrap.Modal(document.getElementById('modalHapusTag')).show();
+  }
+  function confirmDelete() {
+    bootstrap.Modal.getInstance(document.getElementById('modalHapusTag')).hide();
+  }
+
+  /* ── Save tag ── */
+  function saveTag() {
+    const btn  = document.querySelector('#modalTambahTag .btn-modal-save');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+    btn.disabled  = true;
+    setTimeout(() => {
+      bootstrap.Modal.getInstance(document.getElementById('modalTambahTag')).hide();
+      btn.innerHTML = orig; btn.disabled = false;
+      document.getElementById('tagName').value = '';
+      document.getElementById('tagSlug').value = '';
+      document.getElementById('prevName').textContent = '#nama-tag';
+    }, 1400);
+  }
+</script>
+</body>
+</html>

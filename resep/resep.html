@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resep — ResepKita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    /* ══════════════════════════════════════════
+       GLOBAL VARIABLES & RESET
+    ══════════════════════════════════════════ */
+    :root {
+      --primary:        #e85d26;
+      --primary-light:  #ff7b47;
+      --primary-pale:   rgba(232,93,38,.08);
+      --primary-border: rgba(232,93,38,.18);
+      --secondary:      #2d1b0e;
+      --bg:             #faf7f4;
+      --surface:        #ffffff;
+      --sidebar-bg:     #1e1208;
+      --sidebar-w:      260px;
+      --sidebar-w-sm:   70px;
+      --topbar-h:       64px;
+      --text:           #1a0e05;
+      --muted:          #8a7060;
+      --border:         #ede5dc;
+      --danger:         #ef4444;
+      --radius:         16px;
+      --shadow-sm:      0 2px 8px rgba(0,0,0,.06);
+      --shadow-md:      0 4px 24px rgba(0,0,0,.1);
+      --shadow-lg:      0 8px 40px rgba(0,0,0,.14);
+      --transition:     .3s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ══════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════ */
+    .sidebar { position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; z-index: 1000; transition: width var(--transition); overflow: hidden; }
+    .sidebar.collapsed { width: var(--sidebar-w-sm); }
+    .sidebar::before { content: ''; position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(232,93,38,.25) 0%, transparent 70%); top: -60px; right: -60px; pointer-events: none; animation: sideBlob 8s ease-in-out infinite; }
+    .sidebar::after  { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(245,200,66,.12) 0%, transparent 70%); bottom: 80px; left: -40px; pointer-events: none; animation: sideBlob 10s ease-in-out infinite reverse; }
+    @keyframes sideBlob { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.2) translate(8px,-8px)} }
+    .sidebar-brand { display: flex; align-items: center; gap: .75rem; padding: 1.25rem 1.1rem 1rem; text-decoration: none; flex-shrink: 0; white-space: nowrap; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .brand-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 14px rgba(232,93,38,.4); animation: brandPulse 3s ease-in-out infinite; }
+    @keyframes brandPulse { 0%,100%{box-shadow:0 4px 14px rgba(232,93,38,.4)} 50%{box-shadow:0 6px 22px rgba(232,93,38,.65)} }
+    .brand-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: -.3px; }
+    .brand-name span { color: var(--primary-light); }
+    .sidebar.collapsed .brand-name, .sidebar.collapsed .sidebar-label, .sidebar.collapsed .menu-category, .sidebar.collapsed .sidebar-footer-text { display: none; }
+    .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: .75rem .75rem 0; scrollbar-width: none; -ms-overflow-style: none; }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
+    .menu-category { font-size: .65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 1rem .5rem .35rem; white-space: nowrap; overflow: hidden; }
+    .nav-item-wrap { margin-bottom: 2px; }
+    .nav-link-custom { display: flex; align-items: center; gap: .75rem; padding: .65rem .75rem; border-radius: 12px; color: rgba(255,255,255,.55); text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; overflow: hidden; position: relative; transition: background var(--transition), color var(--transition), transform .2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); transform: translateX(3px); }
+    .nav-link-custom.active { background: linear-gradient(135deg, rgba(232,93,38,.25), rgba(232,93,38,.12)); color: #fff; border: 1px solid rgba(232,93,38,.3); }
+    .nav-link-custom.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 60%; background: var(--primary-light); border-radius: 0 3px 3px 0; }
+    .nav-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: transform .3s, background .3s; }
+    .nav-link-custom:hover .nav-icon { transform: scale(1.12) rotate(-5deg); }
+    .nav-link-custom.active .nav-icon { background: rgba(232,93,38,.3); color: var(--primary-light); }
+    .nav-badge { margin-left: auto; background: var(--primary); color: #fff; font-size: .62rem; font-weight: 700; padding: .1rem .45rem; border-radius: 20px; flex-shrink: 0; }
+    .sidebar.collapsed .nav-badge, .sidebar.collapsed .sidebar-label { display: none; }
+    .sidebar.collapsed .nav-link-custom { justify-content: center; padding: .65rem; }
+    .sidebar-footer { flex-shrink: 0; padding: .75rem; border-top: 1px solid rgba(255,255,255,.07); background: rgba(0,0,0,.2); }
+    .sidebar-footer-inner { display: flex; align-items: center; gap: .7rem; padding: .6rem .5rem; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); overflow: hidden; white-space: nowrap; }
+    .sf-avatar { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; flex-shrink: 0; font-weight: 700; }
+    .sf-info { overflow: hidden; }
+    .sf-name { font-size: .8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sf-role { font-size: .68rem; color: rgba(255,255,255,.4); }
+    .sf-dots { margin-left: auto; flex-shrink: 0; color: rgba(255,255,255,.4); font-size: 1rem; cursor: pointer; transition: color .2s; }
+    .sf-dots:hover { color: var(--primary-light); }
+    .sidebar.collapsed .sidebar-footer-inner { justify-content: center; padding: .5rem; }
+
+    /* ══════════════════════════════════════════
+       MAIN WRAPPER & TOPBAR
+    ══════════════════════════════════════════ */
+    .main-wrapper { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; transition: margin-left var(--transition); }
+    .main-wrapper.expanded { margin-left: var(--sidebar-w-sm); }
+    .topbar { position: sticky; top: 0; height: var(--topbar-h); background: rgba(250,247,244,.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; z-index: 900; box-shadow: 0 1px 12px rgba(0,0,0,.06); }
+    .toggle-btn { width: 38px; height: 38px; border-radius: 10px; background: none; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 1.1rem; transition: background .2s, border-color .2s, color .2s; flex-shrink: 0; }
+    .toggle-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .toggle-btn i { transition: transform var(--transition); }
+    .toggle-btn.rotated i { transform: rotate(180deg); }
+    .topbar-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--secondary); }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: .6rem; }
+    .tb-icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; position: relative; transition: background .2s, border-color .2s, color .2s, transform .2s; text-decoration: none; }
+    .tb-icon-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); transform: translateY(-2px); }
+    .tb-notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; border: 1.5px solid var(--surface); animation: notifPing 2s ease-in-out infinite; }
+    @keyframes notifPing { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
+    .user-menu { position: relative; }
+    .user-btn { display: flex; align-items: center; gap: .6rem; padding: .35rem .7rem .35rem .35rem; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s; }
+    .user-btn:hover { background: var(--primary-pale); border-color: var(--primary-border); box-shadow: 0 4px 14px rgba(232,93,38,.1); }
+    .user-avatar { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+    .user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .user-name { font-size: .83rem; font-weight: 600; color: var(--secondary); }
+    .user-role { font-size: .68rem; color: var(--muted); }
+    .user-caret { color: var(--muted); font-size: .75rem; transition: transform var(--transition); }
+    .user-menu.open .user-caret { transform: rotate(180deg); }
+    .user-dropdown { position: absolute; top: calc(100% + 8px); right: 0; width: 200px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); padding: .5rem; display: none; animation: dropIn .25s cubic-bezier(.34,1.56,.64,1); z-index: 999; }
+    .user-dropdown.show { display: block; }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:none} }
+    .dd-item { display: flex; align-items: center; gap: .65rem; padding: .55rem .75rem; border-radius: 10px; font-size: .85rem; color: var(--text); cursor: pointer; text-decoration: none; transition: background .2s, color .2s, transform .15s; }
+    .dd-item:hover { background: var(--primary-pale); color: var(--primary); transform: translateX(3px); }
+    .dd-item i { font-size: 1rem; width: 18px; text-align: center; }
+    .dd-item.danger:hover { background: rgba(239,68,68,.08); color: var(--danger); }
+    .dd-divider { height: 1px; background: var(--border); margin: .35rem 0; }
+
+    /* ══════════════════════════════════════════
+       CONTENT + BREADCRUMB
+    ══════════════════════════════════════════ */
+    .content-area { flex: 1; padding: 1.5rem; }
+    .breadcrumb-bar { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: .75rem; }
+    .bc-left { display: flex; flex-direction: column; gap: .2rem; }
+    .bc-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--secondary); display: flex; align-items: center; gap: .5rem; }
+    .bc-title .bc-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem; animation: bcSpin 6s linear infinite; flex-shrink: 0; }
+    @keyframes bcSpin { 0%,90%,100%{transform:rotate(0deg)} 95%{transform:rotate(360deg)} }
+    .bc-desc { font-size: .82rem; color: var(--muted); padding-left: .2rem; }
+    .bc-right { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--muted); flex-wrap: wrap; }
+    .bc-right a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .bc-right a:hover { text-decoration: underline; }
+
+    /* ══════════════════════════════════════════
+       FOOTER / FAB / MISC
+    ══════════════════════════════════════════ */
+    .main-footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: var(--muted); }
+    .footer-brand { font-family: 'Playfair Display', serif; font-weight: 900; color: var(--secondary); font-size: .9rem; }
+    .footer-brand span { color: var(--primary); }
+    .footer-links { display: flex; gap: 1rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-heart { color: var(--primary); animation: heartbeat 1.4s ease-in-out infinite; display: inline-block; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.25)} 28%{transform:scale(1)} 42%{transform:scale(1.2)} 70%{transform:scale(1)} }
+    .fab { position: fixed; bottom: 2rem; right: 1.8rem; width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); border: none; color: #fff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 800; box-shadow: 0 6px 24px rgba(232,93,38,.45); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; animation: fabFloat 3s ease-in-out infinite; }
+    .fab.visible { opacity: 1; pointer-events: all; }
+    @keyframes fabFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .fab:hover { transform: translateY(-3px) scale(1.08) !important; animation: none; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 999; backdrop-filter: blur(3px); }
+    .sidebar-overlay.show { display: block; }
+    .bg-float { position: fixed; pointer-events: none; z-index: 0; opacity: 0; animation: bgFloat linear infinite; }
+    @keyframes bgFloat { 0%{opacity:0;transform:translateY(110vh) rotate(0deg)} 5%{opacity:.05} 95%{opacity:.05} 100%{opacity:0;transform:translateY(-10vh) rotate(180deg)} }
+    @keyframes bounceIn { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
+    @keyframes iconBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .modal-logout .modal-content { border-radius: 24px; border: none; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-logout .modal-dialog { animation: bounceIn .5s cubic-bezier(.34,1.56,.64,1); }
+    .logout-icon-wrap { width: 80px; height: 80px; border-radius: 24px; background: linear-gradient(135deg,#fee2e2,#fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; animation: iconBob 2s ease-in-out infinite; }
+    .logout-icon-wrap i { font-size: 2.2rem; color: var(--danger); }
+    .btn-logout-confirm { background: linear-gradient(135deg,#f87171,#ef4444); border: none; color: #fff; border-radius: 12px; padding: .7rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(239,68,68,.3); }
+    .btn-logout-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(239,68,68,.4); }
+    .btn-logout-cancel { border: 1.5px solid var(--border); background: transparent; border-radius: 12px; padding: .68rem 2rem; font-family: 'DM Sans',sans-serif; font-weight: 600; font-size: .9rem; color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s; }
+    .btn-logout-cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE LAYOUT
+    ══════════════════════════════════════════ */
+    @media (max-width: 991px) {
+      .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; z-index: 1001; }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-wrapper, .main-wrapper.expanded { margin-left: 0; }
+      .user-info { display: none; }
+    }
+    @media (max-width: 575px) {
+      .content-area { padding: 1rem; }
+      .breadcrumb-bar { padding: .75rem 1rem; }
+      .topbar { padding: 0 1rem; }
+    }
+
+
+    /* =========================================================
+       STYLE KHUSUS HALAMAN RESEP
+    ========================================================= */
+
+    /* ── Toolbar ── */
+    .resep-toolbar {
+      display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem; box-shadow: var(--shadow-sm);
+    }
+    .resep-search-wrap { position: relative; flex: 1; min-width: 200px; }
+    .resep-search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .95rem; pointer-events: none; }
+    .resep-search { width: 100%; padding: .6rem 1rem .6rem 2.5rem; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .88rem; background: var(--bg); color: var(--text); outline: none; transition: border-color .25s, box-shadow .25s; }
+    .resep-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(232,93,38,.1); background: var(--surface); }
+    .resep-search::placeholder { color: #bba898; }
+    .resep-filter { padding: .6rem .9rem; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .85rem; background: var(--bg); color: var(--text); outline: none; cursor: pointer; transition: border-color .25s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%238a7060' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 2rem; }
+    .resep-filter:focus { border-color: var(--primary); }
+
+    /* Tombol Tambah — link ke halaman create, bukan modal */
+    .btn-tambah-resep {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .62rem 1.15rem; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: #fff; font-family: 'DM Sans', sans-serif; font-size: .87rem;
+      font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none;
+      box-shadow: 0 4px 14px rgba(232,93,38,.35);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-tambah-resep:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 6px 22px rgba(232,93,38,.45); }
+    .btn-tambah-resep i { font-size: 1rem; transition: transform .3s; }
+    .btn-tambah-resep:hover i { transform: rotate(90deg); }
+
+    /* ── Stat pills ── */
+    .resep-stat-pills { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .stat-pill { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem 1rem; border-radius: 50px; font-size: .8rem; font-weight: 600; border: 1.5px solid transparent; transition: transform .2s, box-shadow .2s; cursor: default; }
+    .stat-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+    .stat-pill i { font-size: .9rem; }
+    .pill-all       { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .pill-published { background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.2); color: #16a34a; }
+    .pill-pending   { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); color: #d97706; }
+    .pill-draft     { background: rgba(100,116,139,.08); border-color: rgba(100,116,139,.2); color: #475569; }
+    .pill-rejected  { background: rgba(239,68,68,.07); border-color: rgba(239,68,68,.18); color: #dc2626; }
+
+    /* ── Status badge resep ── */
+    .resep-badge { font-size: .65rem; font-weight: 700; padding: .22rem .65rem; border-radius: 20px; white-space: nowrap; display: inline-block; }
+    .badge-published { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.25); }
+    .badge-pending   { background: rgba(245,158,11,.1);  color: #d97706; border: 1px solid rgba(245,158,11,.25); }
+    .badge-draft     { background: rgba(100,116,139,.1); color: #475569; border: 1px solid rgba(100,116,139,.22); }
+    .badge-rejected  { background: rgba(239,68,68,.1);   color: #dc2626; border: 1px solid rgba(239,68,68,.2); }
+
+    /* ── Featured badge ── */
+    .badge-featured { background: rgba(245,200,66,.15); color: #b45309; border: 1px solid rgba(245,200,66,.4); font-size: .62rem; font-weight: 700; padding: .18rem .5rem; border-radius: 20px; white-space: nowrap; display: inline-block; }
+
+    /* ── Thumbnail kecil di tabel ── */
+    .resep-thumb {
+      width: 46px; height: 38px; border-radius: 8px;
+      object-fit: cover; background: var(--bg);
+      border: 1px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; overflow: hidden;
+    }
+    .resep-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 7px; }
+
+    /* ── Rating bintang ── */
+    .resep-rating { display: inline-flex; align-items: center; gap: .25rem; font-size: .78rem; font-weight: 600; color: var(--secondary); white-space: nowrap; }
+    .resep-rating i { color: #f59e0b; font-size: .8rem; }
+
+    /* ── Tabel resep ── */
+    .resep-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+    .resep-table-responsive {
+      width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .resep-table-responsive::-webkit-scrollbar { height: 4px; }
+    .resep-table-responsive::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .resep-table {
+      width: 100%; min-width: 780px; border-collapse: collapse; font-size: .83rem;
+    }
+    .resep-table thead th {
+      background: var(--bg); color: var(--muted); font-weight: 600;
+      font-size: .7rem; text-transform: uppercase; letter-spacing: .5px;
+      padding: .8rem 1rem; border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .resep-table thead th.sortable { cursor: pointer; user-select: none; }
+    .resep-table thead th.sortable:hover { color: var(--primary); }
+    .resep-table thead th.sortable i { font-size: .65rem; margin-left: .2rem; opacity: .5; }
+    .resep-table tbody td {
+      padding: .8rem 1rem; border-bottom: 1px solid rgba(237,229,220,.5);
+      vertical-align: middle; color: var(--text);
+    }
+    .resep-table tbody tr:last-child td { border-bottom: none; }
+    .resep-table tbody tr { transition: background .15s; }
+    .resep-table tbody tr:hover { background: var(--primary-pale); }
+
+    /* Kolom judul — nama + kategori */
+    .resep-table td.td-judul { min-width: 200px; }
+    .resep-judul-text {
+      font-weight: 700; font-size: .88rem; color: var(--secondary);
+      display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+      margin-bottom: .2rem;
+    }
+    .resep-meta-text { font-size: .7rem; color: var(--muted); display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+    .resep-meta-dot { width: 3px; height: 3px; background: var(--border); border-radius: 50%; flex-shrink: 0; }
+
+    /* Penulis / kontributor */
+    .resep-author { display: flex; align-items: center; gap: .5rem; white-space: nowrap; }
+    .author-avatar { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .68rem; font-weight: 700; flex-shrink: 0; }
+    .author-name { font-size: .78rem; font-weight: 500; color: var(--secondary); }
+
+    /* Waktu masak + porsi */
+    .resep-info-cell { white-space: nowrap; font-size: .78rem; color: var(--muted); }
+    .resep-info-cell strong { color: var(--secondary); font-weight: 600; }
+
+    /* Tombol aksi */
+    .tbl-action-btn {
+      width: 30px; height: 30px; border-radius: 8px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .82rem; color: var(--muted); cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s, transform .2s;
+      text-decoration: none;
+    }
+    .tbl-action-btn:hover { transform: translateY(-1px); }
+    .tbl-action-btn.view:hover   { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.2); color: #2563eb; }
+    .tbl-action-btn.edit:hover   { background: var(--primary-pale); border-color: var(--primary-border); color: var(--primary); }
+    .tbl-action-btn.del:hover    { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: var(--danger); }
+    .tbl-action-btn.approve:hover { background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.2); color: #16a34a; }
+
+    /* ── Pagination ── */
+    .resep-pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: .75rem; padding: .75rem 0;
+    }
+    .pag-info { font-size: .8rem; color: var(--muted); }
+    .pag-info strong { color: var(--secondary); }
+    .pag-btns { display: flex; gap: .35rem; }
+    .pag-btn { width: 34px; height: 34px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .pag-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .pag-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .pag-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Modal delete ── */
+    .modal-delete .modal-content { border-radius: 24px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.18); }
+    .modal-delete .modal-dialog { animation: bounceIn .4s cubic-bezier(.34,1.56,.64,1); }
+    .delete-icon-wrap { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg,#fee2e2,#fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; animation: iconBob 2s ease-in-out infinite; }
+    .delete-icon-wrap i { font-size: 2rem; color: var(--danger); }
+    .btn-modal-cancel { padding: .67rem 1.4rem; border-radius: 12px; border: 1.5px solid var(--border); background: transparent; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: border-color .2s, color .2s; }
+    .btn-modal-cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── Responsive ── */
+    @media (max-width: 575px) {
+      .resep-stat-pills { gap: .4rem; }
+      .stat-pill { font-size: .74rem; padding: .38rem .8rem; }
+      .resep-toolbar { gap: .5rem; }
+      .resep-pagination { flex-direction: column; align-items: center; }
+      .pag-info { text-align: center; width: 100%; }
+      .pag-btns { justify-content: center; }
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="bgFloats"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <div class="brand-icon">🔥</div>
+    <span class="brand-name">Resep<span>Kita</span></span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-item-wrap">
+      <a href="dashboard.html" class="nav-link-custom" data-tooltip="Dashboard">
+        <div class="nav-icon"><i class="bi bi-grid-1x2"></i></div>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+    </div>
+    <div class="menu-category">Master Data</div>
+    <div class="nav-item-wrap">
+      <a href="kategori.html" class="nav-link-custom" data-tooltip="Kategori">
+        <div class="nav-icon"><i class="bi bi-tag"></i></div>
+        <span class="sidebar-label">Kategori</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="tags.html" class="nav-link-custom" data-tooltip="Tags">
+        <div class="nav-icon"><i class="bi bi-hash"></i></div>
+        <span class="sidebar-label">Tags</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="bahan.html" class="nav-link-custom" data-tooltip="Bahan">
+        <div class="nav-icon"><i class="bi bi-basket"></i></div>
+        <span class="sidebar-label">Bahan Makanan</span>
+      </a>
+    </div>
+    <div class="menu-category">Konten</div>
+    <div class="nav-item-wrap">
+      <a href="resep.html" class="nav-link-custom active" data-tooltip="Resep">
+        <div class="nav-icon"><i class="bi bi-journal-richtext"></i></div>
+        <span class="sidebar-label">Resep</span>
+        <span class="nav-badge">12</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Moderasi">
+        <div class="nav-icon"><i class="bi bi-shield-check"></i></div>
+        <span class="sidebar-label">Moderasi</span>
+        <span class="nav-badge">4</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Koleksi">
+        <div class="nav-icon"><i class="bi bi-collection"></i></div>
+        <span class="sidebar-label">Koleksi</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Komentar">
+        <div class="nav-icon"><i class="bi bi-chat-dots"></i></div>
+        <span class="sidebar-label">Komentar</span>
+        <span class="nav-badge">7</span>
+      </a>
+    </div>
+    <div class="menu-category">Pengguna</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengguna">
+        <div class="nav-icon"><i class="bi bi-people"></i></div>
+        <span class="sidebar-label">Pengguna</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Peran">
+        <div class="nav-icon"><i class="bi bi-person-badge"></i></div>
+        <span class="sidebar-label">Peran & Akses</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Laporan">
+        <div class="nav-icon"><i class="bi bi-flag"></i></div>
+        <span class="sidebar-label">Laporan User</span>
+        <span class="nav-badge">2</span>
+      </a>
+    </div>
+    <div class="menu-category">Analitik</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Statistik">
+        <div class="nav-icon"><i class="bi bi-bar-chart-line"></i></div>
+        <span class="sidebar-label">Statistik</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Trending">
+        <div class="nav-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <span class="sidebar-label">Trending</span>
+      </a>
+    </div>
+    <div class="menu-category">Sistem</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengaturan">
+        <div class="nav-icon"><i class="bi bi-gear"></i></div>
+        <span class="sidebar-label">Pengaturan</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Bantuan">
+        <div class="nav-icon"><i class="bi bi-question-circle"></i></div>
+        <span class="sidebar-label">Bantuan</span>
+      </a>
+    </div>
+    <div style="height:.75rem"></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-inner">
+      <div class="sf-avatar">A</div>
+      <div class="sf-info sidebar-footer-text">
+        <div class="sf-name">Ahmad Firdaus</div>
+        <div class="sf-role">Super Admin</div>
+      </div>
+      <i class="bi bi-three-dots sf-dots sidebar-footer-text"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </button>
+    <span class="topbar-title d-none d-sm-block">Resep</span>
+    <div class="topbar-right">
+      <button class="tb-icon-btn d-none d-md-flex" title="Cari"><i class="bi bi-search"></i></button>
+      <button class="tb-icon-btn" title="Notifikasi">
+        <i class="bi bi-bell"></i>
+        <span class="tb-notif-dot"></span>
+      </button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-btn" onclick="toggleUserMenu()">
+          <div class="user-avatar">A</div>
+          <div class="user-info">
+            <span class="user-name">Ahmad Firdaus</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+          <i class="bi bi-chevron-down user-caret ms-1"></i>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#" class="dd-item"><i class="bi bi-person-circle"></i> Profil Saya</a>
+          <a href="#" class="dd-item"><i class="bi bi-gear"></i> Pengaturan</a>
+          <div class="dd-divider"></div>
+          <div class="dd-item danger" onclick="showLogoutModal()"><i class="bi bi-box-arrow-right"></i> Logout</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════ CONTENT ══════════ -->
+  <main class="content-area">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar" data-aos="fade-down" data-aos-duration="600">
+      <div class="bc-left">
+        <div class="bc-title">
+          <div class="bc-icon"><i class="bi bi-journal-richtext"></i></div>
+          Daftar Resep
+        </div>
+        <div class="bc-desc">Kelola semua resep yang diunggah oleh pengguna platform ResepKita.</div>
+      </div>
+      <div class="bc-right">
+        <i class="bi bi-house-fill text-warning"></i>
+        <a href="dashboard.html">Home</a>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <span style="color:var(--muted)">Konten</span>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <span style="color:var(--primary);font-weight:600">Resep</span>
+      </div>
+    </div>
+
+    <!-- Stat Pills -->
+    <div class="resep-stat-pills" data-aos="fade-up" data-aos-delay="50">
+      <div class="stat-pill pill-all">
+        <i class="bi bi-journal-richtext"></i>
+        <span>Total: <strong>248</strong> Resep</span>
+      </div>
+      <div class="stat-pill pill-published">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>Published: <strong>196</strong></span>
+      </div>
+      <div class="stat-pill pill-pending">
+        <i class="bi bi-hourglass-split"></i>
+        <span>Pending: <strong>12</strong></span>
+      </div>
+      <div class="stat-pill pill-draft">
+        <i class="bi bi-file-earmark"></i>
+        <span>Draft: <strong>34</strong></span>
+      </div>
+      <div class="stat-pill pill-rejected">
+        <i class="bi bi-x-circle-fill"></i>
+        <span>Ditolak: <strong>6</strong></span>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="resep-toolbar" data-aos="fade-up" data-aos-delay="100">
+      <!-- Search -->
+      <div class="resep-search-wrap">
+        <i class="bi bi-search"></i>
+        <input type="text" class="resep-search" id="resepSearch" placeholder="Cari judul resep atau nama penulis..." oninput="filterResep()"/>
+      </div>
+
+      <!-- Filter Status -->
+      <select class="resep-filter" id="resepStatusFilter" onchange="filterResep()">
+        <option value="all">Semua Status</option>
+        <option value="published">Published</option>
+        <option value="pending">Pending</option>
+        <option value="draft">Draft</option>
+        <option value="rejected">Ditolak</option>
+      </select>
+
+      <!-- Filter Kategori -->
+      <select class="resep-filter d-none d-md-block" id="resepKatFilter" onchange="filterResep()">
+        <option value="all">Semua Kategori</option>
+        <option value="masakan-utama">Masakan Utama</option>
+        <option value="cemilan">Cemilan</option>
+        <option value="minuman">Minuman</option>
+        <option value="kue-roti">Kue & Roti</option>
+        <option value="sarapan">Sarapan</option>
+      </select>
+
+      <!-- Tombol Tambah — arahkan ke halaman create, bukan modal -->
+      <a href="resep-create.html" class="btn-tambah-resep ms-auto">
+        <i class="bi bi-plus-lg"></i>
+        <span class="d-none d-sm-inline">Tambah Resep</span>
+        <span class="d-inline d-sm-none">Tambah</span>
+      </a>
+    </div>
+
+    <!-- ── TABLE RESEP ── -->
+    <div class="resep-table-wrap" data-aos="fade-up" data-aos-delay="150">
+      <div class="resep-table-responsive">
+        <table class="resep-table" id="resepTable">
+          <thead>
+            <tr>
+              <th style="width:54px"></th><!-- thumbnail -->
+              <th class="sortable" onclick="sortResep('judul')">Judul Resep <i class="bi bi-chevron-expand"></i></th>
+              <th class="d-none d-lg-table-cell" style="width:130px">Penulis</th>
+              <th class="sortable d-none d-md-table-cell" style="width:95px;text-align:center" onclick="sortResep('rating')">Rating <i class="bi bi-chevron-expand"></i></th>
+              <th class="d-none d-md-table-cell" style="width:90px;text-align:center">Waktu</th>
+              <th class="sortable d-none d-lg-table-cell" style="width:85px;text-align:center" onclick="sortResep('views')">Views <i class="bi bi-chevron-expand"></i></th>
+              <th style="width:105px">Status</th>
+              <th style="width:110px;text-align:center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="resepTbody">
+
+            <!-- Row 1 -->
+            <tr data-judul="rendang daging sapi" data-status="published" data-kat="masakan-utama" data-rating="4.9" data-views="12840" data-author="Siti Aminah">
+              <td>
+                <div class="resep-thumb">🍖</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Rendang Daging Sapi Padang Asli</div>
+                <div class="resep-meta-text">
+                  <span>Masakan Utama</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>60 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">4 porsi</span>
+                  <span class="resep-meta-dot d-none d-lg-inline-block"></span>
+                  <span class="badge-featured d-none d-lg-inline">⭐ Unggulan</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar">SA</div>
+                  <span class="author-name">Siti Aminah</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center">
+                <div class="resep-rating"><i class="bi bi-star-fill"></i> 4.9</div>
+              </td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>60</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;font-size:.78rem;font-weight:600;color:var(--secondary)">12.8k</td>
+              <td><span class="resep-badge badge-published">Published</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <a href="resep-edit.html" class="tbl-action-btn edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Rendang Daging Sapi Padang Asli')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr data-judul="nasi goreng kampung" data-status="published" data-kat="masakan-utama" data-rating="4.7" data-views="9420" data-author="Budi Santoso">
+              <td>
+                <div class="resep-thumb">🍳</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Nasi Goreng Kampung Spesial</div>
+                <div class="resep-meta-text">
+                  <span>Masakan Utama</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>20 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">2 porsi</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar">BS</div>
+                  <span class="author-name">Budi Santoso</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center">
+                <div class="resep-rating"><i class="bi bi-star-fill"></i> 4.7</div>
+              </td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>20</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;font-size:.78rem;font-weight:600;color:var(--secondary)">9.4k</td>
+              <td><span class="resep-badge badge-published">Published</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <a href="resep-edit.html" class="tbl-action-btn edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Nasi Goreng Kampung Spesial')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 3 — Pending -->
+            <tr data-judul="soto ayam lamongan" data-status="pending" data-kat="masakan-utama" data-rating="0" data-views="0" data-author="Dewi Kartika">
+              <td>
+                <div class="resep-thumb">🍜</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Soto Ayam Lamongan Kuah Bening</div>
+                <div class="resep-meta-text">
+                  <span>Masakan Utama</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>45 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">4 porsi</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">DK</div>
+                  <span class="author-name">Dewi Kartika</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>45</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td><span class="resep-badge badge-pending">Pending</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <button class="tbl-action-btn approve" title="Setujui" onclick="approveResep(this)"><i class="bi bi-check-lg"></i></button>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Soto Ayam Lamongan Kuah Bening')" title="Tolak / Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 4 -->
+            <tr data-judul="gado gado jakarta" data-status="published" data-kat="masakan-utama" data-rating="4.6" data-views="7110" data-author="Rina Wahyuni">
+              <td>
+                <div class="resep-thumb">🥗</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Gado-Gado Jakarta Saus Kacang</div>
+                <div class="resep-meta-text">
+                  <span>Masakan Utama</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>30 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">3 porsi</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar" style="background:linear-gradient(135deg,#10b981,#059669)">RW</div>
+                  <span class="author-name">Rina Wahyuni</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center">
+                <div class="resep-rating"><i class="bi bi-star-fill"></i> 4.6</div>
+              </td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>30</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;font-size:.78rem;font-weight:600;color:var(--secondary)">7.1k</td>
+              <td><span class="resep-badge badge-published">Published</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <a href="resep-edit.html" class="tbl-action-btn edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Gado-Gado Jakarta Saus Kacang')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 5 — Draft -->
+            <tr data-judul="klepon ubi ungu" data-status="draft" data-kat="cemilan" data-rating="0" data-views="0" data-author="Ahmad Firdaus">
+              <td>
+                <div class="resep-thumb">🟢</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text" style="opacity:.7">Klepon Ubi Ungu Isian Gula Aren</div>
+                <div class="resep-meta-text">
+                  <span>Cemilan</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>50 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">20 buah</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar">AF</div>
+                  <span class="author-name">Ahmad Firdaus</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>50</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td><span class="resep-badge badge-draft">Draft</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Preview"><i class="bi bi-eye"></i></a>
+                  <a href="resep-edit.html" class="tbl-action-btn edit" title="Lanjut Edit"><i class="bi bi-pencil"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Klepon Ubi Ungu Isian Gula Aren')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 6 -->
+            <tr data-judul="es teh susu tarik" data-status="published" data-kat="minuman" data-rating="4.8" data-views="6530" data-author="Farah Nadila">
+              <td>
+                <div class="resep-thumb">🧋</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Es Teh Susu Tarik ala Thailand</div>
+                <div class="resep-meta-text">
+                  <span>Minuman</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>10 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">2 porsi</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706)">FN</div>
+                  <span class="author-name">Farah Nadila</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center">
+                <div class="resep-rating"><i class="bi bi-star-fill"></i> 4.8</div>
+              </td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>10</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;font-size:.78rem;font-weight:600;color:var(--secondary)">6.5k</td>
+              <td><span class="resep-badge badge-published">Published</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <a href="resep-edit.html" class="tbl-action-btn edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Es Teh Susu Tarik ala Thailand')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 7 — Pending -->
+            <tr data-judul="pizza teflon tanpa oven" data-status="pending" data-kat="kue-roti" data-rating="0" data-views="0" data-author="Hendra Kurniawan">
+              <td>
+                <div class="resep-thumb">🍕</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Pizza Teflon Tanpa Oven Praktis</div>
+                <div class="resep-meta-text">
+                  <span>Kue &amp; Roti</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>35 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">4 porsi</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">HK</div>
+                  <span class="author-name">Hendra K.</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>35</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td><span class="resep-badge badge-pending">Pending</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <button class="tbl-action-btn approve" title="Setujui" onclick="approveResep(this)"><i class="bi bi-check-lg"></i></button>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Pizza Teflon Tanpa Oven Praktis')" title="Tolak / Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 8 -->
+            <tr data-judul="bubur ayam jakarta" data-status="published" data-kat="sarapan" data-rating="4.5" data-views="5880" data-author="Siti Aminah">
+              <td>
+                <div class="resep-thumb">🍚</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Bubur Ayam Jakarta Lengkap</div>
+                <div class="resep-meta-text">
+                  <span>Sarapan</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>40 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">3 porsi</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar">SA</div>
+                  <span class="author-name">Siti Aminah</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center">
+                <div class="resep-rating"><i class="bi bi-star-fill"></i> 4.5</div>
+              </td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>40</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;font-size:.78rem;font-weight:600;color:var(--secondary)">5.9k</td>
+              <td><span class="resep-badge badge-published">Published</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <a href="resep-edit.html" class="tbl-action-btn edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Bubur Ayam Jakarta Lengkap')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 9 — Rejected -->
+            <tr data-judul="steak wagyu tiruan" data-status="rejected" data-kat="masakan-utama" data-rating="0" data-views="0" data-author="Rizky Maulana">
+              <td>
+                <div class="resep-thumb" style="opacity:.55">🥩</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text" style="opacity:.6">Steak Wagyu Tiruan Super Murah</div>
+                <div class="resep-meta-text" style="opacity:.6">
+                  <span>Masakan Utama</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>25 menit</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author" style="opacity:.6">
+                  <div class="author-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">RM</div>
+                  <span class="author-name">Rizky Maulana</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center;opacity:.6"><strong>25</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;color:var(--muted);font-size:.78rem">—</td>
+              <td><span class="resep-badge badge-rejected">Ditolak</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Steak Wagyu Tiruan Super Murah')" title="Hapus Permanen"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 10 -->
+            <tr data-judul="kue lapis legit" data-status="published" data-kat="kue-roti" data-rating="4.9" data-views="4720" data-author="Dewi Kartika">
+              <td>
+                <div class="resep-thumb">🎂</div>
+              </td>
+              <td class="td-judul">
+                <div class="resep-judul-text">Kue Lapis Legit Spekuk Premium</div>
+                <div class="resep-meta-text">
+                  <span>Kue &amp; Roti</span>
+                  <span class="resep-meta-dot"></span>
+                  <span>120 menit</span>
+                  <span class="resep-meta-dot d-none d-md-inline-block"></span>
+                  <span class="d-none d-md-inline">16 potong</span>
+                  <span class="resep-meta-dot d-none d-lg-inline-block"></span>
+                  <span class="badge-featured d-none d-lg-inline">⭐ Unggulan</span>
+                </div>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <div class="resep-author">
+                  <div class="author-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">DK</div>
+                  <span class="author-name">Dewi Kartika</span>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell" style="text-align:center">
+                <div class="resep-rating"><i class="bi bi-star-fill"></i> 4.9</div>
+              </td>
+              <td class="d-none d-md-table-cell resep-info-cell" style="text-align:center"><strong>120</strong> mnt</td>
+              <td class="d-none d-lg-table-cell" style="text-align:center;font-size:.78rem;font-weight:600;color:var(--secondary)">4.7k</td>
+              <td><span class="resep-badge badge-published">Published</span></td>
+              <td>
+                <div class="d-flex gap-1 justify-content-center">
+                  <a href="#" class="tbl-action-btn view" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                  <a href="resep-edit.html" class="tbl-action-btn edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <button class="tbl-action-btn del" onclick="openDeleteResep('Kue Lapis Legit Spekuk Premium')" title="Hapus"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="resep-pagination">
+      <div class="pag-info">Menampilkan <strong>1–10</strong> dari <strong>248</strong> resep</div>
+      <div class="pag-btns">
+        <button class="pag-btn" disabled><i class="bi bi-chevron-left"></i></button>
+        <button class="pag-btn active">1</button>
+        <button class="pag-btn">2</button>
+        <button class="pag-btn">3</button>
+        <span style="color:var(--muted);font-size:.85rem;padding:0 .25rem">…</span>
+        <button class="pag-btn">25</button>
+        <button class="pag-btn"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div>
+      <span class="footer-brand">Resep<span>Kita</span></span>
+      &nbsp;— Dibuat dengan <span class="footer-heart">♥</span> untuk para pecinta masak Indonesia
+    </div>
+    <div class="footer-links">
+      <a href="#">Tentang</a>
+      <a href="#">Privasi</a>
+      <a href="#">Bantuan</a>
+    </div>
+    <div>v1.0.0 &nbsp;•&nbsp; © 2025 ResepKita</div>
+  </footer>
+
+</div><!-- /main-wrapper -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Ke atas">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- MODAL HAPUS RESEP -->
+<div class="modal fade modal-delete" id="modalHapusResep" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content" style="border-radius:24px;border:none;box-shadow:0 20px 60px rgba(0,0,0,.18)">
+      <div class="modal-body text-center p-4">
+        <div class="delete-icon-wrap"><i class="bi bi-trash3"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.35rem">Hapus Resep?</h5>
+        <p style="font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem">
+          Kamu yakin ingin menghapus resep<br>
+          <strong id="delResepName" style="color:var(--secondary)"></strong>?<br>
+          <span style="color:var(--danger);font-size:.77rem">⚠ Tindakan ini tidak dapat dibatalkan.</span>
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
+          <button onclick="confirmHapusResep()" style="display:inline-flex;align-items:center;gap:.35rem;padding:.68rem 1.5rem;border:none;border-radius:12px;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.88rem;cursor:pointer;box-shadow:0 4px 14px rgba(239,68,68,.3)">
+            <i class="bi bi-trash3"></i> Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div class="modal fade modal-logout" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content" style="border-radius:24px;border:none;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <div class="modal-body text-center p-4">
+        <div class="logout-icon-wrap"><i class="bi bi-box-arrow-right"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.4rem">Konfirmasi Logout</h5>
+        <p style="font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:1.4rem">Apakah kamu yakin ingin keluar dari akun <strong style="color:var(--secondary)">Ahmad Firdaus</strong>?</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-logout-cancel" data-bs-dismiss="modal">Batal</button>
+          <button class="btn-logout-confirm" onclick="window.location.href='login.html'"><i class="bi bi-box-arrow-right me-1"></i> Ya, Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ once: true, easing: 'ease-out-cubic', offset: 40 });
+
+  /* ── BG Floats ── */
+  ['🍕','🍜','🍱','🥗','🍰','🥤','🍛','🍣','🧁','🍩','🍓','🥑','🌶️','🫕','🍲','🧆'].forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'bg-float'; el.textContent = e;
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${1.2+Math.random()*1.5}rem;animation-duration:${14+Math.random()*16}s;animation-delay:${Math.random()*12}s;`;
+    document.getElementById('bgFloats').appendChild(el);
+  });
+
+  /* ── Sidebar ── */
+  let collapsed = false;
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const mw = document.getElementById('mainWrapper');
+    const btn = document.getElementById('toggleBtn');
+    if (window.innerWidth <= 991) {
+      sb.classList.toggle('mobile-open');
+      document.getElementById('sidebarOverlay').classList.toggle('show');
+    } else {
+      collapsed = !collapsed;
+      sb.classList.toggle('collapsed', collapsed);
+      mw.classList.toggle('expanded', collapsed);
+      btn.classList.toggle('rotated', collapsed);
+    }
+  }
+  function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
+
+  /* ── User dropdown ── */
+  function toggleUserMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+    document.getElementById('userDropdown').classList.toggle('show');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.user-menu')) {
+      document.getElementById('userMenu').classList.remove('open');
+      document.getElementById('userDropdown').classList.remove('show');
+    }
+  });
+
+  /* ── Sidebar tooltips saat collapsed ── */
+  document.querySelectorAll('.nav-link-custom').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      if (!document.getElementById('sidebar').classList.contains('collapsed')) return;
+      const tip = document.createElement('div');
+      tip.textContent = this.dataset.tooltip || '';
+      tip.style.cssText = `position:fixed;background:var(--secondary);color:#fff;padding:.35rem .85rem;border-radius:8px;font-size:.78rem;font-weight:600;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);`;
+      const r = this.getBoundingClientRect();
+      tip.style.left = (r.right + 10) + 'px';
+      tip.style.top  = (r.top + r.height / 2 - 14) + 'px';
+      document.body.appendChild(tip);
+      this._tip = tip;
+    });
+    link.addEventListener('mouseleave', function() {
+      if (this._tip) { this._tip.remove(); this._tip = null; }
+    });
+    link.addEventListener('click', function(e) {
+      if (this.getAttribute('href') === '#') e.preventDefault();
+      document.querySelectorAll('.nav-link-custom').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  /* ── FAB ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('fab').classList.toggle('visible', window.scrollY > 250);
+  });
+
+  /* ── Logout modal ── */
+  function showLogoutModal() {
+    document.getElementById('userDropdown').classList.remove('show');
+    document.getElementById('userMenu').classList.remove('open');
+    new bootstrap.Modal(document.getElementById('logoutModal')).show();
+  }
+
+  /* ── Filter tabel resep ── */
+  function filterResep() {
+    const q      = document.getElementById('resepSearch').value.toLowerCase();
+    const status = document.getElementById('resepStatusFilter').value;
+    const kat    = document.getElementById('resepKatFilter').value;
+
+    document.querySelectorAll('#resepTbody tr').forEach(row => {
+      const judul  = (row.dataset.judul  || '').toLowerCase();
+      const author = (row.dataset.author || '').toLowerCase();
+      const st     = row.dataset.status || '';
+      const k      = row.dataset.kat    || '';
+
+      const matchQ  = judul.includes(q) || author.includes(q);
+      const matchS  = status === 'all' || st === status;
+      const matchK  = kat    === 'all' || k  === kat;
+
+      row.style.display = (matchQ && matchS && matchK) ? '' : 'none';
+    });
+  }
+
+  /* ── Sort tabel resep ── */
+  let sortDir = {};
+  function sortResep(col) {
+    sortDir[col] = !sortDir[col];
+    const tbody = document.getElementById('resepTbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr'));
+    rows.sort((a, b) => {
+      let va = a.dataset[col] || '';
+      let vb = b.dataset[col] || '';
+      if (col === 'rating' || col === 'views') {
+        va = parseFloat(va) || 0;
+        vb = parseFloat(vb) || 0;
+        return sortDir[col] ? vb - va : va - vb;
+      }
+      return sortDir[col] ? vb.localeCompare(va) : va.localeCompare(vb);
+    });
+    rows.forEach(r => tbody.appendChild(r));
+  }
+
+  /* ── Approve resep pending ── */
+  function approveResep(btn) {
+    const row   = btn.closest('tr');
+    const badge = row.querySelector('.resep-badge');
+    badge.className = 'resep-badge badge-published';
+    badge.textContent = 'Published';
+    row.dataset.status = 'published';
+    // Ganti tombol approve → edit
+    btn.outerHTML = '<a href="resep-edit.html" class="tbl-action-btn edit" title="Edit"><i class="bi bi-pencil"></i></a>';
+  }
+
+  /* ── Modal hapus resep ── */
+  function openDeleteResep(judul) {
+    document.getElementById('delResepName').textContent = '"' + judul + '"';
+    new bootstrap.Modal(document.getElementById('modalHapusResep')).show();
+  }
+  function confirmHapusResep() {
+    bootstrap.Modal.getInstance(document.getElementById('modalHapusResep')).hide();
+  }
+</script>
+</body>
+</html>
