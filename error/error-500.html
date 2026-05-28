@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Error 500 — Kesalahan Server | ResepKita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+  :root {
+    --primary:        #e85d26;
+    --primary-light:  #ff7b47;
+    --primary-pale:   rgba(232,93,38,.08);
+    --primary-border: rgba(232,93,38,.18);
+    --secondary:      #2d1b0e;
+    --bg:             #faf7f4;
+    --surface:        #ffffff;
+    --sidebar-bg:     #1e1208;
+    --sidebar-w:      260px;
+    --sidebar-w-sm:   70px;
+    --topbar-h:       64px;
+    --text:           #1a0e05;
+    --muted:          #8a7060;
+    --border:         #ede5dc;
+    --danger:         #ef4444;
+    --success:        #22c55e;
+    --warning:        #f59e0b;
+    --info:           #3b82f6;
+    --radius:         16px;
+    --shadow-sm:      0 2px 8px rgba(0,0,0,.06);
+    --shadow-md:      0 4px 24px rgba(0,0,0,.1);
+    --shadow-lg:      0 8px 40px rgba(0,0,0,.14);
+    --transition:     .3s cubic-bezier(.4,0,.2,1);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  /* ── Sidebar ── */
+  .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:1000;transition:width var(--transition);overflow:hidden}
+  .sidebar.collapsed{width:var(--sidebar-w-sm)}
+  .sidebar::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(232,93,38,.25) 0%,transparent 70%);top:-60px;right:-60px;pointer-events:none;animation:sideBlob 8s ease-in-out infinite}
+  .sidebar::after{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(245,200,66,.12) 0%,transparent 70%);bottom:80px;left:-40px;pointer-events:none;animation:sideBlob 10s ease-in-out infinite reverse}
+  @keyframes sideBlob{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.2) translate(8px,-8px)}}
+  .sidebar-brand{display:flex;align-items:center;gap:.75rem;padding:1.25rem 1.1rem 1rem;text-decoration:none;flex-shrink:0;white-space:nowrap;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.07)}
+  .brand-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 4px 14px rgba(232,93,38,.4);animation:brandPulse 3s ease-in-out infinite}
+  @keyframes brandPulse{0%,100%{box-shadow:0 4px 14px rgba(232,93,38,.4)}50%{box-shadow:0 6px 22px rgba(232,93,38,.65)}}
+  .brand-name{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:#fff;letter-spacing:-.3px}
+  .brand-name span{color:var(--primary-light)}
+  .sidebar.collapsed .brand-name,.sidebar.collapsed .sidebar-label,.sidebar.collapsed .menu-category{display:none}
+  .sidebar-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:.75rem .75rem 0;scrollbar-width:none;-ms-overflow-style:none}
+  .sidebar-nav::-webkit-scrollbar{display:none}
+  .menu-category{font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.28);padding:1rem .5rem .35rem;white-space:nowrap}
+  .nav-item-wrap{margin-bottom:2px}
+  .nav-link-custom{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:12px;color:rgba(255,255,255,.55);text-decoration:none;font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;position:relative;transition:background var(--transition),color var(--transition),transform .2s}
+  .nav-link-custom:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);transform:translateX(3px)}
+  .nav-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:transform .3s}
+  .nav-link-custom:hover .nav-icon{transform:scale(1.12) rotate(-5deg)}
+  .nav-badge{margin-left:auto;background:var(--primary);color:#fff;font-size:.62rem;font-weight:700;padding:.1rem .45rem;border-radius:20px;flex-shrink:0}
+  .sidebar.collapsed .nav-badge,.sidebar.collapsed .sidebar-label{display:none}
+  .sidebar.collapsed .nav-link-custom{justify-content:center;padding:.65rem}
+  .sidebar-footer{flex-shrink:0;padding:.75rem;border-top:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.2)}
+  .sidebar-footer-inner{display:flex;align-items:center;gap:.7rem;padding:.6rem .5rem;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);overflow:hidden;white-space:nowrap}
+  .sf-avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;flex-shrink:0;font-weight:700}
+  .sf-name{font-size:.8rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sf-role{font-size:.68rem;color:rgba(255,255,255,.4)}
+  .sidebar.collapsed .sidebar-footer-inner{justify-content:center;padding:.5rem}
+  .sidebar.collapsed .sf-info,.sidebar.collapsed .sf-dots{display:none}
+  .sf-dots{margin-left:auto;flex-shrink:0;color:rgba(255,255,255,.4);font-size:1rem;cursor:pointer}
+
+  /* ── Main wrapper ── */
+  .main-wrapper{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;transition:margin-left var(--transition)}
+  .main-wrapper.expanded{margin-left:var(--sidebar-w-sm)}
+
+  /* ── Topbar ── */
+  .topbar{position:sticky;top:0;height:var(--topbar-h);background:rgba(250,247,244,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;z-index:900;box-shadow:0 1px 12px rgba(0,0,0,.06)}
+  .toggle-btn{width:38px;height:38px;border-radius:10px;background:none;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:1.1rem;transition:background .2s,border-color .2s,color .2s;flex-shrink:0}
+  .toggle-btn:hover{background:var(--primary-pale);border-color:var(--primary-border);color:var(--primary)}
+  .toggle-btn i{transition:transform var(--transition)}
+  .toggle-btn.rotated i{transform:rotate(180deg)}
+  .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--secondary)}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:.6rem}
+  .tb-icon-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;position:relative;transition:background .2s,border-color .2s,color .2s,transform .2s;text-decoration:none}
+  .tb-icon-btn:hover{background:var(--primary-pale);border-color:var(--primary-border);color:var(--primary);transform:translateY(-2px)}
+  .user-btn{display:flex;align-items:center;gap:.6rem;padding:.35rem .7rem .35rem .35rem;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:background .2s,border-color .2s}
+  .user-btn:hover{background:var(--primary-pale);border-color:var(--primary-border)}
+  .user-avatar{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0}
+  .user-name{font-size:.83rem;font-weight:600;color:var(--secondary)}
+  .user-role{font-size:.68rem;color:var(--muted)}
+  .user-caret{color:var(--muted);font-size:.75rem}
+
+  /* ── Sidebar overlay & floats ── */
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;backdrop-filter:blur(3px)}
+  .sidebar-overlay.show{display:block}
+  .bg-float{position:fixed;pointer-events:none;z-index:0;opacity:0;animation:bgFloat linear infinite}
+  @keyframes bgFloat{0%{opacity:0;transform:translateY(110vh) rotate(0deg)}5%{opacity:.035}95%{opacity:.035}100%{opacity:0;transform:translateY(-10vh) rotate(180deg)}}
+
+  /* ── Footer ── */
+  .main-footer{background:var(--surface);border-top:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-size:.78rem;color:var(--muted)}
+  .footer-brand{font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);font-size:.9rem}
+  .footer-brand span{color:var(--primary)}
+  .footer-heart{color:var(--primary);animation:heartbeat 1.4s ease-in-out infinite;display:inline-block}
+  @keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.25)}28%{transform:scale(1)}42%{transform:scale(1.2)}70%{transform:scale(1)}}
+
+  /* ── Error stage ── */
+  .error-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem;position:relative;overflow:hidden}
+  .error-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg);padding:3rem 2.5rem;max-width:540px;width:100%;text-align:center;position:relative;z-index:2;animation:cardIn .55s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes cardIn{from{opacity:0;transform:translateY(28px) scale(.96)}to{opacity:1;transform:none}}
+
+  /* Code number */
+  .error-code{
+    font-family:'Playfair Display',serif;
+    font-size:clamp(5rem,18vw,9rem);
+    font-weight:900;
+    line-height:1;
+    margin-bottom:.2rem;
+    letter-spacing:-.04em;
+    background:linear-gradient(135deg,var(--primary-light),var(--primary));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    position:relative;
+    animation:codeFloat 4s ease-in-out infinite;
+  }
+  @keyframes codeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  .error-emoji{
+    font-size:clamp(2.5rem,8vw,4rem);
+    display:block;
+    margin-bottom:.75rem;
+    animation:emojiSpin 6s ease-in-out infinite;
+    filter:drop-shadow(0 4px 16px rgba(0,0,0,.12));
+  }
+  @keyframes emojiSpin{0%,90%,100%{transform:rotate(0deg) scale(1)}95%{transform:rotate(360deg) scale(1.15)}}
+
+  .error-title{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,4vw,1.75rem);font-weight:900;color:var(--secondary);margin-bottom:.75rem;line-height:1.3}
+  .error-desc{font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:1.75rem;max-width:380px;margin-left:auto;margin-right:auto}
+  .error-desc strong{color:var(--secondary)}
+
+  /* Code pill */
+  .error-code-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .85rem;border-radius:20px;font-size:.72rem;font-weight:700;font-family:monospace;margin-bottom:1.25rem;letter-spacing:.04em}
+
+  /* Action buttons */
+  .error-actions{display:flex;gap:.65rem;justify-content:center;flex-wrap:wrap}
+  .btn-primary-err{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.4rem;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 16px rgba(232,93,38,.35);transition:transform .2s,box-shadow .2s}
+  .btn-primary-err:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(232,93,38,.45)}
+  .btn-outline-err{display:inline-flex;align-items:center;gap:.4rem;padding:.68rem 1.2rem;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);color:var(--secondary);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s,background .2s}
+  .btn-outline-err:hover{border-color:var(--primary-border);color:var(--primary);background:var(--primary-pale)}
+
+  /* Tips / info box */
+  .error-tips{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:1rem 1.25rem;margin-top:1.5rem;text-align:left}
+  .error-tips-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:.6rem;display:flex;align-items:center;gap:.35rem}
+  .error-tips-title i{font-size:.85rem}
+  .error-tip-item{display:flex;align-items:flex-start;gap:.5rem;font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:.4rem}
+  .error-tip-item:last-child{margin-bottom:0}
+  .error-tip-item i{font-size:.78rem;flex-shrink:0;margin-top:.18rem}
+
+  /* Decorative blobs behind card */
+  .blob{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:1}
+
+  /* Countdown timer (untuk 503) */
+  .countdown{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--primary);margin:.5rem 0 1rem}
+  .countdown-label{font-size:.72rem;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-top:-.4rem;margin-bottom:1rem}
+
+  /* Progress bar (untuk 503) */
+  .maint-prog-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:.75rem 0 .5rem}
+  .maint-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--primary-light),var(--primary));animation:progMove 3s ease-in-out infinite alternate}
+  @keyframes progMove{0%{width:30%}100%{width:85%}}
+
+  /* Status chips (untuk 503) */
+  .status-chips{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:.75rem 0}
+  .status-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .7rem;border-radius:20px;font-size:.72rem;font-weight:600}
+  .chip-ok{background:rgba(34,197,94,.1);border:1.5px solid rgba(34,197,94,.25);color:#16a34a}
+  .chip-maint{background:rgba(245,158,11,.1);border:1.5px solid rgba(245,158,11,.25);color:#d97706}
+
+  /* Login redirect (untuk 403) */
+  .login-form-hint{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:.9rem 1.1rem;margin-top:1.25rem;display:flex;align-items:center;gap:.75rem}
+  .lf-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0}
+  .lf-text{font-size:.8rem;color:var(--muted);line-height:1.55;text-align:left}
+  .lf-text strong{color:var(--secondary)}
+
+  /* Responsive */
+  @media(max-width:991px){
+    .sidebar{transform:translateX(-100%);width:var(--sidebar-w) !important;z-index:1001}
+    .sidebar.mobile-open{transform:translateX(0)}
+    .main-wrapper,.main-wrapper.expanded{margin-left:0}
+    .user-name,.user-role,.user-caret{display:none}
+  }
+  @media(max-width:575px){
+    .topbar{padding:0 1rem}
+    .error-card{padding:2rem 1.25rem}
+    .error-actions{flex-direction:column;align-items:center}
+    .btn-primary-err,.btn-outline-err{width:100%;justify-content:center}
+  }
+</style>
+</head>
+<body>
+<div id="bgFloats"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <div class="brand-icon">🔥</div>
+    <span class="brand-name">Resep<span>Kita</span></span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-item-wrap">
+      <a href="dashboard.html" class="nav-link-custom" data-tooltip="Dashboard">
+        <div class="nav-icon"><i class="bi bi-grid-1x2"></i></div>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+    </div>
+    <div class="menu-category">Master Data</div>
+    <div class="nav-item-wrap">
+      <a href="kategori.html" class="nav-link-custom" data-tooltip="Kategori">
+        <div class="nav-icon"><i class="bi bi-tag"></i></div>
+        <span class="sidebar-label">Kategori</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="tags.html" class="nav-link-custom" data-tooltip="Tags">
+        <div class="nav-icon"><i class="bi bi-hash"></i></div>
+        <span class="sidebar-label">Tags</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="bahan.html" class="nav-link-custom" data-tooltip="Bahan Makanan">
+        <div class="nav-icon"><i class="bi bi-basket"></i></div>
+        <span class="sidebar-label">Bahan Makanan</span>
+      </a>
+    </div>
+    <div class="menu-category">Konten</div>
+    <div class="nav-item-wrap">
+      <a href="resep.html" class="nav-link-custom" data-tooltip="Resep">
+        <div class="nav-icon"><i class="bi bi-journal-richtext"></i></div>
+        <span class="sidebar-label">Resep</span>
+        <span class="nav-badge">12</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="moderasi.html" class="nav-link-custom" data-tooltip="Moderasi">
+        <div class="nav-icon"><i class="bi bi-shield-check"></i></div>
+        <span class="sidebar-label">Moderasi</span>
+        <span class="nav-badge">4</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Koleksi">
+        <div class="nav-icon"><i class="bi bi-collection"></i></div>
+        <span class="sidebar-label">Koleksi</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Komentar">
+        <div class="nav-icon"><i class="bi bi-chat-dots"></i></div>
+        <span class="sidebar-label">Komentar</span>
+        <span class="nav-badge">7</span>
+      </a>
+    </div>
+    <div class="menu-category">Pengguna</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengguna">
+        <div class="nav-icon"><i class="bi bi-people"></i></div>
+        <span class="sidebar-label">Pengguna</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Peran & Akses">
+        <div class="nav-icon"><i class="bi bi-person-badge"></i></div>
+        <span class="sidebar-label">Peran &amp; Akses</span>
+      </a>
+    </div>
+    <div class="menu-category">Sistem</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengaturan">
+        <div class="nav-icon"><i class="bi bi-gear"></i></div>
+        <span class="sidebar-label">Pengaturan</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Bantuan">
+        <div class="nav-icon"><i class="bi bi-question-circle"></i></div>
+        <span class="sidebar-label">Bantuan</span>
+      </a>
+    </div>
+    <div style="height:.75rem"></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-inner">
+      <div class="sf-avatar">A</div>
+      <div class="sf-info">
+        <div class="sf-name">Ahmad Firdaus</div>
+        <div class="sf-role">Super Admin</div>
+      </div>
+      <i class="bi bi-three-dots sf-dots"></i>
+    </div>
+  </div>
+</aside>
+
+<div class="main-wrapper" id="mainWrapper">
+
+  <header class="topbar">
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </button>
+    <span class="topbar-title d-none d-sm-block">Error 500</span>
+    <div class="topbar-right">
+      <a href="dashboard.html" class="tb-icon-btn" title="Kembali ke Dashboard"><i class="bi bi-house"></i></a>
+      <div class="user-btn">
+        <div class="user-avatar">A</div>
+        <div class="d-flex flex-column">
+          <span class="user-name">Ahmad Firdaus</span>
+          <span class="user-role">Super Admin</span>
+        </div>
+        <i class="bi bi-chevron-down user-caret ms-1"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="error-stage">
+    
+      <div class="blob" style="width:340px;height:340px;background:rgba(239,68,68,.07);top:-80px;right:-60px"></div>
+      <div class="blob" style="width:280px;height:280px;background:rgba(232,93,38,.06);bottom:-60px;left:-60px"></div>
+    
+    <div class="error-card">
+      <span class="error-emoji">💥</span>
+      <div class="error-code">500</div>
+      <span class="error-code-pill" style="background:rgba(239,68,68,.09);border:1.5px solid rgba(239,68,68,.25);color:#dc2626">
+        <i class="bi bi-server"></i> Internal Server Error — 500
+      </span>
+      <h1 class="error-title">Ada yang Salah di Dapur Kami</h1>
+      <p class="error-desc">Server kami sedang mengalami gangguan internal. Tim teknis sudah mendapat notifikasi dan sedang berusaha memperbaiki masalah ini secepat mungkin.</p>
+      
+      
+      <div class="error-actions">
+        <button class="btn-primary-err" onclick="window.location.reload()"><i class="bi bi-arrow-clockwise"></i> Coba Lagi</button>
+        <a href="dashboard.html" class="btn-outline-err"><i class="bi bi-house-fill"></i> Ke Dashboard</a>
+        <button class="btn-outline-err" onclick="copyErrorId()"><i class="bi bi-clipboard"></i> Salin Error ID</button>
+      </div>
+      <div class="error-tips">
+        <div class="error-tips-title"><i class="bi bi-bug"></i> Detail Teknis</div>
+        <div class="error-tip-item">
+          <i class="bi bi-hash"></i>
+          Error ID: <code style="font-family:monospace;background:var(--border);padding:1px 6px;border-radius:5px;font-size:.78rem;color:var(--secondary)" id="errId">ERR-500-RK-20250527-84F2</code>
+        </div>
+        <div class="error-tip-item"><i class="bi bi-clock"></i> Terjadi: <strong style="color:var(--secondary)" id="errTime"></strong></div>
+        <div class="error-tip-item"><i class="bi bi-dot"></i> Tim teknis telah mendapat notifikasi otomatis</div>
+        <div class="error-tip-item"><i class="bi bi-dot"></i> Coba lagi dalam beberapa menit — biasanya server pulih sendiri</div>
+        <div class="error-tip-item"><i class="bi bi-dot"></i> Jika darurat, hubungi admin via <a href="#" style="color:var(--primary);font-weight:600">WhatsApp Support</a></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <div><span class="footer-brand">Resep<span>Kita</span></span> &nbsp;— Dibuat dengan <span class="footer-heart">♥</span> untuk para pecinta masak Indonesia</div>
+    <div style="font-size:.78rem;color:var(--muted)">v1.0.0 &nbsp;•&nbsp; © 2025 ResepKita</div>
+  </footer>
+
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* BG floats */
+    const EMOJIS = ['🍕','🍜','🌶️','🥗','🍰','🥤','🍛','🍣','🧁','🍩','🍓','🥑','🌿','🫕','🍲','🔥'];
+    EMOJIS.forEach(e => {
+      const el = document.createElement('div');
+      el.className = 'bg-float'; el.textContent = e;
+      el.style.cssText = `left:${Math.random()*100}vw;font-size:${1+Math.random()*1.3}rem;animation-duration:${14+Math.random()*16}s;animation-delay:${Math.random()*14}s;`;
+      document.getElementById('bgFloats').appendChild(el);
+    });
+    /* Sidebar toggle */
+    let collapsed = false;
+    function toggleSidebar() {
+      const sb = document.getElementById('sidebar');
+      const mw = document.getElementById('mainWrapper');
+      const btn = document.getElementById('toggleBtn');
+      if (window.innerWidth <= 991) {
+        sb.classList.toggle('mobile-open');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+      } else {
+        collapsed = !collapsed;
+        sb.classList.toggle('collapsed', collapsed);
+        mw.classList.toggle('expanded', collapsed);
+        btn.classList.toggle('rotated', collapsed);
+      }
+    }
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+    /* Tooltip saat collapsed */
+    document.querySelectorAll('.nav-link-custom').forEach(link => {
+      link.addEventListener('mouseenter', function() {
+        if (!document.getElementById('sidebar').classList.contains('collapsed')) return;
+        const tip = document.createElement('div');
+        tip.textContent = this.dataset.tooltip || '';
+        tip.style.cssText = 'position:fixed;background:var(--secondary);color:#fff;padding:.35rem .85rem;border-radius:8px;font-size:.78rem;font-weight:600;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+        const r = this.getBoundingClientRect();
+        tip.style.left = (r.right + 10) + 'px';
+        tip.style.top  = (r.top + r.height/2 - 14) + 'px';
+        document.body.appendChild(tip); this._tip = tip;
+      });
+      link.addEventListener('mouseleave', function() { if (this._tip) { this._tip.remove(); this._tip = null; } });
+      link.addEventListener('click', function(e) { if (this.getAttribute('href') === '#') e.preventDefault(); });
+    });
+  </script>
+
+
+  <script>
+    /* Error timestamp */
+    const now = new Date();
+    document.getElementById('errTime').textContent = now.toLocaleString('id-ID', {
+      day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'
+    }) + ' WIB';
+    function copyErrorId() {
+      navigator.clipboard.writeText('ERR-500-RK-20250527-84F2').then(() => {
+        const btn = document.querySelector('.btn-outline-err:last-child');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check2"></i> Tersalin!';
+        btn.style.borderColor = 'rgba(34,197,94,.4)';
+        btn.style.color = '#16a34a';
+        setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

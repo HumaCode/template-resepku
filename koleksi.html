@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Koleksi Resep — ResepKita</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --primary:        #e85d26;
+      --primary-light:  #ff7b47;
+      --primary-pale:   rgba(232,93,38,.08);
+      --primary-border: rgba(232,93,38,.18);
+      --secondary:      #2d1b0e;
+      --bg:             #faf7f4;
+      --surface:        #ffffff;
+      --sidebar-bg:     #1e1208;
+      --sidebar-w:      260px;
+      --sidebar-w-sm:   70px;
+      --topbar-h:       64px;
+      --text:           #1a0e05;
+      --muted:          #8a7060;
+      --border:         #ede5dc;
+      --danger:         #ef4444;
+      --success:        #22c55e;
+      --warning:        #f59e0b;
+      --radius:         16px;
+      --shadow-sm:      0 2px 8px rgba(0,0,0,.06);
+      --shadow-md:      0 4px 24px rgba(0,0,0,.1);
+      --shadow-lg:      0 8px 40px rgba(0,0,0,.14);
+      --transition:     .3s cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+    /* ── Sidebar ── */
+    .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:1000;transition:width var(--transition);overflow:hidden}
+    .sidebar.collapsed{width:var(--sidebar-w-sm)}
+    .sidebar::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(232,93,38,.25) 0%,transparent 70%);top:-60px;right:-60px;pointer-events:none;animation:sideBlob 8s ease-in-out infinite}
+    .sidebar::after{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(245,200,66,.12) 0%,transparent 70%);bottom:80px;left:-40px;pointer-events:none;animation:sideBlob 10s ease-in-out infinite reverse}
+    @keyframes sideBlob{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.2) translate(8px,-8px)}}
+    .sidebar-brand{display:flex;align-items:center;gap:.75rem;padding:1.25rem 1.1rem 1rem;text-decoration:none;flex-shrink:0;white-space:nowrap;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.07)}
+    .brand-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 4px 14px rgba(232,93,38,.4);animation:brandPulse 3s ease-in-out infinite}
+    @keyframes brandPulse{0%,100%{box-shadow:0 4px 14px rgba(232,93,38,.4)}50%{box-shadow:0 6px 22px rgba(232,93,38,.65)}}
+    .brand-name{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:#fff;letter-spacing:-.3px}
+    .brand-name span{color:var(--primary-light)}
+    .sidebar.collapsed .brand-name,.sidebar.collapsed .sidebar-label,.sidebar.collapsed .menu-category,.sidebar.collapsed .sidebar-footer-text{display:none}
+    .sidebar-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:.75rem .75rem 0;scrollbar-width:none;-ms-overflow-style:none}
+    .sidebar-nav::-webkit-scrollbar{display:none}
+    .menu-category{font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.28);padding:1rem .5rem .35rem;white-space:nowrap;overflow:hidden}
+    .nav-item-wrap{margin-bottom:2px}
+    .nav-link-custom{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:12px;color:rgba(255,255,255,.55);text-decoration:none;font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;position:relative;transition:background var(--transition),color var(--transition),transform .2s}
+    .nav-link-custom:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);transform:translateX(3px)}
+    .nav-link-custom.active{background:linear-gradient(135deg,rgba(232,93,38,.25),rgba(232,93,38,.12));color:#fff;border:1px solid rgba(232,93,38,.3)}
+    .nav-link-custom.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--primary-light);border-radius:0 3px 3px 0}
+    .nav-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:transform .3s}
+    .nav-link-custom:hover .nav-icon{transform:scale(1.12) rotate(-5deg)}
+    .nav-link-custom.active .nav-icon{background:rgba(232,93,38,.3);color:var(--primary-light)}
+    .nav-badge{margin-left:auto;background:var(--primary);color:#fff;font-size:.62rem;font-weight:700;padding:.1rem .45rem;border-radius:20px;flex-shrink:0}
+    .sidebar.collapsed .nav-badge,.sidebar.collapsed .sidebar-label{display:none}
+    .sidebar.collapsed .nav-link-custom{justify-content:center;padding:.65rem}
+    .sidebar-footer{flex-shrink:0;padding:.75rem;border-top:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.2)}
+    .sidebar-footer-inner{display:flex;align-items:center;gap:.7rem;padding:.6rem .5rem;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);overflow:hidden;white-space:nowrap}
+    .sf-avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;flex-shrink:0;font-weight:700}
+    .sf-name{font-size:.8rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sf-role{font-size:.68rem;color:rgba(255,255,255,.4)}
+    .sf-dots{margin-left:auto;flex-shrink:0;color:rgba(255,255,255,.4);font-size:1rem;cursor:pointer;transition:color .2s}
+    .sf-dots:hover{color:var(--primary-light)}
+    .sidebar.collapsed .sidebar-footer-inner{justify-content:center;padding:.5rem}
+
+    /* ── Main wrapper & topbar ── */
+    .main-wrapper{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;transition:margin-left var(--transition)}
+    .main-wrapper.expanded{margin-left:var(--sidebar-w-sm)}
+    .topbar{position:sticky;top:0;height:var(--topbar-h);background:rgba(250,247,244,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;z-index:900;box-shadow:0 1px 12px rgba(0,0,0,.06)}
+    .toggle-btn{width:38px;height:38px;border-radius:10px;background:none;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:1.1rem;transition:background .2s,border-color .2s,color .2s;flex-shrink:0}
+    .toggle-btn:hover{background:var(--primary-pale);border-color:var(--primary-border);color:var(--primary)}
+    .toggle-btn i{transition:transform var(--transition)}
+    .toggle-btn.rotated i{transform:rotate(180deg)}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--secondary)}
+    .topbar-right{margin-left:auto;display:flex;align-items:center;gap:.6rem}
+    .tb-icon-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;position:relative;transition:background .2s,border-color .2s,color .2s,transform .2s;text-decoration:none}
+    .tb-icon-btn:hover{background:var(--primary-pale);border-color:var(--primary-border);color:var(--primary);transform:translateY(-2px)}
+    .tb-notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--primary);border-radius:50%;border:1.5px solid var(--surface);animation:notifPing 2s ease-in-out infinite}
+    @keyframes notifPing{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.7}}
+    .user-menu{position:relative}
+    .user-btn{display:flex;align-items:center;gap:.6rem;padding:.35rem .7rem .35rem .35rem;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:background .2s,border-color .2s}
+    .user-btn:hover{background:var(--primary-pale);border-color:var(--primary-border)}
+    .user-avatar{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0}
+    .user-info{display:flex;flex-direction:column;line-height:1.2}
+    .user-name{font-size:.83rem;font-weight:600;color:var(--secondary)}
+    .user-role{font-size:.68rem;color:var(--muted)}
+    .user-caret{color:var(--muted);font-size:.75rem;transition:transform var(--transition)}
+    .user-menu.open .user-caret{transform:rotate(180deg)}
+    .user-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:200px;background:var(--surface);border:1.5px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);padding:.5rem;display:none;animation:dropIn .25s cubic-bezier(.34,1.56,.64,1);z-index:999}
+    .user-dropdown.show{display:block}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
+    .dd-item{display:flex;align-items:center;gap:.65rem;padding:.55rem .75rem;border-radius:10px;font-size:.85rem;color:var(--text);cursor:pointer;text-decoration:none;transition:background .2s,color .2s,transform .15s}
+    .dd-item:hover{background:var(--primary-pale);color:var(--primary);transform:translateX(3px)}
+    .dd-item i{font-size:1rem;width:18px;text-align:center}
+    .dd-item.danger:hover{background:rgba(239,68,68,.08);color:var(--danger)}
+    .dd-divider{height:1px;background:var(--border);margin:.35rem 0}
+
+    /* ── Misc ── */
+    .content-area{flex:1;padding:1.5rem}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;backdrop-filter:blur(3px)}
+    .sidebar-overlay.show{display:block}
+    .bg-float{position:fixed;pointer-events:none;z-index:0;opacity:0;animation:bgFloat linear infinite}
+    @keyframes bgFloat{0%{opacity:0;transform:translateY(110vh) rotate(0deg)}5%{opacity:.04}95%{opacity:.04}100%{opacity:0;transform:translateY(-10vh) rotate(180deg)}}
+    @keyframes bounceIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+    @keyframes iconBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .main-footer{background:var(--surface);border-top:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-size:.78rem;color:var(--muted)}
+    .footer-brand{font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);font-size:.9rem}
+    .footer-brand span{color:var(--primary)}
+    .footer-heart{color:var(--primary);animation:heartbeat 1.4s ease-in-out infinite;display:inline-block}
+    @keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.25)}28%{transform:scale(1)}42%{transform:scale(1.2)}70%{transform:scale(1)}}
+
+    /* Responsive */
+    @media(max-width:991px){
+      .sidebar{transform:translateX(-100%);width:var(--sidebar-w) !important;z-index:1001}
+      .sidebar.mobile-open{transform:translateX(0)}
+      .main-wrapper,.main-wrapper.expanded{margin-left:0}
+      .user-info{display:none}
+    }
+    @media(max-width:575px){.content-area{padding:1rem}.topbar{padding:0 1rem}}
+
+    /* ── Breadcrumb ── */
+    .breadcrumb-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow-sm);flex-wrap:wrap;gap:.75rem}
+    .bc-left{display:flex;flex-direction:column;gap:.2rem}
+    .bc-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--secondary);display:flex;align-items:center;gap:.5rem}
+    .bc-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0}
+    .bc-desc{font-size:.82rem;color:var(--muted);padding-left:.2rem}
+    .bc-right{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
+    .bc-right a{color:var(--primary);text-decoration:none;font-weight:500}
+    .bc-right a:hover{text-decoration:underline}
+
+    /* ── Stat cards ── */
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+    @media(max-width:767px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.15rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:.3rem;transition:transform .2s,box-shadow .2s}
+    .stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+    .stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:.15rem}
+    .stat-icon.orange{background:rgba(232,93,38,.1);color:var(--primary)}
+    .stat-icon.green{background:rgba(34,197,94,.1);color:#16a34a}
+    .stat-icon.blue{background:rgba(59,130,246,.1);color:#2563eb}
+    .stat-icon.purple{background:rgba(168,85,247,.1);color:#7c3aed}
+    .stat-value{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--secondary);line-height:1}
+    .stat-label{font-size:.72rem;color:var(--muted);font-weight:500}
+    .stat-sub{font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.25rem;margin-top:.15rem}
+    .stat-sub.up{color:#16a34a}
+    .stat-sub.dn{color:var(--danger)}
+
+    /* ── Toolbar ── */
+    .toolbar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm)}
+    .search-wrap{position:relative;flex:1;min-width:200px}
+    .search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.95rem;pointer-events:none}
+    .search-input{width:100%;padding:.62rem 1rem .62rem 2.5rem;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;background:var(--bg);color:var(--text);outline:none;transition:border-color .25s,box-shadow .25s,background .2s}
+    .search-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(232,93,38,.1);background:var(--surface)}
+    .search-input::placeholder{color:#bba898}
+    .filter-select{padding:.62rem .9rem;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.85rem;background:var(--bg);color:var(--text);outline:none;cursor:pointer;transition:border-color .25s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%238a7060' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:2rem}
+    .filter-select:focus{border-color:var(--primary)}
+    .btn-add{display:inline-flex;align-items:center;gap:.4rem;padding:.65rem 1.25rem;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(232,93,38,.3);transition:transform .2s,box-shadow .2s;white-space:nowrap}
+    .btn-add:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(232,93,38,.42)}
+
+    /* ── View toggle ── */
+    .view-toggle{display:flex;gap:.25rem;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:.2rem}
+    .vt-btn{width:32px;height:32px;border-radius:8px;border:none;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.95rem;transition:background .2s,color .2s}
+    .vt-btn.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow-sm)}
+
+    /* ══════════════════════════════════════════
+       GRID VIEW — koleksi cards
+    ══════════════════════════════════════════ */
+    .collections-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.1rem}
+    @media(max-width:575px){.collections-grid{grid-template-columns:1fr}}
+
+    .col-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .25s,border-color .2s;cursor:pointer}
+    .col-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--primary-border)}
+
+    /* Cover collage */
+    .col-cover{position:relative;height:160px;background:var(--bg);overflow:hidden}
+    .col-cover-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:100%;gap:2px}
+    .col-cover-cell{display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:linear-gradient(135deg,#fdf3ec,#fbe7d6);transition:transform .3s}
+    .col-card:hover .col-cover-cell{transform:scale(1.06)}
+    .col-cover-cell:first-child{grid-row:1/3;font-size:3.5rem}
+
+    /* Overlay info di bawah cover */
+    .col-cover-overlay{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(29,16,6,.65),transparent);display:flex;align-items:flex-end;padding:.75rem 1rem;pointer-events:none}
+    .col-cover-stat{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:rgba(255,255,255,.9);font-weight:600}
+    .col-cover-stat i{font-size:.8rem;color:var(--primary-light)}
+
+    /* Privacy badge */
+    .col-privacy{position:absolute;top:.65rem;right:.65rem;padding:.18rem .6rem;border-radius:20px;font-size:.65rem;font-weight:700;display:flex;align-items:center;gap:.28rem}
+    .col-privacy.public{background:rgba(34,197,94,.15);color:#15803d;border:1px solid rgba(34,197,94,.28);backdrop-filter:blur(8px)}
+    .col-privacy.private{background:rgba(100,116,139,.18);color:#fff;border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px)}
+
+    /* Card body */
+    .col-body{padding:.9rem 1rem 1rem}
+    .col-owner{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
+    .owner-avatar{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff;flex-shrink:0}
+    .owner-name{font-size:.75rem;color:var(--muted);font-weight:500}
+    .col-name{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:900;color:var(--secondary);margin-bottom:.3rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .col-desc{font-size:.78rem;color:var(--muted);line-height:1.55;margin-bottom:.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .col-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
+    .col-meta{display:flex;align-items:center;gap:.6rem}
+    .col-meta-item{display:inline-flex;align-items:center;gap:.28rem;font-size:.72rem;color:var(--muted)}
+    .col-meta-item i{font-size:.78rem}
+    .col-actions{display:flex;gap:.3rem}
+    .col-act-btn{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none}
+    .col-act-btn:hover{transform:scale(1.1)}
+    .col-act-btn.view:hover{border-color:rgba(59,130,246,.3);color:#2563eb;background:rgba(59,130,246,.07)}
+    .col-act-btn.edit:hover{border-color:var(--primary-border);color:var(--primary);background:var(--primary-pale)}
+    .col-act-btn.del:hover{border-color:rgba(239,68,68,.3);color:var(--danger);background:rgba(239,68,68,.07)}
+
+    /* ── Empty state ── */
+    .empty-state{text-align:center;padding:3.5rem 2rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:none}
+    .empty-state.show{display:block}
+    .empty-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--primary-pale),rgba(232,93,38,.04));border:2px dashed var(--primary-border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;font-size:2rem}
+    .empty-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:var(--secondary);margin-bottom:.35rem}
+    .empty-sub{font-size:.83rem;color:var(--muted);line-height:1.65;margin-bottom:1.25rem}
+
+    /* ── Pagination ── */
+    .pag-wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;padding:.75rem 0 .25rem}
+    .pag-info{font-size:.8rem;color:var(--muted)}
+    .pag-info strong{color:var(--secondary)}
+    .pag-btns{display:flex;gap:.35rem}
+    .pag-btn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .pag-btn:hover{border-color:var(--primary);color:var(--primary)}
+    .pag-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .pag-btn:disabled{opacity:.4;cursor:not-allowed}
+
+    /* ── Modals ── */
+    .modal-custom .modal-content{border-radius:24px;border:none;box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden}
+    .modal-custom .modal-dialog{animation:bounceIn .4s cubic-bezier(.34,1.56,.64,1)}
+    .modal-hdr{display:flex;align-items:center;gap:.75rem;padding:1.25rem 1.5rem .85rem;border-bottom:1px solid var(--border)}
+    .modal-hdr-icon{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--primary-light),var(--primary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0}
+    .modal-hdr-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:900;color:var(--secondary)}
+    .modal-hdr-sub{font-size:.73rem;color:var(--muted)}
+    .modal-x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:all .2s;font-size:.85rem}
+    .modal-x:hover{border-color:var(--danger);color:var(--danger);background:rgba(239,68,68,.07)}
+    .modal-bd{padding:1.25rem 1.5rem}
+    .modal-ft{padding:.85rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.6rem;justify-content:flex-end}
+    .form-lbl{font-size:.78rem;font-weight:600;color:var(--secondary);display:block;margin-bottom:.35rem}
+    .form-lbl .req{color:var(--danger);margin-left:2px}
+    .form-ctrl{width:100%;padding:.65rem 1rem;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.87rem;background:var(--bg);color:var(--text);outline:none;transition:border-color .25s,box-shadow .25s,background .2s}
+    .form-ctrl:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(232,93,38,.1);background:var(--surface)}
+    .form-ctrl::placeholder{color:#bba898}
+    .form-hint{font-size:.71rem;color:var(--muted);margin-top:.28rem}
+    .btn-ok{display:inline-flex;align-items:center;gap:.35rem;padding:.65rem 1.4rem;border:none;border-radius:11px;background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(232,93,38,.3);transition:transform .2s,box-shadow .2s}
+    .btn-ok:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(232,93,38,.42)}
+    .btn-cancel{padding:.64rem 1.3rem;border-radius:11px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s}
+    .btn-cancel:hover{border-color:var(--primary);color:var(--primary)}
+    /* Modal hapus */
+    .del-icon-wrap{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#fee2e2,#fecaca);display:flex;align-items:center;justify-content:center;margin:0 auto .85rem;animation:iconBob 2.5s ease-in-out infinite}
+    .del-icon-wrap i{font-size:1.75rem;color:var(--danger)}
+    .btn-del{display:inline-flex;align-items:center;gap:.35rem;padding:.65rem 1.4rem;border:none;border-radius:11px;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.87rem;cursor:pointer;box-shadow:0 4px 14px rgba(239,68,68,.3);transition:transform .2s}
+    .btn-del:hover{transform:translateY(-2px)}
+
+    /* Privacy toggle */
+    .privacy-toggle{display:flex;gap:.5rem}
+    .priv-opt{flex:1;padding:.6rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;gap:.4rem;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+    .priv-opt.sel{background:var(--primary-pale);border-color:var(--primary-border);color:var(--primary)}
+    .priv-opt i{font-size:.9rem}
+
+    /* Toast */
+    .toast-wrap{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:.5rem;align-items:center;pointer-events:none}
+    .toast-item{display:inline-flex;align-items:center;gap:.55rem;padding:.65rem 1.25rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.16);animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) forwards;pointer-events:auto;white-space:nowrap}
+    .toast-item.removing{animation:toastOut .3s ease-in forwards}
+    @keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:none}}
+    @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(10px) scale(.95)}}
+    .t-success{background:linear-gradient(135deg,#4ade80,#22c55e)}
+    .t-danger{background:linear-gradient(135deg,#f87171,#ef4444)}
+    .t-info{background:linear-gradient(135deg,#60a5fa,#3b82f6)}
+  </style>
+</head>
+<body>
+
+<div id="bgFloats"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <div class="brand-icon">🔥</div>
+    <span class="brand-name">Resep<span>Kita</span></span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-item-wrap">
+      <a href="dashboard.html" class="nav-link-custom" data-tooltip="Dashboard">
+        <div class="nav-icon"><i class="bi bi-grid-1x2"></i></div>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+    </div>
+    <div class="menu-category">Master Data</div>
+    <div class="nav-item-wrap">
+      <a href="kategori.html" class="nav-link-custom" data-tooltip="Kategori">
+        <div class="nav-icon"><i class="bi bi-tag"></i></div>
+        <span class="sidebar-label">Kategori</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="tags.html" class="nav-link-custom" data-tooltip="Tags">
+        <div class="nav-icon"><i class="bi bi-hash"></i></div>
+        <span class="sidebar-label">Tags</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="bahan.html" class="nav-link-custom" data-tooltip="Bahan Makanan">
+        <div class="nav-icon"><i class="bi bi-basket"></i></div>
+        <span class="sidebar-label">Bahan Makanan</span>
+      </a>
+    </div>
+    <div class="menu-category">Konten</div>
+    <div class="nav-item-wrap">
+      <a href="resep.html" class="nav-link-custom" data-tooltip="Resep">
+        <div class="nav-icon"><i class="bi bi-journal-richtext"></i></div>
+        <span class="sidebar-label">Resep</span>
+        <span class="nav-badge">12</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="moderasi.html" class="nav-link-custom" data-tooltip="Moderasi">
+        <div class="nav-icon"><i class="bi bi-shield-check"></i></div>
+        <span class="sidebar-label">Moderasi</span>
+        <span class="nav-badge">4</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="koleksi.html" class="nav-link-custom active" data-tooltip="Koleksi">
+        <div class="nav-icon"><i class="bi bi-collection"></i></div>
+        <span class="sidebar-label">Koleksi</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Komentar">
+        <div class="nav-icon"><i class="bi bi-chat-dots"></i></div>
+        <span class="sidebar-label">Komentar</span>
+        <span class="nav-badge">7</span>
+      </a>
+    </div>
+    <div class="menu-category">Pengguna</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengguna">
+        <div class="nav-icon"><i class="bi bi-people"></i></div>
+        <span class="sidebar-label">Pengguna</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="role-permission.html" class="nav-link-custom" data-tooltip="Peran & Akses">
+        <div class="nav-icon"><i class="bi bi-person-badge"></i></div>
+        <span class="sidebar-label">Peran &amp; Akses</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Laporan User">
+        <div class="nav-icon"><i class="bi bi-flag"></i></div>
+        <span class="sidebar-label">Laporan User</span>
+        <span class="nav-badge">2</span>
+      </a>
+    </div>
+    <div class="menu-category">Analitik</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Statistik">
+        <div class="nav-icon"><i class="bi bi-bar-chart-line"></i></div>
+        <span class="sidebar-label">Statistik</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Trending">
+        <div class="nav-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <span class="sidebar-label">Trending</span>
+      </a>
+    </div>
+    <div class="menu-category">Sistem</div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Pengaturan">
+        <div class="nav-icon"><i class="bi bi-gear"></i></div>
+        <span class="sidebar-label">Pengaturan</span>
+      </a>
+    </div>
+    <div class="nav-item-wrap">
+      <a href="#" class="nav-link-custom" data-tooltip="Bantuan">
+        <div class="nav-icon"><i class="bi bi-question-circle"></i></div>
+        <span class="sidebar-label">Bantuan</span>
+      </a>
+    </div>
+    <div style="height:.75rem"></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-inner">
+      <div class="sf-avatar">A</div>
+      <div class="sf-info sidebar-footer-text">
+        <div class="sf-name">Ahmad Firdaus</div>
+        <div class="sf-role">Super Admin</div>
+      </div>
+      <i class="bi bi-three-dots sf-dots sidebar-footer-text"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </button>
+    <span class="topbar-title d-none d-sm-block">Koleksi Resep</span>
+    <div class="topbar-right">
+      <button class="tb-icon-btn" title="Notifikasi">
+        <i class="bi bi-bell"></i>
+        <span class="tb-notif-dot"></span>
+      </button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-btn" onclick="toggleUserMenu()">
+          <div class="user-avatar">A</div>
+          <div class="user-info">
+            <span class="user-name">Ahmad Firdaus</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+          <i class="bi bi-chevron-down user-caret ms-1"></i>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#" class="dd-item"><i class="bi bi-person-circle"></i> Profil Saya</a>
+          <a href="#" class="dd-item"><i class="bi bi-gear"></i> Pengaturan</a>
+          <div class="dd-divider"></div>
+          <div class="dd-item danger" onclick="showLogoutModal()"><i class="bi bi-box-arrow-right"></i> Logout</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar" data-aos="fade-down" data-aos-duration="600">
+      <div class="bc-left">
+        <div class="bc-title">
+          <div class="bc-icon"><i class="bi bi-collection"></i></div>
+          Koleksi Resep
+        </div>
+        <div class="bc-desc">Kelola semua koleksi yang dibuat oleh pengguna platform.</div>
+      </div>
+      <div class="bc-right">
+        <i class="bi bi-house-fill" style="color:var(--warning)"></i>
+        <a href="dashboard.html">Home</a>
+        <i class="bi bi-chevron-right" style="color:var(--border)"></i>
+        <span style="color:var(--primary);font-weight:600">Koleksi</span>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-row" data-aos="fade-up" data-aos-delay="50">
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="bi bi-collection-fill"></i></div>
+        <div class="stat-value">1,284</div>
+        <div class="stat-label">Total Koleksi</div>
+        <div class="stat-sub up"><i class="bi bi-arrow-up-short"></i>+48 minggu ini</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-globe2"></i></div>
+        <div class="stat-value">876</div>
+        <div class="stat-label">Koleksi Publik</div>
+        <div class="stat-sub up"><i class="bi bi-arrow-up-short"></i>+31 minggu ini</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-lock-fill"></i></div>
+        <div class="stat-value">408</div>
+        <div class="stat-label">Koleksi Privat</div>
+        <div class="stat-sub"><i class="bi bi-dash"></i> Stabil</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="bi bi-bookmark-star-fill"></i></div>
+        <div class="stat-value">18.4k</div>
+        <div class="stat-label">Total Resep Tersimpan</div>
+        <div class="stat-sub up"><i class="bi bi-arrow-up-short"></i>+1.2k bulan ini</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar" data-aos="fade-up" data-aos-delay="80">
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input type="text" class="search-input" id="searchInput" placeholder="Cari nama koleksi atau pemilik..." oninput="filterCollections()"/>
+      </div>
+      <select class="filter-select" id="privacyFilter" onchange="filterCollections()">
+        <option value="all">Semua Tipe</option>
+        <option value="public">Publik</option>
+        <option value="private">Privat</option>
+      </select>
+      <select class="filter-select d-none d-md-block" id="sortFilter">
+        <option value="newest">Terbaru</option>
+        <option value="oldest">Terlama</option>
+        <option value="most">Terbanyak Resep</option>
+      </select>
+      <div class="view-toggle">
+        <button class="vt-btn active" id="gridBtn" onclick="setView('grid')" title="Grid"><i class="bi bi-grid-3x3-gap"></i></button>
+        <button class="vt-btn"        id="listBtn" onclick="setView('list')" title="List"><i class="bi bi-list-ul"></i></button>
+      </div>
+      <button class="btn-add" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Buat Koleksi</span></button>
+    </div>
+
+    <!-- Collections Grid -->
+    <div class="collections-grid" id="collectionsGrid" data-aos="fade-up" data-aos-delay="110">
+
+      <!-- Card 1 -->
+      <div class="col-card" data-name="resep rendang & gulai padang" data-privacy="public">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🍖</div>
+            <div class="col-cover-cell">🥘</div>
+            <div class="col-cover-cell">🌶️</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 24 resep &nbsp;·&nbsp; <i class="bi bi-eye-fill"></i> 4.8k views</div>
+          </div>
+          <span class="col-privacy public"><i class="bi bi-globe2"></i> Publik</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,#ec4899,#be185d)">SA</div>
+            <span class="owner-name">Siti Aminah</span>
+          </div>
+          <div class="col-name">Resep Rendang &amp; Gulai Padang</div>
+          <div class="col-desc">Kumpulan resep masakan Padang autentik dengan bumbu rempah khas Minangkabau yang kaya rasa.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 24</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> 312</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 2 hr lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Resep Rendang & Gulai Padang')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Resep Rendang & Gulai Padang')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-card" data-name="cemilan anak sehat bergizi" data-privacy="public">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🍪</div>
+            <div class="col-cover-cell">🥑</div>
+            <div class="col-cover-cell">🍓</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 17 resep &nbsp;·&nbsp; <i class="bi bi-eye-fill"></i> 3.1k views</div>
+          </div>
+          <span class="col-privacy public"><i class="bi bi-globe2"></i> Publik</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,#10b981,#059669)">BS</div>
+            <span class="owner-name">Budi Santoso</span>
+          </div>
+          <div class="col-name">Cemilan Anak Sehat &amp; Bergizi</div>
+          <div class="col-desc">Aneka camilan sehat untuk si kecil, tanpa pengawet, tanpa pewarna buatan, tapi tetap lezat dan disukai anak-anak.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 17</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> 198</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 1 hari lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Cemilan Anak Sehat & Bergizi')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Cemilan Anak Sehat & Bergizi')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 — Private -->
+      <div class="col-card" data-name="menu diet mingguan pribadi" data-privacy="private">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🥗</div>
+            <div class="col-cover-cell">🥦</div>
+            <div class="col-cover-cell">🍳</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 9 resep &nbsp;·&nbsp; <i class="bi bi-eye-slash-fill"></i> Privat</div>
+          </div>
+          <span class="col-privacy private"><i class="bi bi-lock-fill"></i> Privat</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">DK</div>
+            <span class="owner-name">Dewi Kartika</span>
+          </div>
+          <div class="col-name">Menu Diet Mingguan Pribadi</div>
+          <div class="col-desc">Rencana makan mingguan dengan kalori terkontrol, cocok untuk program penurunan berat badan yang sehat dan terstruktur.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 9</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> —</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 3 hari lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Menu Diet Mingguan Pribadi')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Menu Diet Mingguan Pribadi')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="col-card" data-name="minuman segar tanpa alkohol" data-privacy="public">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🥤</div>
+            <div class="col-cover-cell">🍹</div>
+            <div class="col-cover-cell">🧋</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 31 resep &nbsp;·&nbsp; <i class="bi bi-eye-fill"></i> 7.2k views</div>
+          </div>
+          <span class="col-privacy public"><i class="bi bi-globe2"></i> Publik</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706)">LN</div>
+            <span class="owner-name">Laila Nurfitri</span>
+          </div>
+          <div class="col-name">Minuman Segar Tanpa Alkohol</div>
+          <div class="col-desc">Kreasi minuman menyegarkan, mocktail, infused water, dan jus buah nusantara untuk berbagai suasana dan kesempatan.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 31</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> 541</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 4 hari lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Minuman Segar Tanpa Alkohol')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Minuman Segar Tanpa Alkohol')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="col-card" data-name="kue tradisional nusantara" data-privacy="public">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🍰</div>
+            <div class="col-cover-cell">🧁</div>
+            <div class="col-cover-cell">🍩</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 42 resep &nbsp;·&nbsp; <i class="bi bi-eye-fill"></i> 9.6k views</div>
+          </div>
+          <span class="col-privacy public"><i class="bi bi-globe2"></i> Publik</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,var(--primary-light),var(--primary))">RH</div>
+            <span class="owner-name">Rani Handayani</span>
+          </div>
+          <div class="col-name">Kue Tradisional Nusantara</div>
+          <div class="col-desc">Warisan kue-kue tradisional Indonesia dari Sabang sampai Merauke — klepon, onde-onde, nagasari, lemper, dan masih banyak lagi.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 42</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> 872</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 5 hari lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Kue Tradisional Nusantara')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Kue Tradisional Nusantara')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 — Private -->
+      <div class="col-card" data-name="eksperimen dapur pribadi" data-privacy="private">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🧪</div>
+            <div class="col-cover-cell">🍽️</div>
+            <div class="col-cover-cell">✨</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 6 resep &nbsp;·&nbsp; <i class="bi bi-eye-slash-fill"></i> Privat</div>
+          </div>
+          <span class="col-privacy private"><i class="bi bi-lock-fill"></i> Privat</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">HK</div>
+            <span class="owner-name">Hendra Kurniawan</span>
+          </div>
+          <div class="col-name">Eksperimen Dapur Pribadi</div>
+          <div class="col-desc">Draft resep-resep eksperimen yang masih dalam tahap pengembangan dan belum siap dipublikasikan ke umum.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 6</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> —</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 1 minggu lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Eksperimen Dapur Pribadi')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Eksperimen Dapur Pribadi')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 7 -->
+      <div class="col-card" data-name="sarapan cepat ala chef" data-privacy="public">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🌅</div>
+            <div class="col-cover-cell">🍳</div>
+            <div class="col-cover-cell">☕</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 19 resep &nbsp;·&nbsp; <i class="bi bi-eye-fill"></i> 5.4k views</div>
+          </div>
+          <span class="col-privacy public"><i class="bi bi-globe2"></i> Publik</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,#f97316,#ea580c)">AF</div>
+            <span class="owner-name">Ahmad Firdaus</span>
+          </div>
+          <div class="col-name">Sarapan Cepat ala Chef</div>
+          <div class="col-desc">Inspirasi sarapan lezat yang bisa disiapkan dalam 15 menit atau kurang — cocok untuk pagi hari yang sibuk.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 19</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> 427</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 1 minggu lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Sarapan Cepat ala Chef')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Sarapan Cepat ala Chef')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 8 -->
+      <div class="col-card" data-name="masakan seafood pesisir" data-privacy="public">
+        <div class="col-cover">
+          <div class="col-cover-grid">
+            <div class="col-cover-cell">🦐</div>
+            <div class="col-cover-cell">🐟</div>
+            <div class="col-cover-cell">🦀</div>
+          </div>
+          <div class="col-cover-overlay">
+            <div class="col-cover-stat"><i class="bi bi-bookmark-fill"></i> 28 resep &nbsp;·&nbsp; <i class="bi bi-eye-fill"></i> 6.7k views</div>
+          </div>
+          <span class="col-privacy public"><i class="bi bi-globe2"></i> Publik</span>
+        </div>
+        <div class="col-body">
+          <div class="col-owner">
+            <div class="owner-avatar" style="background:linear-gradient(135deg,#0891b2,#0e7490)">FN</div>
+            <span class="owner-name">Farah Nadila</span>
+          </div>
+          <div class="col-name">Masakan Seafood Pesisir</div>
+          <div class="col-desc">Kreasi olahan ikan, udang, cumi, dan kerang segar dengan bumbu pesisir nusantara yang gurih dan menggugah selera.</div>
+          <div class="col-footer">
+            <div class="col-meta">
+              <span class="col-meta-item"><i class="bi bi-collection"></i> 28</span>
+              <span class="col-meta-item"><i class="bi bi-heart"></i> 693</span>
+              <span class="col-meta-item"><i class="bi bi-clock"></i> 2 minggu lalu</span>
+            </div>
+            <div class="col-actions">
+              <a href="#" class="col-act-btn view" title="Lihat"><i class="bi bi-eye"></i></a>
+              <button class="col-act-btn edit" title="Edit" onclick="openEditModal('Masakan Seafood Pesisir')"><i class="bi bi-pencil"></i></button>
+              <button class="col-act-btn del"  title="Hapus" onclick="openDeleteModal('Masakan Seafood Pesisir')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /collections-grid -->
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">Tidak Ada Koleksi</div>
+      <div class="empty-sub">Tidak ada koleksi yang cocok dengan pencarianmu.<br>Coba ubah kata kunci atau filter pencarian.</div>
+      <button class="btn-add" onclick="document.getElementById('searchInput').value='';filterCollections()">
+        <i class="bi bi-arrow-counterclockwise"></i> Reset Pencarian
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pag-wrap" id="pagWrap" data-aos="fade-up" data-aos-delay="130">
+      <div class="pag-info">Menampilkan <strong>1–8</strong> dari <strong>1.284</strong> koleksi</div>
+      <div class="pag-btns">
+        <button class="pag-btn" disabled><i class="bi bi-chevron-left"></i></button>
+        <button class="pag-btn active">1</button>
+        <button class="pag-btn">2</button>
+        <button class="pag-btn">3</button>
+        <button class="pag-btn d-none d-sm-flex">…</button>
+        <button class="pag-btn d-none d-sm-flex">161</button>
+        <button class="pag-btn"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div>
+      <span class="footer-brand">Resep<span>Kita</span></span>
+      &nbsp;— Dibuat dengan <span class="footer-heart">♥</span> untuk para pecinta masak Indonesia
+    </div>
+    <div style="display:flex;gap:1rem" class="d-none d-sm-flex">
+      <a href="#" style="color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted)'">Tentang</a>
+      <a href="#" style="color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted)'">Bantuan</a>
+    </div>
+    <div>v1.0.0 &nbsp;•&nbsp; © 2025 ResepKita</div>
+  </footer>
+
+</div><!-- /main-wrapper -->
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ══ MODAL TAMBAH / EDIT KOLEKSI ══ -->
+<div class="modal fade modal-custom" id="modalKoleksi" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:480px">
+    <div class="modal-content">
+      <div class="modal-hdr">
+        <div class="modal-hdr-icon" id="mKoleksiIcon"><i class="bi bi-collection"></i></div>
+        <div>
+          <div class="modal-hdr-title" id="mKoleksiTitle">Buat Koleksi Baru</div>
+          <div class="modal-hdr-sub"   id="mKoleksiSub">Kelompokkan resep favoritmu dalam satu tempat</div>
+        </div>
+        <button class="modal-x" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-bd">
+
+        <div class="mb-3">
+          <label class="form-lbl">Nama Koleksi <span class="req">*</span></label>
+          <input type="text" class="form-ctrl" id="colName" placeholder="cth: Resep Favorit Keluarga"/>
+          <div class="form-hint">Buat nama yang mudah diingat dan deskriptif</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-lbl">Deskripsi <span style="font-size:.7rem;color:var(--muted);font-weight:400">(opsional)</span></label>
+          <textarea class="form-ctrl" rows="3" id="colDesc" placeholder="Ceritakan sedikit tentang koleksi ini..." style="resize:none"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-lbl" style="margin-bottom:.5rem">Visibilitas</label>
+          <div class="privacy-toggle">
+            <div class="priv-opt sel" id="privPublic"  onclick="setPrivacy('public')">
+              <i class="bi bi-globe2"></i> Publik
+            </div>
+            <div class="priv-opt"      id="privPrivate" onclick="setPrivacy('private')">
+              <i class="bi bi-lock-fill"></i> Privat
+            </div>
+          </div>
+          <div class="form-hint mt-2">Publik: bisa dilihat semua pengguna &nbsp;·&nbsp; Privat: hanya kamu</div>
+        </div>
+
+        <div class="mb-0">
+          <label class="form-lbl" style="margin-bottom:.5rem">Cover (pilih emoji tema)</label>
+          <div style="display:flex;gap:.45rem;flex-wrap:wrap">
+            <span class="icon-sel sel" onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--primary-border);background:var(--primary-pale);cursor:pointer;font-size:1.2rem;transition:all .2s">🍽️</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🍜</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🥗</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🍰</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🥤</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🍖</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🦐</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🌅</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">🧪</span>
+            <span class="icon-sel"    onclick="pickEmoji(this)" style="padding:.35rem .6rem;border-radius:9px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:1.2rem;transition:all .2s">⭐</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-ft">
+        <button class="btn-cancel" data-bs-dismiss="modal">Batal</button>
+        <button class="btn-ok" onclick="saveKoleksi()"><i class="bi bi-floppy"></i> Simpan Koleksi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL HAPUS KOLEKSI ══ -->
+<div class="modal fade modal-custom" id="modalHapus" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-bd text-center py-4">
+        <div class="del-icon-wrap"><i class="bi bi-collection"></i></div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.3rem">Hapus Koleksi?</h5>
+        <p style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem">
+          Koleksi <strong id="delColName" style="color:var(--secondary)"></strong> akan dihapus.<br>
+          <span style="color:var(--danger);font-size:.76rem">⚠ Resep dalam koleksi tidak ikut terhapus.</span>
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-cancel" data-bs-dismiss="modal">Batal</button>
+          <button class="btn-del" onclick="confirmDelete()"><i class="bi bi-trash"></i> Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div class="modal fade modal-custom" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-bd text-center py-4">
+        <div class="del-icon-wrap" style="background:linear-gradient(135deg,#fee2e2,#fecaca)">
+          <i class="bi bi-box-arrow-right" style="color:var(--danger)"></i>
+        </div>
+        <h5 style="font-family:'Playfair Display',serif;font-weight:900;color:var(--secondary);margin-bottom:.3rem">Konfirmasi Logout</h5>
+        <p style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem">Yakin ingin keluar dari akun <strong style="color:var(--secondary)">Ahmad Firdaus</strong>?</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-cancel" data-bs-dismiss="modal">Batal</button>
+          <button class="btn-del" onclick="window.location.href='login.html'"><i class="bi bi-box-arrow-right"></i> Ya, Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ once: true, easing: 'ease-out-cubic', offset: 30 });
+
+  /* BG floats */
+  ['🍕','🍜','🌶️','🥗','🍰','🥤','🍛','🍣','🧁','🍩','🍓','🥑','🌿','🫕','🍲','🔥'].forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'bg-float'; el.textContent = e;
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${1+Math.random()*1.3}rem;animation-duration:${14+Math.random()*16}s;animation-delay:-${Math.random()*14}s;`;
+    document.getElementById('bgFloats').appendChild(el);
+  });
+
+  /* Sidebar */
+  let collapsed = false;
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const mw = document.getElementById('mainWrapper');
+    const btn = document.getElementById('toggleBtn');
+    if (window.innerWidth <= 991) {
+      sb.classList.toggle('mobile-open');
+      document.getElementById('sidebarOverlay').classList.toggle('show');
+    } else {
+      collapsed = !collapsed;
+      sb.classList.toggle('collapsed', collapsed);
+      mw.classList.toggle('expanded', collapsed);
+      btn.classList.toggle('rotated', collapsed);
+    }
+  }
+  function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
+
+  /* User dropdown */
+  function toggleUserMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+    document.getElementById('userDropdown').classList.toggle('show');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.user-menu')) {
+      document.getElementById('userMenu').classList.remove('open');
+      document.getElementById('userDropdown').classList.remove('show');
+    }
+  });
+
+  /* Sidebar tooltip */
+  document.querySelectorAll('.nav-link-custom').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      if (!document.getElementById('sidebar').classList.contains('collapsed')) return;
+      const tip = document.createElement('div');
+      tip.textContent = this.dataset.tooltip || '';
+      tip.style.cssText = 'position:fixed;background:var(--secondary);color:#fff;padding:.35rem .85rem;border-radius:8px;font-size:.78rem;font-weight:600;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+      const r = this.getBoundingClientRect();
+      tip.style.left = (r.right + 10) + 'px';
+      tip.style.top  = (r.top + r.height/2 - 14) + 'px';
+      document.body.appendChild(tip); this._tip = tip;
+    });
+    link.addEventListener('mouseleave', function() { if (this._tip) { this._tip.remove(); this._tip = null; } });
+    link.addEventListener('click', function(e) { if (this.getAttribute('href') === '#') e.preventDefault(); });
+  });
+
+  /* Logout */
+  function showLogoutModal() {
+    document.getElementById('userDropdown').classList.remove('show');
+    document.getElementById('userMenu').classList.remove('open');
+    new bootstrap.Modal(document.getElementById('logoutModal')).show();
+  }
+
+  /* ═══════════════════════════════════
+     VIEW TOGGLE
+  ═══════════════════════════════════ */
+  function setView(v) {
+    const grid = document.getElementById('collectionsGrid');
+    document.getElementById('gridBtn').classList.toggle('active', v === 'grid');
+    document.getElementById('listBtn').classList.toggle('active', v === 'list');
+    if (v === 'list') {
+      grid.style.gridTemplateColumns = '1fr';
+      document.querySelectorAll('.col-cover').forEach(c => c.style.height = '90px');
+    } else {
+      grid.style.gridTemplateColumns = '';
+      document.querySelectorAll('.col-cover').forEach(c => c.style.height = '160px');
+    }
+  }
+
+  /* ═══════════════════════════════════
+     FILTER / SEARCH
+  ═══════════════════════════════════ */
+  function filterCollections() {
+    const q       = document.getElementById('searchInput').value.toLowerCase();
+    const privacy = document.getElementById('privacyFilter').value;
+    let visible = 0;
+    document.querySelectorAll('#collectionsGrid .col-card').forEach(card => {
+      const name = card.dataset.name || '';
+      const priv = card.dataset.privacy || '';
+      const matchQ = name.includes(q);
+      const matchP = privacy === 'all' || priv === privacy;
+      const show   = matchQ && matchP;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('emptyState').classList.toggle('show', visible === 0);
+    document.getElementById('pagWrap').style.display = visible === 0 ? 'none' : '';
+  }
+
+  /* ═══════════════════════════════════
+     MODAL TAMBAH / EDIT
+  ═══════════════════════════════════ */
+  let _editMode = false;
+  let _selPrivacy = 'public';
+
+  function openAddModal() {
+    _editMode = false; _selPrivacy = 'public';
+    document.getElementById('mKoleksiTitle').textContent = 'Buat Koleksi Baru';
+    document.getElementById('mKoleksiSub').textContent   = 'Kelompokkan resep favoritmu dalam satu tempat';
+    document.getElementById('mKoleksiIcon').innerHTML    = '<i class="bi bi-plus-lg"></i>';
+    document.getElementById('colName').value = '';
+    document.getElementById('colDesc').value = '';
+    setPrivacy('public');
+    new bootstrap.Modal(document.getElementById('modalKoleksi')).show();
+  }
+
+  function openEditModal(name) {
+    _editMode = true; _selPrivacy = 'public';
+    document.getElementById('mKoleksiTitle').textContent = 'Edit Koleksi';
+    document.getElementById('mKoleksiSub').textContent   = `Mengubah koleksi "${name}"`;
+    document.getElementById('mKoleksiIcon').innerHTML    = '<i class="bi bi-pencil"></i>';
+    document.getElementById('colName').value = name;
+    document.getElementById('colDesc').value = '';
+    setPrivacy('public');
+    new bootstrap.Modal(document.getElementById('modalKoleksi')).show();
+  }
+
+  function setPrivacy(v) {
+    _selPrivacy = v;
+    document.getElementById('privPublic').classList.toggle('sel',  v === 'public');
+    document.getElementById('privPrivate').classList.toggle('sel', v === 'private');
+  }
+
+  function pickEmoji(el) {
+    document.querySelectorAll('.icon-sel').forEach(o => {
+      o.style.borderColor = 'var(--border)';
+      o.style.background  = 'transparent';
+    });
+    el.style.borderColor = 'var(--primary-border)';
+    el.style.background  = 'var(--primary-pale)';
+  }
+
+  function saveKoleksi() {
+    const name = document.getElementById('colName').value.trim();
+    if (!name) {
+      document.getElementById('colName').style.borderColor = 'var(--danger)';
+      document.getElementById('colName').focus();
+      return;
+    }
+    bootstrap.Modal.getInstance(document.getElementById('modalKoleksi')).hide();
+    showToast((_editMode ? 'Koleksi diperbarui: ' : 'Koleksi dibuat: ') + '"' + name + '"', 'success');
+  }
+
+  /* ═══════════════════════════════════
+     MODAL HAPUS
+  ═══════════════════════════════════ */
+  let _delName = '';
+  function openDeleteModal(name) {
+    _delName = name;
+    document.getElementById('delColName').textContent = '"' + name + '"';
+    new bootstrap.Modal(document.getElementById('modalHapus')).show();
+  }
+  function confirmDelete() {
+    bootstrap.Modal.getInstance(document.getElementById('modalHapus')).hide();
+    showToast('Koleksi "' + _delName + '" berhasil dihapus', 'danger');
+  }
+
+  /* ═══════════════════════════════════
+     TOAST
+  ═══════════════════════════════════ */
+  function showToast(msg, type = 'info') {
+    const wrap = document.getElementById('toastWrap');
+    const t    = document.createElement('div');
+    const icons = { success:'bi-check2-circle', danger:'bi-trash', info:'bi-info-circle' };
+    t.className = `toast-item t-${type}`;
+    t.innerHTML = `<i class="bi ${icons[type] || 'bi-info-circle'}"></i> ${msg}`;
+    wrap.appendChild(t);
+    setTimeout(() => {
+      t.classList.add('removing');
+      setTimeout(() => t.remove(), 320);
+    }, 3200);
+  }
+</script>
+</body>
+</html>
